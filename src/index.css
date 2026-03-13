@@ -318,6 +318,47 @@ body {
   transition: transform 0.15s ease-out, opacity 0.3s;
 }
 
+/* ── Speakers cinematic polish ── */
+@keyframes cinematic-sweep {
+  0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  18% { opacity: 0.45; }
+  40% { transform: translateX(140%) skewX(-18deg); opacity: 0; }
+  100% { transform: translateX(140%) skewX(-18deg); opacity: 0; }
+}
+
+.cinematic-speakers-bg {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(1,151,178,0.14), transparent 42%),
+    radial-gradient(circle at 82% 20%, rgba(91,203,43,0.12), transparent 38%),
+    linear-gradient(180deg, #f7fbfc 0%, #f2f8fa 45%, #eef6f8 100%);
+}
+
+.cinematic-vignette {
+  background: radial-gradient(circle at center, transparent 48%, rgba(2, 6, 23, 0.16) 100%);
+}
+
+.speaker-cinematic-card {
+  perspective: 1100px;
+}
+
+.speaker-cinematic-card > div {
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16), 0 3px 10px rgba(15, 23, 42, 0.08);
+  transform-origin: center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 420ms ease;
+}
+
+.speaker-cinematic-card:hover > div {
+  transform: rotateX(3deg) rotateY(-2deg) translateY(-4px);
+  box-shadow: 0 30px 56px rgba(15, 23, 42, 0.23), 0 10px 22px rgba(1, 151, 178, 0.18);
+}
+
+.cinematic-sweep {
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.3) 48%, transparent 62%);
+  animation: cinematic-sweep 6.6s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
 /* ── Gradient underline decoration ── */
 .gradient-underline {
   background-image: linear-gradient(90deg, var(--brand-cyan), var(--brand-lime));

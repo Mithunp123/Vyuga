@@ -1,3 +1,11 @@
+import kpyBalaImg from '../assets/chie-guest/page7-block-1.png'
+import raghavaLawrenceImg from '../assets/chie-guest/page7-block-2.png'
+import mariyappanThangaveluImg from '../assets/chie-guest/page7-block-3.png'
+import shekarNaikImg from '../assets/chie-guest/page7-block-4.png'
+import mohamedAshikImg from '../assets/chie-guest/page7-block-5.png'
+import prateekMadhavImg from '../assets/chie-guest/page7-block-6.png'
+import vigneshGajendiranImg from '../assets/chie-guest/page7-block-7.png'
+
 export const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Program', to: '/program' },
@@ -36,32 +44,46 @@ export const scheduleSummary = [
 
 export const speakers = [
   {
-    name: 'Dr. Aanya Kapoor',
-    role: 'Director, Accessibility Research',
-    org: 'Assistive Tech Lab',
-    image:
-      'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=600&q=80',
+    name: 'Mohamed Ashik',
+    role: 'Social Activist · 1.2M Followers',
+    org: 'Theme: Visual & Hearing Accessibility',
+    image: mohamedAshikImg,
   },
   {
-    name: 'Rahul Mehta',
-    role: 'Product Lead, Inclusive Design',
-    org: 'Nimbus AI',
-    image:
-      'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80',
+    name: 'Vignesh Gajendiran',
+    role: 'Social Activist · 922K Followers',
+    org: 'Theme: Cognitive & Learning Accessibility',
+    image: vigneshGajendiranImg,
   },
   {
-    name: 'Sofia Chen',
-    role: 'Head of Partnerships',
-    org: 'Open Access Foundation',
-    image:
-      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
+    name: 'Shekar Naik',
+    role: 'India Blind Cricket Team',
+    org: 'Theme: Blind Cricket',
+    image: shekarNaikImg,
   },
   {
-    name: 'Prof. Vikram Iyer',
-    role: 'Professor, HCI & Robotics',
-    org: 'IIT Delhi',
-    image:
-      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80',
+    name: 'Mariyappan Thangavelu',
+    role: 'Paralympic High Jumper',
+    org: 'Theme: Special Talent Utsav',
+    image: mariyappanThangaveluImg,
+  },
+  {
+    name: 'Raghava Lawrence',
+    role: 'Actor & Choreographer',
+    org: 'Theme: Inclusion & Awareness',
+    image: raghavaLawrenceImg,
+  },
+  {
+    name: 'KPY Bala',
+    role: 'Actor & Comedian',
+    org: 'Theme: Innovation Fest Spotlight',
+    image: kpyBalaImg,
+  },
+  {
+    name: 'Prateek Madhav',
+    role: 'Chief Guest · CEO & Co-Founder',
+    org: 'AssisTech Foundation · Theme: Assistive Technology',
+    image: prateekMadhavImg,
   },
 ]
 

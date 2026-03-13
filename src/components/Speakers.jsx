@@ -7,9 +7,10 @@ export default function Speakers() {
   const inView = useInView(ref, { once: true, amount: 0.15 })
 
   return (
-    <section id="speakers" className="relative overflow-hidden bg-gradient-to-b from-white via-brand-cyan-light/15 to-white" ref={ref}>
+    <section id="speakers" className="cinematic-speakers-bg relative overflow-hidden" ref={ref}>
       {/* Noise overlay */}
       <div className="absolute inset-0 noise-overlay pointer-events-none" />
+      <div className="absolute inset-0 cinematic-vignette pointer-events-none" />
 
       {/* Blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -41,7 +42,7 @@ export default function Speakers() {
                 Meet the
               </span>
               <span className="block font-impact text-4xl tracking-[0.1em] gradient-text sm:text-5xl">
-                KEYNOTE SPEAKERS
+                VYUGA THEMES & GUESTS
               </span>
             </motion.h2>
           </div>
@@ -64,8 +65,9 @@ export default function Speakers() {
               key={s.name}
               initial={{ opacity: 0, y: 50 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
+              whileHover={{ y: -10, scale: 1.015 }}
               transition={{ duration: 0.7, delay: 0.2 + idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative"
+              className="speaker-cinematic-card group relative"
               style={{ marginTop: idx % 2 === 1 ? '2rem' : '0' }}
             >
               {/* Image with overlay */}
@@ -77,6 +79,7 @@ export default function Speakers() {
                   decoding="async"
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+                <div className="pointer-events-none absolute inset-0 cinematic-sweep" />
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
                 {/* Hover glow */}
@@ -101,7 +104,7 @@ export default function Speakers() {
                 {/* Badge */}
                 <div className="absolute top-4 right-4">
                   <span className="rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold tracking-widest text-white backdrop-blur-sm ring-1 ring-white/20">
-                    KEYNOTE
+                    VYUGA
                   </span>
                 </div>
               </div>
