@@ -1,80 +1,109 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import { speakers } from '../data/homeData.js'
 
-const _motion = motion
-
 export default function Speakers() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, amount: 0.15 })
+
   return (
-    <section id="speakers" className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section id="speakers" className="relative overflow-hidden bg-gradient-to-b from-white via-brand-cyan-light/15 to-white" ref={ref}>
+      {/* Noise overlay */}
+      <div className="absolute inset-0 noise-overlay pointer-events-none" />
+
+      {/* Blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-1/4 h-80 w-80 rounded-full bg-brand-cyan/6 blur-[100px] animate-morph" />
+        <div className="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-brand-lime/6 blur-[100px] animate-morph" style={{ animationDelay: '4s' }} />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2"
+            >
+              <div className="gradient-line w-12" />
+              <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-brand-cyan">
+                SPEAKERS
+              </span>
+            </motion.div>
             <motion.h2
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.45 }}
-              className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Keynote Speakers
+              <span className="block font-hero text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                Meet the
+              </span>
+              <span className="block font-impact text-4xl tracking-[0.1em] gradient-text sm:text-5xl">
+                KEYNOTE SPEAKERS
+              </span>
             </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.45, delay: 0.04 }}
-              className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base"
-            >
-              Meet the leaders shaping accessibility, inclusive AI, and assistive innovation.
-            </motion.p>
           </div>
-          <a
+
+          <motion.a
+            initial={{ opacity: 0, y: 14 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
             href="#register"
-            className="inline-flex w-fit items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-brand-cyan/40"
+            className="shimmer-btn inline-flex w-fit items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-cyan/20 transition-all hover:shadow-xl hover:scale-105"
           >
-            Become a speaker
-          </a>
+            Become a speaker →
+          </motion.a>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Speaker grid — staggered creative layout */}
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {speakers.map((s, idx) => (
             <motion.article
               key={s.name}
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.45, delay: 0.03 * idx }}
-              whileHover={{ y: -3 }}
-              className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+              initial={{ opacity: 0, y: 50 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.2 + idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative"
+              style={{ marginTop: idx % 2 === 1 ? '2rem' : '0' }}
             >
-              <div className="flex items-center gap-4">
-                <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-white/10">
-                  <img
-                    src={s.image}
-                    alt={s.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-base font-extrabold text-slate-900">{s.name}</p>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-600">{s.role}</p>
-                </div>
-              </div>
+              {/* Image with overlay */}
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
+                <img
+                  src={s.image}
+                  alt={s.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                {/* Hover glow */}
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-              <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold tracking-widest text-slate-500">
-                  ORGANIZATION
-                </p>
-                <p className="mt-2 text-sm font-bold text-slate-900">{s.org}</p>
-              </div>
+                {/* Text at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <motion.div
+                    className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0"
+                  >
+                    <p className="font-hero text-xl font-extrabold text-white drop-shadow-lg">{s.name}</p>
+                    <p className="mt-1 text-sm font-medium text-white/70">{s.role}</p>
+                    <div className="mt-3 overflow-hidden">
+                      <div className="h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-brand-cyan to-brand-lime transition-transform duration-700 group-hover:scale-x-100" />
+                    </div>
+                    <p className="mt-3 font-mono text-[10px] tracking-widest text-white/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                      {s.org.toUpperCase()}
+                    </p>
+                  </motion.div>
+                </div>
 
-              <div className="mt-6 flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Keynote</span>
-                <span className="rounded-full bg-brand-lime/15 px-3 py-1 text-xs font-bold text-brand-lime">
-                  Featured
-                </span>
+                {/* Badge */}
+                <div className="absolute top-4 right-4">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold tracking-widest text-white backdrop-blur-sm ring-1 ring-white/20">
+                    KEYNOTE
+                  </span>
+                </div>
               </div>
             </motion.article>
           ))}

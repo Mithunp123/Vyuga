@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { galleryImages } from '../data/homeData.js'
-
-const _motion = motion
+import { ChevronLeft, ChevronRight, X as XIcon } from 'lucide-react'
 
 export default function Gallery() {
   const images = useMemo(() => galleryImages, [])
   const [activeIdx, setActiveIdx] = useState(null)
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, amount: 0.1 })
 
   useEffect(() => {
     if (activeIdx === null) return
@@ -23,33 +24,58 @@ export default function Gallery() {
   const active = activeIdx === null ? null : images[activeIdx]
 
   return (
-    <section id="highlights" className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
-        <motion.h2
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.45 }}
-          className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl"
-        >
-          Conference Highlights Gallery
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.45, delay: 0.04 }}
-          className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base"
-        >
-          Moments from keynotes, workshops, networking, and the exhibitor floor.
-        </motion.p>
+    <section id="highlights" className="relative overflow-hidden bg-gradient-to-b from-white via-brand-cyan-light/10 to-white" ref={ref}>
+      {/* Noise */}
+      <div className="absolute inset-0 noise-overlay pointer-events-none" />
 
-        <div className="mt-10 [column-gap:1.25rem] sm:[column-count:2] lg:[column-count:3]">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2"
+            >
+              <div className="gradient-line w-12" />
+              <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-brand-cyan">
+                GALLERY
+              </span>
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <span className="block font-hero text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                Conference
+              </span>
+              <span className="block font-impact text-3xl tracking-[0.1em] gradient-text sm:text-4xl">
+                HIGHLIGHTS
+              </span>
+            </motion.h2>
+          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="max-w-xs text-sm leading-relaxed text-slate-500"
+          >
+            Moments from keynotes, workshops, networking, and the exhibitor floor.
+          </motion.p>
+        </div>
+
+        {/* Masonry grid */}
+        <div className="mt-14 [column-gap:1rem] sm:[column-count:2] lg:[column-count:3]">
           {images.map((img, idx) => (
-            <button
+            <motion.button
               key={`${img.src}-${idx}`}
+              initial={{ opacity: 0, y: 40 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.1 + idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
               type="button"
-              className="mb-5 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-1"
+              className="mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-brand-cyan/10"
               onClick={() => setActiveIdx(idx)}
               aria-label={`Open image: ${img.alt}`}
             >
@@ -59,67 +85,72 @@ export default function Gallery() {
                   alt={img.alt}
                   loading="lazy"
                   decoding="async"
-                  className="h-auto w-full object-cover transition duration-500 group-hover:scale-110"
+                  className="h-auto w-full object-cover transition duration-700 group-hover:scale-105"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
-                <div className="pointer-events-none absolute bottom-0 left-0 right-0 p-4">
-                  <p className="text-xs font-semibold text-white/95">{img.alt}</p>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                  <p className="font-mono text-[10px] tracking-widest text-white/60">
+                    {String(idx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+                  </p>
+                  <p className="mt-1 font-hero text-sm font-bold text-white">{img.alt}</p>
                 </div>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
 
+      {/* Lightbox */}
       <AnimatePresence>
         {active ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center bg-black/70 p-4"
+            className="fixed inset-0 z-[60] grid place-items-center bg-slate-900/90 p-4 backdrop-blur-xl"
             role="dialog"
             aria-modal="true"
             aria-label="Image preview"
             onClick={() => setActiveIdx(null)}
           >
             <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              initial={{ opacity: 0, y: 30, scale: 0.92 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.98 }}
-              transition={{ duration: 0.22 }}
-              className="relative w-full max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl"
+              exit={{ opacity: 0, y: 30, scale: 0.92 }}
+              transition={{ duration: 0.4, type: 'spring', stiffness: 100 }}
+              className="relative w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-                <p className="truncate text-sm font-semibold text-slate-900">{active.alt}</p>
+              <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                <p className="truncate font-hero text-sm font-bold text-slate-900">{active.alt}</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-slate-600 transition hover:bg-slate-100"
                     onClick={() =>
                       setActiveIdx((v) => (v === null ? v : (v - 1 + images.length) % images.length))
                     }
                   >
-                    Prev
+                    <ChevronLeft className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-50"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-slate-600 transition hover:bg-slate-100"
                     onClick={() => setActiveIdx((v) => (v === null ? v : (v + 1) % images.length))}
                   >
-                    Next
+                    <ChevronRight className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
-                    className="rounded-lg bg-brand-cyan px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#017F96]"
+                    className="shimmer-btn rounded-xl px-3.5 py-2 text-white transition hover:opacity-90"
                     onClick={() => setActiveIdx(null)}
                   >
-                    Close
+                    <XIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <div className="relative">
+              <div className="bg-slate-50">
                 <img
                   src={active.src}
                   alt={active.alt}

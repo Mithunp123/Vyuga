@@ -6,11 +6,16 @@ export default {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['Outfit', '"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        hero: ['Syne', 'Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['"Space Grotesk"', 'Outfit', 'ui-monospace', 'monospace'],
+        impact: ['"Bebas Neue"', 'Outfit', 'ui-sans-serif', 'sans-serif'],
       },
       colors: {
         brand: {
           cyan: '#0197B2',
+          'cyan-light': '#e0f6fa',
           lime: '#5BCB2B',
+          'lime-light': '#e8f9de',
         },
       },
     },
