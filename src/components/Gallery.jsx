@@ -28,7 +28,7 @@ export default function Gallery() {
       {/* Noise */}
       <div className="absolute inset-0 noise-overlay pointer-events-none" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

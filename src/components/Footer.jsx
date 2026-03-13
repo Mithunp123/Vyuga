@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { navLinks } from '../data/homeData.js'
 import { Clock, Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -8,7 +10,7 @@ function SocialIcon({ label, href, children }) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/40 transition-all hover:bg-brand-cyan/20 hover:text-white hover:border-brand-cyan/30 hover:shadow-lg hover:shadow-brand-cyan/10 hover:-translate-y-0.5"
+      className="inline-flex h-10 w-10 items-center justify-center border-b border-white/10 text-white/40 transition-all hover:text-brand-cyan hover:border-brand-cyan/30 hover:-translate-y-0.5"
       aria-label={label}
     >
       {children}
@@ -16,65 +18,67 @@ function SocialIcon({ label, href, children }) {
   )
 }
 
-export default function Footer() {
+/* Scroll-driven text color: dim → white */
+function ScrollWhiteText({ children, className = '', as = 'span' }) {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] })
+  const color = useTransform(scrollYProgress, [0, 0.8], ['rgba(255,255,255,0.15)', 'rgba(255,255,255,0.9)'])
+  const Tag = motion[as] || motion.span
   return (
-    <footer className="relative bg-slate-950 text-white overflow-hidden">
-      {/* Dot grid */}
+    <Tag ref={ref} style={{ color }} className={className}>
+      {children}
+    </Tag>
+  )
+}
+
+export default function Footer() {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start center'] })
+  const watermarkOpacity = useTransform(scrollYProgress, [0, 0.8], [0.03, 0.25])
+  const watermarkY = useTransform(scrollYProgress, [0, 0.8], [40, 0])
+  const textOpacity = useTransform(scrollYProgress, [0, 0.4], [0.35, 1])
+
+  return (
+    <footer ref={ref} className="relative bg-slate-950 text-white overflow-hidden">
       <div className="absolute inset-0 dot-grid opacity-10" />
-      {/* Glow */}
       <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-96 w-[800px] rounded-full bg-brand-cyan/5 blur-[150px]" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-20 pb-10 sm:px-6">
-        {/* Big brand text */}
-        <div className="mb-16 overflow-hidden">
-          <span className="block font-impact text-[12vw] leading-[0.85] tracking-[0.1em] text-white/[0.03] select-none sm:text-[8vw]">
-            EMPOWER
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 pb-10 sm:px-6">
+        {/* Giant watermark — scroll-reveal white text */}
+        <motion.div style={{ opacity: watermarkOpacity, y: watermarkY }} className="mb-16 overflow-hidden">
+          <span className="block font-impact text-[14vw] leading-[0.85] tracking-[0.12em] text-white select-none sm:text-[9vw]">
+            VYUGA
           </span>
-        </div>
+        </motion.div>
 
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-3">
-              <span className="font-hero text-xl font-extrabold tracking-[0.15em] text-white">
-                EMPOWER
+            <div className="flex items-baseline gap-3">
+              <span className="font-hero text-xl font-extrabold tracking-[0.15em] text-glow-cyan">
+                VYUGA
               </span>
-              <span className="rounded-full bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 px-3 py-1 font-impact text-sm tracking-widest text-brand-cyan">
-                2025
-              </span>
+              <span className="font-marker text-lg text-brand-lime">2026</span>
             </div>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-white/40">
-              Empower 2025 is a global conference dedicated to accessibility in design, tech, and
+            <motion.p style={{ opacity: textOpacity }} className="mt-5 max-w-md font-serif text-sm italic leading-relaxed text-white">
+              A global conference dedicated to accessibility in design, tech, and
               innovation. Learn from industry leaders and participate in hands-on workshops.
-            </p>
+            </motion.p>
 
-            <div className="mt-7 grid gap-3 text-sm text-white/50">
-              <p className="flex items-center gap-3">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-brand-cyan ring-1 ring-white/10">
-                  <Clock className="h-4 w-4" />
-                </span>
-                10 am – 5 pm (Monday to Friday)
-              </p>
-              <p className="flex items-center gap-3">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-brand-cyan ring-1 ring-white/10">
-                  <Phone className="h-4 w-4" />
-                </span>
-                +91 98710 93651
-              </p>
-              <p className="flex items-center gap-3">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-brand-cyan ring-1 ring-white/10">
-                  <Mail className="h-4 w-4" />
-                </span>
-                info@empowerconference.in
-              </p>
-              <p className="flex items-center gap-3">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-brand-cyan ring-1 ring-white/10">
-                  <MapPin className="h-4 w-4" />
-                </span>
-                Assistive Tech Lab, IIT Delhi
-              </p>
-            </div>
+            <motion.div style={{ opacity: textOpacity }} className="mt-7 space-y-3 text-sm text-white">
+              {[
+                { Icon: Clock, text: '10 am – 5 pm (Monday to Friday)' },
+                { Icon: Phone, text: '+91 98710 93651' },
+                { Icon: Mail, text: 'info@vyuga.in' },
+                { Icon: MapPin, text: 'Assistive Tech Lab, IIT Delhi' },
+              ].map(({ Icon, text }) => (
+                <p key={text} className="flex items-center gap-3">
+                  <Icon className="h-4 w-4 text-brand-cyan/60" />
+                  {text}
+                </p>
+              ))}
+            </motion.div>
 
-            <div className="mt-7 flex items-center gap-3">
+            <div className="mt-7 flex items-center gap-4">
               <SocialIcon label="LinkedIn" href="https://www.linkedin.com/">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                   <path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.026-3.036-1.852-3.036-1.853 0-2.136 1.445-2.136 2.939v5.666H9.35V9h3.414v1.561h.046c.477-.9 1.637-1.852 3.37-1.852 3.601 0 4.267 2.37 4.267 5.455v6.288zM5.337 7.433A2.062 2.062 0 0 1 3.27 5.37a2.065 2.065 0 1 1 4.13 0c0 1.138-.924 2.063-2.063 2.063zM6.812 20.452H3.862V9h2.95v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.727v20.545C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.273V1.727C24 .774 23.2 0 22.222 0h.003z" />
@@ -95,38 +99,35 @@ export default function Footer() {
 
           <div className="grid gap-10 sm:grid-cols-2 lg:col-span-3 lg:block">
             <div>
-              <p className="font-mono text-[10px] font-semibold tracking-[0.3em] text-brand-cyan">QUICK LINKS</p>
+              <p className="font-marker text-xs text-brand-cyan">Quick links</p>
               <ul className="mt-5 grid gap-3">
                 {navLinks.map((l) => (
                   <li key={l.to}>
-                    <Link
-                      to={l.to}
-                      className="text-sm font-medium text-white/40 transition hover:text-brand-cyan"
-                    >
-                      {l.label}
-                    </Link>
+                    <ScrollWhiteText className="text-sm transition hover:text-brand-cyan">
+                      <Link to={l.to}>{l.label}</Link>
+                    </ScrollWhiteText>
                   </li>
                 ))}
                 <li>
-                  <a href="/#highlights" className="text-sm font-medium text-white/40 transition hover:text-brand-cyan">
-                    Highlights
-                  </a>
+                  <ScrollWhiteText className="text-sm transition hover:text-brand-cyan">
+                    <a href="/#highlights">Highlights</a>
+                  </ScrollWhiteText>
                 </li>
               </ul>
             </div>
 
             <div className="lg:mt-10">
-              <p className="font-mono text-[10px] font-semibold tracking-[0.3em] text-brand-cyan">POLICIES</p>
+              <p className="font-marker text-xs text-brand-lime">Policies</p>
               <ul className="mt-5 grid gap-3">
-                <li><a href="#" className="text-sm font-medium text-white/40 transition hover:text-brand-cyan">Cancellation & Refund</a></li>
-                <li><a href="#" className="text-sm font-medium text-white/40 transition hover:text-brand-cyan">Privacy Policy</a></li>
-                <li><a href="#" className="text-sm font-medium text-white/40 transition hover:text-brand-cyan">Terms & Conditions</a></li>
+                <li><ScrollWhiteText className="text-sm">Cancellation & Refund</ScrollWhiteText></li>
+                <li><ScrollWhiteText className="text-sm">Privacy Policy</ScrollWhiteText></li>
+                <li><ScrollWhiteText className="text-sm">Terms & Conditions</ScrollWhiteText></li>
               </ul>
             </div>
           </div>
 
           <div className="lg:col-span-4">
-            <p className="font-mono text-[10px] font-semibold tracking-[0.3em] text-brand-cyan">VENUE DIRECTIONS</p>
+            <p className="font-marker text-xs text-brand-cyan">Venue directions</p>
             <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
               <iframe
                 title="IIT Delhi Map"
@@ -139,10 +140,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-white/5 pt-7 text-xs text-white/20 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-mono">Copyright · All rights reserved · Empower 2025</p>
-          <p className="font-mono">Assistive Tech Lab, IIT Delhi</p>
-        </div>
+        <motion.div style={{ opacity: textOpacity }} className="mt-14 flex flex-col gap-3 border-t border-white/5 pt-7 text-xs text-white sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-mono tracking-wider">Copyright · All rights reserved · Vyuga 2026</p>
+          <p className="font-serif italic">Assistive Tech Lab, IIT Delhi</p>
+        </motion.div>
       </div>
     </footer>
   )

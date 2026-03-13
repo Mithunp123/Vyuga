@@ -21,7 +21,7 @@ export default function PageShell({ title, subtitle, children }) {
             className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-brand-cyan"
           >
             <span className="h-px w-8 bg-brand-cyan" />
-            EMPOWER 2025
+            VYUGA 2026
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

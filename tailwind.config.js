@@ -9,6 +9,8 @@ export default {
         hero: ['Syne', 'Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"Space Grotesk"', 'Outfit', 'ui-monospace', 'monospace'],
         impact: ['"Bebas Neue"', 'Outfit', 'ui-sans-serif', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', '"Times New Roman"', 'serif'],
+        marker: ['"Permanent Marker"', 'cursive'],
       },
       colors: {
         brand: {

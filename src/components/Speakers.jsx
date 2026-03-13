@@ -17,7 +17,7 @@ export default function Speakers() {
         <div className="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-brand-lime/6 blur-[100px] animate-morph" style={{ animationDelay: '4s' }} />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

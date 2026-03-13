@@ -63,10 +63,10 @@ export default function Preloader({ onComplete }) {
               className="flex items-baseline gap-3"
             >
               <span className="font-hero text-5xl font-extrabold tracking-tight gradient-text sm:text-7xl">
-                EMPOWER
+                VYUGA
               </span>
               <span className="font-impact text-4xl tracking-wider text-slate-300 sm:text-6xl">
-                2025
+                2026
               </span>
             </motion.div>
 

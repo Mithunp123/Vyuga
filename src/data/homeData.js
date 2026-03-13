@@ -8,9 +8,9 @@ export const navLinks = [
 ]
 
 export const partnerBadges = [
-  { name: 'HCLTech', src: 'https://logo.clearbit.com/hcltech.com' },
-  { name: 'Google', src: 'https://logo.clearbit.com/google.com' },
-  { name: 'Microsoft', src: 'https://logo.clearbit.com/microsoft.com' },
+  { name: 'HCLTech', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/HCL_Technologies_logo.svg/200px-HCL_Technologies_logo.svg.png' },
+  { name: 'Google', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png' },
+  { name: 'Microsoft', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/200px-Microsoft_logo_%282012%29.svg.png' },
 ]
 
 export const scheduleSummary = [
@@ -66,12 +66,12 @@ export const speakers = [
 ]
 
 export const sponsors = [
-  { tier: 'Silver Sponsor', name: 'HCLTech', src: 'https://logo.clearbit.com/hcltech.com' },
-  { tier: 'Bronze Sponsor', name: 'Google', src: 'https://logo.clearbit.com/google.com' },
-  { tier: 'Bronze Sponsor', name: 'Microsoft', src: 'https://logo.clearbit.com/microsoft.com' },
-  { tier: 'Partner', name: 'IBM', src: 'https://logo.clearbit.com/ibm.com' },
-  { tier: 'Partner', name: 'Adobe', src: 'https://logo.clearbit.com/adobe.com' },
-  { tier: 'Partner', name: 'Intel', src: 'https://logo.clearbit.com/intel.com' },
+  { tier: 'Silver Sponsor', name: 'HCLTech', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/HCL_Technologies_logo.svg/200px-HCL_Technologies_logo.svg.png' },
+  { tier: 'Bronze Sponsor', name: 'Google', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png' },
+  { tier: 'Bronze Sponsor', name: 'Microsoft', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/200px-Microsoft_logo_%282012%29.svg.png' },
+  { tier: 'Partner', name: 'IBM', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/200px-IBM_logo.svg.png' },
+  { tier: 'Partner', name: 'Adobe', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Adobe_Corporate_Logo.png/200px-Adobe_Corporate_Logo.png' },
+  { tier: 'Partner', name: 'Intel', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282006-2020%29.svg/200px-Intel_logo_%282006-2020%29.svg.png' },
 ]
 
 export const exhibitors = [

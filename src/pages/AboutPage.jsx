@@ -3,7 +3,7 @@ import About from '../components/About.jsx'
 
 export default function AboutPage() {
   return (
-    <PageShell title="About" subtitle="What Empower is and why it matters.">
+    <PageShell title="About" subtitle="What Vyuga is and why it matters.">
       <About />
     </PageShell>
   )

@@ -117,10 +117,10 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link to="/" className="group inline-flex items-center gap-2.5">
           <span className="font-hero text-xl font-extrabold tracking-[0.18em] text-brand-cyan transition-all group-hover:tracking-[0.22em]">
-            EMPOWER
+            VYUGA
           </span>
           <span className="rounded-full bg-gradient-to-r from-brand-lime/20 to-brand-lime/10 px-2.5 py-1 font-impact text-sm tracking-widest text-brand-lime ring-1 ring-brand-lime/20 transition-all group-hover:shadow-md group-hover:shadow-brand-lime/10">
-            2025
+            2026
           </span>
         </Link>
 
