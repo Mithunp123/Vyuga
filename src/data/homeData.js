@@ -1,0 +1,142 @@
+export const navLinks = [
+  { label: 'Home', to: '/' },
+  { label: 'Program', to: '/program' },
+  { label: 'About', to: '/about' },
+  { label: 'Speakers', to: '/speakers' },
+  { label: 'Sponsors', to: '/sponsors' },
+  { label: 'Exhibitors', to: '/exhibitors' },
+]
+
+export const partnerBadges = [
+  { name: 'HCLTech', src: 'https://logo.clearbit.com/hcltech.com' },
+  { name: 'Google', src: 'https://logo.clearbit.com/google.com' },
+  { name: 'Microsoft', src: 'https://logo.clearbit.com/microsoft.com' },
+]
+
+export const scheduleSummary = [
+  {
+    title: 'Workshops',
+    time: 'Day 1 · Morning',
+    description:
+      'Hands-on sessions on assistive tech, inclusive design, and rapid prototyping.',
+  },
+  {
+    title: 'Keynote Talks',
+    time: 'Day 1–2 · Midday',
+    description:
+      'Insights from global leaders shaping accessible technology and innovation.',
+  },
+  {
+    title: 'Networking',
+    time: 'Day 2 · Evening',
+    description:
+      'Meet researchers, founders, practitioners, and policy leaders in a relaxed setting.',
+  },
+]
+
+export const speakers = [
+  {
+    name: 'Dr. Aanya Kapoor',
+    role: 'Director, Accessibility Research',
+    org: 'Assistive Tech Lab',
+    image:
+      'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    name: 'Rahul Mehta',
+    role: 'Product Lead, Inclusive Design',
+    org: 'Nimbus AI',
+    image:
+      'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    name: 'Sofia Chen',
+    role: 'Head of Partnerships',
+    org: 'Open Access Foundation',
+    image:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    name: 'Prof. Vikram Iyer',
+    role: 'Professor, HCI & Robotics',
+    org: 'IIT Delhi',
+    image:
+      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80',
+  },
+]
+
+export const sponsors = [
+  { tier: 'Silver Sponsor', name: 'HCLTech', src: 'https://logo.clearbit.com/hcltech.com' },
+  { tier: 'Bronze Sponsor', name: 'Google', src: 'https://logo.clearbit.com/google.com' },
+  { tier: 'Bronze Sponsor', name: 'Microsoft', src: 'https://logo.clearbit.com/microsoft.com' },
+  { tier: 'Partner', name: 'IBM', src: 'https://logo.clearbit.com/ibm.com' },
+  { tier: 'Partner', name: 'Adobe', src: 'https://logo.clearbit.com/adobe.com' },
+  { tier: 'Partner', name: 'Intel', src: 'https://logo.clearbit.com/intel.com' },
+]
+
+export const exhibitors = [
+  {
+    name: 'BrailleNext',
+    description:
+      'Next-gen refreshable braille displays and learning tools designed for speed and comfort.',
+    logo: 'https://logo.clearbit.com/humanware.com',
+  },
+  {
+    name: 'HearWell',
+    description:
+      'AI-assisted captioning and hearing enhancement for classrooms and auditoriums.',
+    logo: 'https://logo.clearbit.com/oticon.com',
+  },
+  {
+    name: 'AccessOS',
+    description:
+      'Open accessibility toolkit for web, mobile, and enterprise design systems.',
+    logo: 'https://logo.clearbit.com/github.com',
+  },
+  {
+    name: 'MobilityWorks',
+    description:
+      'Smart mobility solutions and adaptive hardware for independent living.',
+    logo: 'https://logo.clearbit.com/bosch.com',
+  },
+]
+
+export const galleryImages = [
+  {
+    alt: 'Conference keynote audience',
+    src: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Networking session',
+    src: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Workshop discussion',
+    src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Panel talk on stage',
+    src: 'https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Expo booths',
+    src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Speaker close-up',
+    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Audience applauding',
+    src: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Volunteer help desk',
+    src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
+    alt: 'Team photo',
+    src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
+  },
+]
+
