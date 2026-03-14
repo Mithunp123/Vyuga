@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { navLinks } from '../data/homeData.js'
-import { Clock, Mail, MapPin, Phone } from 'lucide-react'
+import { Globe, Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function SocialIcon({ label, href, children }) {
@@ -66,14 +66,14 @@ export default function Footer() {
 
             <motion.div style={{ opacity: textOpacity }} className="mt-7 space-y-3 text-sm text-white">
               {[
-                { Icon: Clock, text: '10 am – 5 pm (Monday to Friday)' },
-                { Icon: Phone, text: '+91 98710 93651' },
-                { Icon: Mail, text: 'info@vyuga.in' },
+                { Icon: Phone, text: '04288-274374' },
+                { Icon: Mail, text: 'connect@nexyugainnovations.com' },
+                { Icon: Globe, text: 'www.nexyugainnovations.com', href: 'https://www.nexyugainnovations.com' },
                 { Icon: MapPin, text: 'K.S.Rangasamy College of Technology, Tiruchengode' },
-              ].map(({ Icon, text }) => (
+              ].map(({ Icon, text, href }) => (
                 <p key={text} className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-brand-cyan/60" />
-                  {text}
+                  {href ? <a href={href} target="_blank" rel="noreferrer" className="transition-colors hover:text-brand-cyan">{text}</a> : text}
                 </p>
               ))}
             </motion.div>

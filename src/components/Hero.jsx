@@ -3,6 +3,12 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
+import logoV from '../assets/logo/1.png'
+import logoY from '../assets/logo/2.png'
+import logoU from '../assets/logo/3.png'
+import logoG from '../assets/logo/4.png'
+import logoA from '../assets/logo/5.png'
+
 /* ── Interactive particle network (Canvas) ── */
 function ParticleCanvas() {
   const canvasRef = useRef(null)
@@ -224,22 +230,22 @@ export default function Hero() {
 
             {/* ── VYUGA TEXT + TYPOGRAPHY ── */}
             <div className="mt-6 space-y-0">
-              {/* VYUGA — bold black text */}
-              <div className="overflow-hidden">
-                <span className="block font-hero text-[15vw] font-black leading-[0.85] tracking-[-0.03em] text-slate-900 sm:text-[12vw] lg:text-[10vw]" aria-label="VYUGA">
-                  {['V','Y','U','G','A'].map((ch, i) => (
-                    <motion.span
+              {/* VYUGA — logo letter images */}
+              <div className="overflow-hidden" aria-label="VYUGA">
+                <div className="flex items-center justify-start gap-0">
+                  {[logoV, logoY, logoU, logoG, logoA].map((src, i) => (
+                    <motion.img
                       key={i}
+                      src={src}
+                      alt={['V','Y','U','G','A'][i]}
                       initial={{ opacity: 0, y: 80, filter: 'blur(12px)' }}
                       animate={textInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
                       transition={{ duration: 0.9, delay: 0.3 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block"
+                      className="-mx-[1vw] h-[22vw] w-auto object-contain mix-blend-multiply sm:h-[18vw] sm:-mx-[0.8vw] lg:h-[14vw] lg:-mx-[0.5vw]"
                       aria-hidden="true"
-                    >
-                      {ch}
-                    </motion.span>
+                    />
                   ))}
-                </span>
+                </div>
               </div>
 
               {/* Mixed line: italic serif "the" + CONFERENCE outlined */}

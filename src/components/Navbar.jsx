@@ -117,7 +117,7 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link to="/" className="group inline-flex items-center gap-2.5">
-          <img src={logoImg} alt="VYUGA" className="h-10 w-auto object-contain" />
+          <img src={logoImg} alt="VYUGA" className="h-14 w-auto object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">

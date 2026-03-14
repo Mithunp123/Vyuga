@@ -95,8 +95,10 @@ export default function Speakers() {
               <span className="block font-hero text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
                 Meet the
               </span>
-              <span className="block font-impact text-4xl tracking-[0.1em] gradient-text sm:text-5xl">
-                THEMES & GUESTS
+              <span className="block font-impact text-4xl tracking-[0.1em] sm:text-5xl">
+                <span className="text-brand-cyan">THEMES</span>
+                <span className="text-slate-400"> & </span>
+                <span className="text-brand-lime">GUESTS</span>
               </span>
             </motion.h2>
           </div>
