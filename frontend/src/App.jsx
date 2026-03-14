@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/Home.jsx'
 import Program from './pages/Program.jsx'
 import AboutPage from './pages/AboutPage.jsx'
@@ -27,6 +28,8 @@ import AdminDashboard from './pages/AdminDashboard.jsx'
 
 export default function App() {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/program" element={<Program />} />
@@ -61,5 +64,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
