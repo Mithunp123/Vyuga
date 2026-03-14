@@ -16,6 +16,14 @@ import ProjectsStudentDesignChallenge from './pages/ProjectsStudentDesignChallen
 import AttendRegister from './pages/AttendRegister.jsx'
 import AttendAccommodation from './pages/AttendAccommodation.jsx'
 import AttendTravel from './pages/AttendTravel.jsx'
+import InnovationCollegeForm from './pages/InnovationCollegeForm.jsx'
+import InnovationPWDForm from './pages/InnovationPWDForm.jsx'
+import TalentOrgRegistration from './pages/TalentOrgRegistration.jsx'
+import TalentStudentNomination from './pages/TalentStudentNomination.jsx'
+import CricketTeamForm from './pages/CricketTeamForm.jsx'
+
+import AdminLogin from './pages/AdminLogin.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
 
 export default function App() {
   return (
@@ -40,6 +48,16 @@ export default function App() {
       <Route path="/attend/register" element={<AttendRegister />} />
       <Route path="/attend/accommodation" element={<AttendAccommodation />} />
       <Route path="/attend/travel-information" element={<AttendTravel />} />
+
+      <Route path="/register/innovation-college" element={<InnovationCollegeForm />} />
+      <Route path="/register/innovation-pwd" element={<InnovationPWDForm />} />
+      <Route path="/register/talent-org" element={<TalentOrgRegistration />} />
+      <Route path="/register/talent-student" element={<TalentStudentNomination />} />
+      <Route path="/register/cricket" element={<CricketTeamForm />} />
+
+      {/* ── Admin (private) ── */}
+      <Route path="/vyuga-admin" element={<AdminLogin />} />
+      <Route path="/vyuga-admin/dashboard" element={<AdminDashboard />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
