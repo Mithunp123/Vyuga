@@ -69,7 +69,7 @@ export default function Footer() {
                 { Icon: Clock, text: '10 am – 5 pm (Monday to Friday)' },
                 { Icon: Phone, text: '+91 98710 93651' },
                 { Icon: Mail, text: 'info@vyuga.in' },
-                { Icon: MapPin, text: 'Assistive Tech Lab, IIT Delhi' },
+                { Icon: MapPin, text: 'K.S.Rangasamy College of Technology, Tiruchengode' },
               ].map(({ Icon, text }) => (
                 <p key={text} className="flex items-center gap-3">
                   <Icon className="h-4 w-4 text-brand-cyan/60" />
@@ -130,11 +130,11 @@ export default function Footer() {
             <p className="font-marker text-xs text-brand-cyan">Venue directions</p>
             <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
               <iframe
-                title="IIT Delhi Map"
+                title="KSRCT Map"
                 className="h-[280px] w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps?q=Indian%20Institute%20of%20Technology%20Delhi&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1864.1303872982849!2d77.82830417895998!3d11.362597697460115!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba964016c607823%3A0x580736a65c2b0005!2sK.S.RANGASAMY%20COLLEGE%20OF%20TECHNOLOGY!5e1!3m2!1sen!2sin!4v1773465944265!5m2!1sen!2sin"
               />
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function Footer() {
 
         <motion.div style={{ opacity: textOpacity }} className="mt-14 flex flex-col gap-3 border-t border-white/5 pt-7 text-xs text-white sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono tracking-wider">Copyright · All rights reserved · Vyuga 2026</p>
-          <p className="font-serif italic">Assistive Tech Lab, IIT Delhi</p>
+          <p className="font-serif italic">K.S.Rangasamy College of Technology, Tiruchengode</p>
         </motion.div>
       </div>
     </footer>

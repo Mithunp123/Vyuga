@@ -5,6 +5,7 @@ import shekarNaikImg from '../assets/chie-guest/page7-block-4.png'
 import mohamedAshikImg from '../assets/chie-guest/page7-block-5.png'
 import prateekMadhavImg from '../assets/chie-guest/page7-block-6.png'
 import vigneshGajendiranImg from '../assets/chie-guest/page7-block-7.png'
+import baskaranRamasamyImg from '../assets/chie-guest/page7-block-8.png'
 
 export const navLinks = [
   { label: 'Home', to: '/' },
@@ -42,18 +43,12 @@ export const scheduleSummary = [
   },
 ]
 
-export const speakers = [
+export const day1Speakers = [
   {
-    name: 'Mohamed Ashik',
-    role: 'Social Activist · 1.2M Followers',
-    org: 'Theme: Visual & Hearing Accessibility',
-    image: mohamedAshikImg,
-  },
-  {
-    name: 'Vignesh Gajendiran',
-    role: 'Social Activist · 922K Followers',
-    org: 'Theme: Cognitive & Learning Accessibility',
-    image: vigneshGajendiranImg,
+    name: 'Mariyappan Thangavelu',
+    role: 'Paralympic High Jumper',
+    org: 'Theme: Special Talent Utsav',
+    image: mariyappanThangaveluImg,
   },
   {
     name: 'Shekar Naik',
@@ -61,12 +56,9 @@ export const speakers = [
     org: 'Theme: Blind Cricket',
     image: shekarNaikImg,
   },
-  {
-    name: 'Mariyappan Thangavelu',
-    role: 'Paralympic High Jumper',
-    org: 'Theme: Special Talent Utsav',
-    image: mariyappanThangaveluImg,
-  },
+]
+
+export const day2Speakers = [
   {
     name: 'Raghava Lawrence',
     role: 'Actor & Choreographer',
@@ -80,10 +72,31 @@ export const speakers = [
     image: kpyBalaImg,
   },
   {
+    name: 'Baskaran Ramasamy',
+    role: 'Managing Director · Goodwill Wealth Management',
+    org: 'Theme: Investing In Your Future',
+    image: baskaranRamasamyImg,
+  },
+  {
     name: 'Prateek Madhav',
     role: 'Chief Guest · CEO & Co-Founder',
     org: 'AssisTech Foundation · Theme: Assistive Technology',
     image: prateekMadhavImg,
+  },
+]
+
+export const influencers = [
+  {
+    name: 'Mohamed Ashik',
+    role: 'Social Activist · 1.2M Followers',
+    org: 'Theme: Visual & Hearing Accessibility',
+    image: mohamedAshikImg,
+  },
+  {
+    name: 'Vignesh Gajendiran',
+    role: 'Social Activist · 922K Followers',
+    org: 'Theme: Cognitive & Learning Accessibility',
+    image: vigneshGajendiranImg,
   },
 ]
 

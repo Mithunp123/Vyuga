@@ -22,17 +22,17 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
 }
 
 const stats = [
-  { value: 3, suffix: '', label: 'DAYS', accent: 'text-brand-cyan' },
-  { value: 40, suffix: '+', label: 'SESSIONS', accent: 'text-brand-lime' },
-  { value: 500, suffix: '+', label: 'ATTENDEES', accent: 'text-brand-cyan' },
-  { value: 15, suffix: '+', label: 'COUNTRIES', accent: 'text-brand-lime' },
+  { value: 2, suffix: '', label: 'DAYS', accent: 'text-brand-cyan' },
+  { value: 200, suffix: '+', label: 'INNOVATORS & SPECIAL ABLED', accent: 'text-brand-lime' },
+  { value: 1000, suffix: '+', label: 'ATTENDEES', accent: 'text-brand-cyan' },
+  { value: 50, suffix: '+', label: 'NGOs & SPECIAL SCHOOLS', accent: 'text-brand-lime' },
 ]
 
 const features = [
   { text: 'Keynotes from global accessibility leaders', accent: 'font-marker text-brand-cyan' },
   { text: 'Hands-on workshops and rapid prototyping', accent: 'font-serif italic text-brand-lime' },
   { text: 'Assistive tech expo with live demos', accent: 'font-marker text-brand-cyan' },
-  { text: 'Networking with 500+ practitioners', accent: 'font-serif italic text-brand-lime' },
+  { text: 'Networking with 1000+ attendees', accent: 'font-serif italic text-brand-lime' },
 ]
 
 export default function About() {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import logoImg from '../assets/logo.png'
 
 const projectsItems = [
   { label: 'Schedule', to: '/projects/schedule' },
@@ -116,12 +117,7 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link to="/" className="group inline-flex items-center gap-2.5">
-          <span className="font-hero text-xl font-extrabold tracking-[0.18em] text-brand-cyan transition-all group-hover:tracking-[0.22em]">
-            VYUGA
-          </span>
-          <span className="rounded-full bg-gradient-to-r from-brand-lime/20 to-brand-lime/10 px-2.5 py-1 font-impact text-sm tracking-widest text-brand-lime ring-1 ring-brand-lime/20 transition-all group-hover:shadow-md group-hover:shadow-brand-lime/10">
-            2026
-          </span>
+          <img src={logoImg} alt="VYUGA" className="h-10 w-auto object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">

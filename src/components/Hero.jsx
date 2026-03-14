@@ -3,14 +3,6 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
-import logoGoogle from '../assets/logo-google.svg'
-import logoMicrosoft from '../assets/logo-microsoft.svg'
-import logoIBM from '../assets/logo-ibm.svg'
-import logoAdobe from '../assets/logo-adobe.svg'
-import logoIntel from '../assets/logo-intel.svg'
-import logoHCLTech from '../assets/logo-hcltech.svg'
-import logoIITDelhi from '../assets/IIT-delhi.png'
-
 /* ── Interactive particle network (Canvas) ── */
 function ParticleCanvas() {
   const canvasRef = useRef(null)
@@ -136,7 +128,7 @@ function useCountdown(targetDate) {
 
 /* ── Rotating circular text badge ── */
 function RotatingBadge() {
-  const text = '✦ VYUGA ✦ 2026 ✦ IIT DELHI ✦ OCT 3-5 '
+  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUN 26-27 '
   return (
     <div className="relative h-32 w-32 sm:h-40 sm:w-40">
       <svg viewBox="0 0 200 200" className="h-full w-full animate-rotate-text">
@@ -149,7 +141,6 @@ function RotatingBadge() {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-brand-cyan to-brand-lime shadow-lg shadow-brand-cyan/30 flex items-center justify-center">
-          <ArrowRight className="h-5 w-5 text-white" />
         </div>
       </div>
     </div>
@@ -158,7 +149,7 @@ function RotatingBadge() {
 
 /* ── Marquee ── */
 function MarqueeBand() {
-  const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'IIT DELHI']
+  const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'KSRCT']
   const doubled = [...items, ...items]
   return (
     <div className="relative overflow-hidden border-y-2 border-brand-cyan/40 bg-gradient-to-r from-brand-cyan/20 via-brand-lime/20 to-brand-cyan/20">
@@ -176,19 +167,8 @@ function MarqueeBand() {
   )
 }
 
-/* Partner logos — local colored assets */
-const partners = [
-  { name: 'Google', src: logoGoogle },
-  { name: 'Microsoft', src: logoMicrosoft },
-  { name: 'HCL Technologies', src: logoHCLTech },
-  { name: 'IBM', src: logoIBM },
-  { name: 'Adobe', src: logoAdobe },
-  { name: 'Intel', src: logoIntel },
-  { name: 'IIT Delhi', src: logoIITDelhi },
-]
-
 export default function Hero() {
-  const countdown = useCountdown('2026-10-03T09:00:00')
+  const countdown = useCountdown('2026-06-26T09:00:00')
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.15])
@@ -227,7 +207,7 @@ export default function Hero() {
                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand-lime" />
                   </span>
                   <span className="font-mono text-[11px] font-semibold tracking-[0.2em] text-slate-500">
-                    OCT 3–5, 2026 · NEW DELHI
+                    JUN 26–27, 2026 · K.S.RANGASAMY COLLEGE OF TECHNOLOGY, TIRUCHENGODE
                   </span>
                 </div>
               </motion.div>
@@ -278,7 +258,7 @@ export default function Hero() {
                   transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
                   className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-stroke sm:text-[10vw] lg:text-[8vw]"
                 >
-                  CONFERENCE
+                  ABILITY CARNIVAL
                 </motion.span>
               </div>
 
@@ -311,9 +291,9 @@ export default function Hero() {
                 transition={{ duration: 0.7, delay: 1.4 }}
                 className="max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg"
               >
-                Join <span className="font-marker text-brand-cyan">500+</span> researchers, designers, engineers and advocates for
+                Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers, engineers and advocates for
                 keynotes, workshops, and hands-on demos shaping inclusive technology
-                at India's premier assistive tech conference.
+                at India's premier ability carnival.
               </motion.p>
 
               <motion.div
@@ -379,26 +359,20 @@ export default function Hero() {
       <div className="relative z-10">
         <MarqueeBand />
 
-        {/* Partners — vivid color logos */}
+        {/* Co-presented by SRP Foundation */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 2.2 }}
-          className="bg-slate-50 py-10 border-t-2 border-brand-cyan/20"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 2.0 }}
+          className="border-b border-brand-cyan/10 bg-gradient-to-r from-slate-50 via-white to-slate-50 py-5"
         >
-          <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 sm:flex-row sm:justify-center sm:gap-10">
-            <span className="font-marker text-sm text-brand-cyan font-bold">Backed by</span>
-            <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-14">
-              {partners.map((p) => (
-                <img
-                  key={p.name}
-                  src={p.src}
-                  alt={p.name}
-                  className="h-12 w-auto drop-shadow transition-all duration-500 hover:scale-110 hover:drop-shadow-lg sm:h-14"
-                  loading="lazy"
-                />
-              ))}
-            </div>
+          <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 px-4">
+            <div className="hidden h-px w-16 bg-gradient-to-r from-transparent to-brand-cyan/30 sm:block" />
+            <span className="font-marker text-sm text-brand-cyan">Co-presented by</span>
+            <span className="font-hero text-lg font-extrabold tracking-[0.1em] text-slate-800 sm:text-xl">
+              SRP FOUNDATION
+            </span>
+            <div className="hidden h-px w-16 bg-gradient-to-l from-transparent to-brand-lime/30 sm:block" />
           </div>
         </motion.div>
       </div>
