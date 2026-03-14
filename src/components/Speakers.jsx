@@ -91,14 +91,15 @@ export default function Speakers() {
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
+              className="themes-guests-title"
             >
-              <span className="block font-hero text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+              <span className="meet-word block text-4xl sm:text-5xl lg:text-6xl">
                 Meet the
               </span>
-              <span className="block font-impact text-4xl tracking-[0.1em] sm:text-5xl">
-                <span className="text-brand-cyan">THEMES</span>
-                <span className="text-slate-400"> & </span>
-                <span className="text-brand-lime">GUESTS</span>
+              <span className="block text-4xl tracking-[0.08em] sm:text-5xl lg:text-6xl">
+                <span className="themes-word">THEMES</span>
+                <span className="amp-word"> &amp; </span>
+                <span className="guests-word">GUESTS</span>
               </span>
             </motion.h2>
           </div>
