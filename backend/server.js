@@ -23,6 +23,7 @@ const {
 } = require('./mailer')
 
 const app = express()
+app.set('trust proxy', 1)  // trust first proxy (Nginx/Cloudflare)
 const PORT = process.env.PORT || 3001
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads'
 const MAX_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10)
@@ -31,11 +32,16 @@ const MAX_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10)
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(helmet({ contentSecurityPolicy: false }))  // security headers
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }))
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }))
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true, limit: '1mb' }))
-app.use('/uploads', express.static(UPLOAD_DIR))
+// Serve uploaded files with permissive CORS for cross-origin frontend
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  next()
+}, express.static(UPLOAD_DIR))
 
 // ── Rate limiters ─────────────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
@@ -260,8 +266,8 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
       const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
       const ext = path.extname(sanitizeFilename(req.file.originalname))
       const filename = `${phone}_${Date.now()}${ext}`
-      protoImagePath = path.join(UPLOAD_DIR, filename)
-      fs.writeFileSync(protoImagePath, req.file.buffer)
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), req.file.buffer)
+      protoImagePath = filename  // store filename only, not full path
     }
 
     const { data, error } = await supabase
@@ -353,8 +359,8 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
       const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
       const ext = path.extname(sanitizeFilename(req.file.originalname))
       const filename = `${phone}_${Date.now()}${ext}`
-      protoImagePath = path.join(UPLOAD_DIR, filename)
-      fs.writeFileSync(protoImagePath, req.file.buffer)
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), req.file.buffer)
+      protoImagePath = filename  // store filename only
     }
 
     const { data, error } = await supabase
@@ -507,6 +513,8 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         await logError({ source: 'user', endpoint: '/api/talent-student', method: 'POST', errorType: 'upload_error', message: `ffmpeg compression error: ${e.message}`, req })
       }
     }
+    // Store only the filename (not the full path) so frontend can construct URL
+    const videoFileName = videoFilePath ? path.basename(videoFilePath) : null
 
     const { data, error } = await supabase
       .from('talent_nominations')
@@ -521,7 +529,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         guardian_phone: guardianPhone.trim(),
         guardian_email: guardianEmail ? guardianEmail.trim().toLowerCase() : null,
         video_link: videoLink ? videoLink.trim() : '',
-        video_file_path: videoFilePath,
+        video_file_path: videoFileName,
       }])
       .select()
       .single()

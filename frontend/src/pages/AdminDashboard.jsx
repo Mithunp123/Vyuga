@@ -121,7 +121,9 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
   const mediaPath = row.prototype_image_path || row.video_file_path
   const isVideo = mediaPath && /\.(mp4|mov|avi|mkv|webm)$/i.test(mediaPath)
   const isImage = mediaPath && /\.(png|jpe?g|webp)$/i.test(mediaPath)
-  const mediaUrl = mediaPath ? `${API_BASE}/uploads/${mediaPath.replace(/^uploads[\\/]/, '')}` : null
+  // Strip any leading path components — DB should store just filename now
+  const mediaFilename = mediaPath ? mediaPath.replace(/^.*[\\\/]/, '') : null
+  const mediaUrl = mediaFilename ? `${API_BASE}/uploads/${mediaFilename}` : null
 
   const save = async () => {
     setSaving(true)
