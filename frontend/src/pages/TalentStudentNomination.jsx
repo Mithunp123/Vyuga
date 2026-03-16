@@ -61,6 +61,7 @@ export default function TalentStudentNomination() {
     e.preventDefault()
     if (!videoFile) { setError('Please upload the performance video.'); return }
     if (!form.orgName) { setError('Please select an organization.'); return }
+    if (!/^\d{10}$/.test(form.guardianPhone)) { setError('Phone number must be exactly 10 digits.'); return }
     setLoading(true)
     setError('')
     try {
@@ -202,7 +203,7 @@ export default function TalentStudentNomination() {
         {/* Guardian */}
         <Section title="Guardian Details">
           <Field label="Guardian / Parent Name" value={form.guardianName} onChange={set('guardianName')} required />
-          <Field label="Guardian Phone" type="tel" value={form.guardianPhone} onChange={set('guardianPhone')} required />
+          <Field label="Guardian Phone" type="tel" value={form.guardianPhone} onChange={set('guardianPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <Field label="Guardian Email" type="email" value={form.guardianEmail} onChange={set('guardianEmail')} required />
         </Section>
 
@@ -272,7 +273,7 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false }) {
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title }) {
   return (
     <div>
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
@@ -283,6 +284,9 @@ function Field({ label, value, onChange, type = 'text', required = false }) {
         required={required}
         value={value}
         onChange={onChange}
+        pattern={pattern}
+        maxLength={maxLength}
+        title={title}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
       />
     </div>

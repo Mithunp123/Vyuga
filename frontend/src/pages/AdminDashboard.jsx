@@ -148,7 +148,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
 
       {/* ── Status controls (hidden for org tab) ── */}
       {!isOrgTab && (
-        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>Review & Status</p>
           <div className="flex flex-wrap gap-3 mb-4">
             {Object.entries(STATUS_CFG).map(([key, s]) => (
@@ -188,7 +188,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
 
       {/* ── Media preview ── */}
       {mediaUrl && (
-        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
             {isVideo ? 'Performance Video' : 'Prototype Image'}
           </p>
@@ -209,27 +209,65 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
       )}
 
       {/* ── All fields ── */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {Object.entries(row).map(([k, v]) => (
+          {Object.entries(row).filter(([k, v]) => k !== 'status' && !(Array.isArray(v) && v.length > 0 && typeof v[0] === 'object')).map(([k, v]) => (
             v !== null && v !== undefined && v !== '' ? (
-              <div key={k} className="rounded-xl border border-slate-100 px-3 py-2.5" style={{ background: '#f8fafc' }}>
+              <div key={k} className="rounded-xl border border-slate-200 px-3 py-2.5" style={{ background: '#f8fafc' }}>
                 <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">{k.replace(/_/g, ' ')}</p>
                 <p className="text-sm text-slate-800 font-medium break-words leading-snug">
-                  {k === 'status'
-                    ? <StatusBadge status={v} />
-                    : typeof v === 'boolean'
-                      ? (v ? 'Yes' : 'No')
-                      : Array.isArray(v)
-                        ? v.map((m, i) => <span key={i} className="block">{typeof m === 'object' ? JSON.stringify(m) : String(m)}</span>)
-                        : k.endsWith('_at') ? fmtDate(v) : String(v)
+                  {typeof v === 'boolean'
+                    ? (v ? 'Yes' : 'No')
+                    : Array.isArray(v)
+                      ? v.map((m, i) => <span key={i} className="block">{String(m)}</span>)
+                      : k.endsWith('_at') ? fmtDate(v) : String(v)
                   }
                 </p>
               </div>
             ) : null
           ))}
+          {/* Status at the end */}
+          {row.status !== null && row.status !== undefined && (
+            <div className="rounded-xl border-2 border-slate-200 px-3 py-2.5" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
+              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Status</p>
+              <p className="text-sm font-medium">
+                <StatusBadge status={row.status} />
+              </p>
+            </div>
+          )}
         </div>
+
+        {/* ── Members / Players (array of objects) ── */}
+        {Object.entries(row).filter(([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === 'object').map(([k, arr]) => (
+          <div key={k} className="mt-5">
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#0197B2' }}>
+              {k.replace(/_/g, ' ')} ({arr.length})
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {arr.map((member, i) => (
+                <div key={i} className="rounded-xl border-2 border-slate-200 bg-white overflow-hidden">
+                  <div className="px-3 py-2 border-b border-slate-100 flex items-center gap-2" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
+                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: '#0197B2' }}>{i + 1}</span>
+                    <span className="text-sm font-bold text-slate-800">{member.name || member.student_name || member.player_name || `#${i + 1}`}</span>
+                  </div>
+                  <div className="px-3 py-2.5 space-y-1.5">
+                    {Object.entries(member).map(([field, val]) => (
+                      val !== null && val !== undefined && val !== '' ? (
+                        <div key={field} className="flex items-start gap-2">
+                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">{field.replace(/_/g, ' ')}</span>
+                          <span className="text-sm text-slate-700 font-medium break-words">
+                            {typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}
+                          </span>
+                        </div>
+                      ) : null
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -653,7 +691,7 @@ export default function AdminDashboard() {
             )}
 
             {/* Table */}
-            <div className="rounded-2xl border border-slate-200 shadow-md overflow-hidden bg-white">
+            <div className="rounded-2xl border-2 border-slate-200 shadow-md overflow-hidden bg-white">
               {loading[activeTab] && (
                 <div className="flex items-center justify-center py-32">
                   <div className="h-10 w-10 rounded-full border-4 animate-spin mr-4"
@@ -688,89 +726,115 @@ export default function AdminDashboard() {
                   <table className="w-full">
                     <thead>
                       <tr style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
-                        <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase">#</th>
-                        {activeTab !== 'talent-org' && (
-                          <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase">Status</th>
-                        )}
+                        <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase border-b-2 border-slate-200">#</th>
                         {cols.map((c) => (
-                          <th key={c.key} className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase">
+                          <th key={c.key} className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase border-b-2 border-slate-200">
                             {c.label}
                           </th>
                         ))}
-                        <th className="px-4 py-4 text-xs font-bold tracking-wider text-slate-600 uppercase text-right">Media</th>
-                        <th className="px-4 py-4 w-12" />
+                        <th className="px-4 py-4 text-xs font-bold tracking-wider text-slate-600 uppercase text-right border-b-2 border-slate-200">Media</th>
+                        {activeTab !== 'talent-org' && (
+                          <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase border-b-2 border-slate-200">Status</th>
+                        )}
+                        <th className="px-4 py-4 w-12 border-b-2 border-slate-200" />
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.map((row, idx) => {
-                        const hasMedia = !!(row.prototype_image_path || row.video_file_path)
-                        const isExpanded = expandedRow === row.id
-                        return (
-                          <>
-                            <tr
-                              key={row.id || idx}
-                              className="border-t border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
-                              onClick={() => setExpandedRow(isExpanded ? null : row.id)}
-                            >
-                              <td className="px-4 py-4 text-slate-500 text-sm font-medium">{idx + 1}</td>
-                              {activeTab !== 'talent-org' && (
-                                <td className="px-4 py-4">
-                                  <StatusBadge status={row.status || 'pending'} />
-                                </td>
-                              )}
-                              {cols.map((c) => {
-                                const val = c.fmt ? c.fmt(row[c.key]) : (row[c.key] ?? '—')
-                                return (
-                                  <td key={c.key} className="px-4 py-4 text-slate-700 text-sm max-w-[200px] truncate">
-                                    {String(val)}
-                                  </td>
-                                )
-                              })}
-                              <td className="px-4 py-4 text-right">
-                                {hasMedia ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                    style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}>
-                                    {row.video_file_path ? 'Video' : 'Image'}
-                                  </span>
-                                ) : (
-                                  <span className="text-slate-300 text-xs">—</span>
-                                )}
+                      {filtered.map((row, idx) => (
+                        <tr
+                          key={row.id || idx}
+                          className="border-b border-slate-200 hover:bg-gradient-to-r hover:from-brand-cyan/[0.03] hover:to-brand-lime/[0.03] transition-colors cursor-pointer"
+                          onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}
+                        >
+                          <td className="px-4 py-4 text-slate-500 text-sm font-medium border-r border-slate-100">{idx + 1}</td>
+                          {cols.map((c) => {
+                            const val = c.fmt ? c.fmt(row[c.key]) : (row[c.key] ?? '—')
+                            return (
+                              <td key={c.key} className="px-4 py-4 text-slate-700 text-sm max-w-[200px] truncate border-r border-slate-100">
+                                {String(val)}
                               </td>
-                              <td className="px-4 py-4 text-slate-400 text-sm text-right">
-                                {isExpanded ? '▲' : '▼'}
-                              </td>
-                            </tr>
-
-                            <AnimatePresence>
-                              {isExpanded && (
-                                <tr key={`exp-${row.id}`}>
-                                  <td colSpan={cols.length + 4} className="px-0 py-0">
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: 'auto', opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.22 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <ExpandedPanel
-                                        row={row}
-                                        tabId={activeTab}
-                                        token={token}
-                                        onStatusChange={handleStatusChange}
-                                      />
-                                    </motion.div>
-                                  </td>
-                                </tr>
-                              )}
-                            </AnimatePresence>
-                          </>
-                        )
-                      })}
+                            )
+                          })}
+                          <td className="px-4 py-4 text-right border-r border-slate-100">
+                            {!!(row.prototype_image_path || row.video_file_path) ? (
+                              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+                                style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}>
+                                {row.video_file_path ? 'Video' : 'Image'}
+                              </span>
+                            ) : (
+                              <span className="text-slate-300 text-xs">—</span>
+                            )}
+                          </td>
+                          {activeTab !== 'talent-org' && (
+                            <td className="px-4 py-4 border-r border-slate-100">
+                              <StatusBadge status={row.status || 'pending'} />
+                            </td>
+                          )}
+                          <td className="px-4 py-4 text-slate-400 text-sm text-right">
+                            👁
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               )}
             </div>
+
+            {/* ── Detail Modal Popup ── */}
+            <AnimatePresence>
+              {expandedRow !== null && (() => {
+                const modalRow = filtered.find((r) => r.id === expandedRow)
+                if (!modalRow) return null
+                return (
+                  <motion.div
+                    key="detail-modal-backdrop"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                    onClick={() => setExpandedRow(null)}
+                  >
+                    <motion.div
+                      key="detail-modal"
+                      initial={{ opacity: 0, scale: 0.92, y: 30 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.92, y: 30 }}
+                      transition={{ duration: 0.25, ease: [0.34, 1.56, 0.64, 1] }}
+                      className="relative w-full max-w-3xl max-h-[85vh] rounded-3xl border-2 border-slate-200 bg-white shadow-2xl overflow-hidden flex flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Modal header */}
+                      <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b-2 border-slate-200" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
+                        <div>
+                          <p className="text-sm font-bold tracking-wider uppercase" style={{ color: '#0197B2' }}>Registration Details</p>
+                          <p className="text-xs text-slate-500 mt-0.5">#{filtered.indexOf(modalRow) + 1} — {TABS.find((t) => t.id === activeTab)?.label}</p>
+                        </div>
+                        <button
+                          onClick={() => setExpandedRow(null)}
+                          className="w-9 h-9 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-800 hover:bg-white/80 transition-colors"
+                          aria-label="Close"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                      </div>
+
+                      {/* Modal body */}
+                      <div className="overflow-y-auto flex-1 custom-scrollbar">
+                        <ExpandedPanel
+                          row={modalRow}
+                          tabId={activeTab}
+                          token={token}
+                          onStatusChange={handleStatusChange}
+                        />
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )
+              })()}
+            </AnimatePresence>
+
           </div>
         </>
       )}

@@ -34,6 +34,9 @@ export default function InnovationCollegeForm() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    const phoneFields = [form.member1Phone, form.member2Phone, form.member3Phone].filter(Boolean)
+    const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
+    if (invalidPhone) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
     try {
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
@@ -115,7 +118,7 @@ export default function InnovationCollegeForm() {
           <Section key={n} title={`Member ${n}${n === 1 ? ' (Team Leader)' : ''}`}>
             <Field label="Full Name" value={form[`member${n}Name`]} onChange={set(`member${n}Name`)} required={n === 1} />
             <Field label="Email" type="email" value={form[`member${n}Email`]} onChange={set(`member${n}Email`)} required={n === 1} />
-            <Field label="Phone" type="tel" value={form[`member${n}Phone`]} onChange={set(`member${n}Phone`)} required={n === 1} />
+            <Field label="Phone" type="tel" value={form[`member${n}Phone`]} onChange={set(`member${n}Phone`)} required={n === 1} pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           </Section>
         ))}
 
@@ -186,7 +189,7 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false, colSpan = false }) {
+function Field({ label, value, onChange, type = 'text', required = false, colSpan = false, pattern, maxLength, title }) {
   return (
     <div className={colSpan ? 'sm:col-span-2' : ''}>
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -197,6 +200,9 @@ function Field({ label, value, onChange, type = 'text', required = false, colSpa
         required={required}
         value={value}
         onChange={onChange}
+        pattern={pattern}
+        maxLength={maxLength}
+        title={title}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
       />
     </div>

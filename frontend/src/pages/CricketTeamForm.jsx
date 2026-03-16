@@ -28,6 +28,7 @@ export default function CricketTeamForm() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
     try {
       await postJSON('/api/cricket', form)
       setSubmitted(true)
@@ -106,7 +107,7 @@ export default function CricketTeamForm() {
         <Section title="Contact Person">
           <Field label="Contact Name" value={form.contactName} onChange={set('contactName')} required />
           <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
-          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required />
+          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
         </Section>
 
         {/* Declaration */}
@@ -147,7 +148,7 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false }) {
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title }) {
   return (
     <div>
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -158,6 +159,9 @@ function Field({ label, value, onChange, type = 'text', required = false }) {
         required={required}
         value={value}
         onChange={onChange}
+        pattern={pattern}
+        maxLength={maxLength}
+        title={title}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
       />
     </div>
