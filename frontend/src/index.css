@@ -691,3 +691,129 @@ html.a11y-tts-mode *:not(.a11y-fab):not(.a11y-fab *):not(.a11y-panel):not(.a11y-
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   Submit Loader – VYUGA letter animation overlay
+   ═══════════════════════════════════════════════════════════════════ */
+.submit-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  animation: sl-fade-in 0.35s ease-out;
+}
+
+.submit-loader-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.8rem;
+  padding: 2.5rem 3rem 2rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+
+/* Letters container */
+.submit-loader-letters {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+}
+
+.submit-loader-letter-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: sl-entrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.submit-loader-letter {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(1,151,178,0.4));
+  animation: sl-bounce 1.4s ease-in-out infinite;
+}
+
+@media (min-width: 640px) {
+  .submit-loader-letter {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* Glow dot under each letter */
+.submit-loader-glow {
+  width: 28px;
+  height: 6px;
+  margin-top: 0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--brand-cyan) 0%, transparent 70%);
+  opacity: 0.6;
+  animation: sl-glow 1.4s ease-in-out infinite;
+}
+
+/* Progress bar */
+.submit-loader-bar-track {
+  width: 220px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+
+.submit-loader-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--brand-cyan), var(--brand-lime), var(--brand-cyan));
+  background-size: 200% 100%;
+  animation: sl-shimmer 1.8s ease-in-out infinite;
+}
+
+/* Message text */
+.submit-loader-msg {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  min-height: 1.4em;
+  text-align: center;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────── */
+@keyframes sl-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sl-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sl-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+@keyframes sl-glow {
+  0%, 100% { opacity: 0.3; transform: scaleX(0.7); }
+  50%      { opacity: 0.7; transform: scaleX(1.2); }
+}
+
+@keyframes sl-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+

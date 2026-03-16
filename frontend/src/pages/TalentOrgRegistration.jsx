@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Building2, Users } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const EMPTY = {
   orgName: '',
@@ -121,6 +122,7 @@ export default function TalentOrgRegistration() {
       title="Register New Organization"
       subtitle="Fill in your organization details to nominate talented students."
     >
+      <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import compressVideo from '../compressVideo'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -108,6 +109,7 @@ export default function TalentStudentNomination() {
       title="Special Talent Utsav – Student Nomination"
       subtitle="Nominate a talented student and submit their performance video."
     >
+      <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}

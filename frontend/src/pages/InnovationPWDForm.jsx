@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const EMPTY = {
   participationType: 'individual',
@@ -63,6 +64,7 @@ export default function InnovationPWDForm() {
       title="Inclusive Innovation Fest – By Specially Abled"
       subtitle="Innovators with disabilities: register individually or as a team (max 3 members). Theme: Assistive Technology."
     >
+      <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}

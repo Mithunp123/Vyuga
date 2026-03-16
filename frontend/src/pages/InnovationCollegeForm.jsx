@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const THEMES = [
   'Cognitive & Learning Accessibility',
@@ -69,6 +70,7 @@ export default function InnovationCollegeForm() {
       title="Inclusive Innovation Fest – For Specially Abled"
       subtitle="College students: register your 3-member team and choose a theme."
     >
+      <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}

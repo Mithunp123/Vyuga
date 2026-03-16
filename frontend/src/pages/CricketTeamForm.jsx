@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const EMPTY = {
   teamName: '',
@@ -60,6 +61,7 @@ export default function CricketTeamForm() {
       title="Blind Cricket Tournament"
       subtitle="Submit your team's interest to participate in the tournament."
     >
+      <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}
