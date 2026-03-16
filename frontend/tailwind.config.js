@@ -19,6 +19,14 @@ export default {
           lime: '#5BCB2B',
           'lime-light': '#e8f9de',
         },
+        primary: {
+          DEFAULT: '#5BCB2B',
+          dark: '#3d941a',
+        },
+        secondary: {
+          DEFAULT: '#0197B2',
+          dark: '#00758b',
+        },
       },
     },
   },

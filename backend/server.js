@@ -15,7 +15,7 @@ const {
 } = require('./mailer')
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3001
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads'
 const MAX_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10)
 

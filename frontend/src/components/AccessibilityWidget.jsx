@@ -268,15 +268,22 @@ export default function AccessibilityWidget() {
 
       {/* Floating trigger button */}
       <button
-        className="fixed bottom-6 right-6 z-[9998] w-14 h-14 bg-gradient-to-br from-primary to-primary-dark text-white rounded-full shadow-[0_8px_20px_rgba(91,203,43,0.3)] flex items-center justify-center text-3xl hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-primary/40 group"
+        className="a11y-fab fixed bottom-6 right-6 z-[9998] w-14 h-14 rounded-full flex items-center justify-center focus:outline-none group"
         aria-label="Open accessibility options"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         title="Accessibility Options"
       >
-        <span aria-hidden="true" className="group-hover:animate-wiggle">♿</span>
+        {/* Pulse rings */}
+        <span className="a11y-fab-ring" />
+        <span className="a11y-fab-ring a11y-fab-ring--delay" />
+        {/* Icon */}
+        <svg className="a11y-fab-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="4.5" r="2.5" fill="white"/>
+          <path d="M12 8c-3.5 0-6 1-6 1l1 2.5s1.8-.8 3.5-1v3l-2.5 6 2.3 1 2.2-5h1l2.2 5 2.3-1-2.5-6v-3c1.7.2 3.5 1 3.5 1l1-2.5s-2.5-1-6-1z" fill="white"/>
+        </svg>
         {activeCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+          <span className="absolute -top-1.5 -right-1.5 bg-white text-[#0197B2] text-[11px] font-bold w-5.5 h-5.5 flex items-center justify-center rounded-full shadow-md border border-[#0197B2]/20" style={{width:22,height:22}}>
             {activeCount}
           </span>
         )}

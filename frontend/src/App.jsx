@@ -25,11 +25,13 @@ import CricketTeamForm from './pages/CricketTeamForm.jsx'
 
 import AdminLogin from './pages/AdminLogin.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
+import AccessibilityWidget from './components/AccessibilityWidget.jsx'
 
 export default function App() {
   return (
     <>
     <ScrollToTop />
+    <AccessibilityWidget />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/program" element={<Program />} />

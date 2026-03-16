@@ -461,3 +461,233 @@ body {
   transform: scaleX(1);
 }
 
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY WIDGET — CSS RULES
+   ═══════════════════════════════════════════ */
+
+/* ── High Contrast ── */
+html.a11y-high-contrast {
+  filter: contrast(1.4);
+}
+
+/* ── Dark Mode ── */
+html.a11y-dark {
+  filter: invert(1) hue-rotate(180deg);
+}
+html.a11y-dark img,
+html.a11y-dark video,
+html.a11y-dark picture,
+html.a11y-dark canvas,
+html.a11y-dark svg,
+html.a11y-dark [style*="background-image"] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ── Grayscale ── */
+html.a11y-grayscale {
+  filter: grayscale(1);
+}
+
+/* Combined filters (dark + contrast, dark + grayscale, etc.) */
+html.a11y-dark.a11y-high-contrast {
+  filter: invert(1) hue-rotate(180deg) contrast(1.4);
+}
+html.a11y-dark.a11y-grayscale {
+  filter: invert(1) hue-rotate(180deg) grayscale(1);
+}
+html.a11y-high-contrast.a11y-grayscale {
+  filter: contrast(1.4) grayscale(1);
+}
+html.a11y-dark.a11y-high-contrast.a11y-grayscale {
+  filter: invert(1) hue-rotate(180deg) contrast(1.4) grayscale(1);
+}
+
+/* ── Large Links ── */
+html.a11y-large-links a {
+  font-size: 1.25em !important;
+}
+
+/* ── Highlight Links ── */
+html.a11y-highlight-links a {
+  outline: 2px solid #ff0 !important;
+  outline-offset: 2px;
+  background-color: rgba(255, 255, 0, 0.15) !important;
+  text-decoration: underline !important;
+}
+
+/* ── Dyslexia-Friendly Font ── */
+html.a11y-dyslexia,
+html.a11y-dyslexia * {
+  font-family: "OpenDyslexic", "Comic Sans MS", "Arial", sans-serif !important;
+}
+
+/* ── Letter Spacing ── */
+html.a11y-letter-spacing,
+html.a11y-letter-spacing * {
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+
+/* ── Line Height ── */
+html.a11y-line-height,
+html.a11y-line-height * {
+  line-height: 2 !important;
+}
+
+/* ── Reduce Motion ── */
+html.a11y-reduce-motion,
+html.a11y-reduce-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ── Hide Images ── */
+html.a11y-hide-images img,
+html.a11y-hide-images svg:not(.a11y-fab svg):not(.a11y-panel svg),
+html.a11y-hide-images video,
+html.a11y-hide-images picture {
+  opacity: 0 !important;
+}
+
+/* ── Text Alignment ── */
+html.a11y-align-left,
+html.a11y-align-left * {
+  text-align: left !important;
+}
+html.a11y-align-center,
+html.a11y-align-center * {
+  text-align: center !important;
+}
+
+/* ── Cursor ── */
+html.a11y-cursor-large,
+html.a11y-cursor-large * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 4l28 20H20l8 16-4 2-8-16-8 8z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 4 4, auto !important;
+}
+html.a11y-cursor-white,
+html.a11y-cursor-white * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 4l28 20H20l8 16-4 2-8-16-8 8z' fill='%23fff' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") 4 4, auto !important;
+}
+
+/* ── TTS Mode cursor ── */
+html.a11y-tts-mode *:not(.a11y-fab):not(.a11y-fab *):not(.a11y-panel):not(.a11y-panel *) {
+  cursor: crosshair !important;
+}
+
+/* ── TTS wave animation ── */
+.a11y-tts-wave span {
+  display: inline-block;
+  width: 3px;
+  margin: 0 1px;
+  border-radius: 99px;
+  background: #0197B2;
+  animation: a11y-wave 1s ease-in-out infinite;
+}
+.a11y-tts-wave span:nth-child(1) { height: 12px; animation-delay: 0s; }
+.a11y-tts-wave span:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+.a11y-tts-wave span:nth-child(3) { height: 14px; animation-delay: 0.2s; }
+.a11y-tts-wave span:nth-child(4) { height: 20px; animation-delay: 0.3s; }
+.a11y-tts-wave span:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+
+@keyframes a11y-wave {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1); }
+}
+
+/* ── Widget animations ── */
+@keyframes a11y-pop-up {
+  0% { opacity: 0; transform: scale(0.85) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-up {
+  animation: a11y-pop-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes a11y-bounce-in {
+  0% { opacity: 0; transform: translate(-50%, -20px); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
+.animate-bounce-in {
+  animation: a11y-bounce-in 0.35s ease-out forwards;
+}
+
+@keyframes a11y-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+.group:hover .group-hover\:animate-wiggle {
+  animation: a11y-wiggle 0.4s ease-in-out;
+}
+
+/* ── Custom scrollbar for panel ── */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY FAB — Icon & Animation
+   ═══════════════════════════════════════════ */
+
+.a11y-fab {
+  background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-lime) 100%);
+  box-shadow:
+    0 4px 15px rgba(1, 151, 178, 0.35),
+    0 2px 6px rgba(91, 203, 43, 0.2);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease;
+}
+.a11y-fab:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 6px 24px rgba(1, 151, 178, 0.45),
+    0 3px 10px rgba(91, 203, 43, 0.3);
+}
+.a11y-fab:active {
+  transform: scale(0.95);
+}
+.a11y-fab:focus-visible {
+  outline: 3px solid rgba(1, 151, 178, 0.5);
+  outline-offset: 3px;
+}
+
+/* SVG icon hover rotation */
+.a11y-fab-icon {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+.a11y-fab:hover .a11y-fab-icon {
+  transform: rotate(12deg) scale(1.08);
+}
+
+/* Pulse ring around FAB */
+.a11y-fab-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(1, 151, 178, 0.4);
+  animation: a11y-fab-pulse 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+}
+.a11y-fab-ring--delay {
+  animation-delay: 1.4s;
+}
+
+@keyframes a11y-fab-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
