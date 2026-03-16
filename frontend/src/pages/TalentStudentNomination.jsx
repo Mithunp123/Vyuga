@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
+import compressVideo from '../compressVideo'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -29,6 +30,7 @@ export default function TalentStudentNomination() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [videoFile, setVideoFile] = useState(null)
+  const [compressProgress, setCompressProgress] = useState(null)
   const [orgs, setOrgs] = useState([])
   const [orgsLoading, setOrgsLoading] = useState(true)
   const [orgSearch, setOrgSearch] = useState('')
@@ -65,9 +67,18 @@ export default function TalentStudentNomination() {
     setLoading(true)
     setError('')
     try {
+      // Compress video in browser before uploading
+      setCompressProgress(0)
+      const compressed = await compressVideo(videoFile, {
+        maxWidth: 720,
+        videoBitsPerSecond: 800_000,
+        onProgress: setCompressProgress,
+      })
+      setCompressProgress(null)
+
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
-      fd.append('performanceVideo', videoFile)
+      fd.append('performanceVideo', compressed)
       await postFormData('/api/talent-student', fd)
       setSubmitted(true)
     } catch (err) {
@@ -227,13 +238,34 @@ export default function TalentStudentNomination() {
             />
           </label>
           {videoFile && (
-            <button
-              type="button"
-              onClick={() => setVideoFile(null)}
-              className="mt-2 text-xs text-red-500 hover:underline"
-            >
-              Remove video
-            </button>
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setVideoFile(null)}
+                className="text-xs text-red-500 hover:underline"
+              >
+                Remove video
+              </button>
+              {videoFile.size >= 5 * 1024 * 1024 && (
+                <span className="text-xs text-slate-400">
+                  {(videoFile.size / (1024 * 1024)).toFixed(1)} MB — will be compressed before upload
+                </span>
+              )}
+            </div>
+          )}
+          {compressProgress !== null && (
+            <div className="mt-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-semibold" style={{ color: '#0197B2' }}>Compressing video…</span>
+                <span className="text-xs text-slate-500">{compressProgress}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{ width: `${compressProgress}%`, background: 'linear-gradient(90deg, #0197B2, #5BCB2B)' }}
+                />
+              </div>
+            </div>
           )}
         </div>
 

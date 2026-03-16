@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS talent_nominations (
   talent_desc     TEXT,
   guardian_name   TEXT        NOT NULL,
   guardian_phone  TEXT        NOT NULL,
+  guardian_email  TEXT,
   video_link      TEXT        NOT NULL,
   video_file_path TEXT,        -- populated when a video file is uploaded via Multer
   submitted_at    TIMESTAMPTZ NOT NULL DEFAULT now()
