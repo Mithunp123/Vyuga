@@ -40,19 +40,28 @@ function TransportBadge({ icon: Icon, label }) {
 function RouteLine({ segments }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5 mt-2">
-      {segments.map((seg, i) => (
-        <span key={i} className="flex items-center gap-1.5">
-          {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-slate-300" />}
-          <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-sm">
-            {seg}
+      {segments.map((seg, i) => {
+        const isKSR = seg.includes('KSR')
+        return (
+          <span key={i} className="flex items-center gap-1.5">
+            {i > 0 && <ChevronRight className="h-3.5 w-3.5 text-slate-300" />}
+            <span className={[
+              'rounded-lg px-2.5 py-1 text-xs font-semibold shadow-sm',
+              isKSR 
+                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white border-2 border-cyan-400 ring-2 ring-cyan-300/50 font-bold'
+                : 'bg-white border border-slate-200 text-slate-800'
+            ].join(' ')}>
+              {seg}
+            </span>
           </span>
-        </span>
-      ))}
+        )
+      })}
     </div>
   )
 }
 
 export default function AttendTravel() {
+  const [transportMode, setTransportMode] = useState(null) // 'flight' | 'train' | 'bus'
   const [selectedFlight, setSelectedFlight] = useState(null) // 'covai' | 'salem'
 
   return (
@@ -76,7 +85,7 @@ export default function AttendTravel() {
           <p className="text-xs text-slate-500 mt-2">KSR College of Technology, Tiruchengode, Namakkal District, Tamil Nadu</p>
         </motion.div>
 
-        {/* ── Step 1: Choose Flight ── */}
+        {/* ── Step 1: Choose Transport Mode ── */}
         <div>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -87,11 +96,63 @@ export default function AttendTravel() {
               <span className="h-px w-6 inline-block" style={{ background: '#0197B2' }} />
               Start Here
             </p>
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Choose Your Flight Destination</h2>
-            <p className="text-sm text-slate-600 mb-6">You first decide where your flight lands. Select an option below.</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-2">Choose Your Mode of Transport</h2>
+            <p className="text-sm text-slate-600 mb-6">Select how you'll be traveling to the event.</p>
           </motion.div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { id: 'flight', icon: Plane, label: 'Flight', desc: 'Traveling by air', color: '#0197B2', bg: '#e0f6fa' },
+              { id: 'train', icon: Train, label: 'Train', desc: 'Traveling by rail', color: '#5BCB2B', bg: '#f4fef0' },
+              { id: 'bus', icon: Bus, label: 'Bus', desc: 'Traveling by road', color: '#f59e0b', bg: '#fef3c7' },
+            ].map((opt, i) => {
+              const isActive = transportMode === opt.id
+              const Icon = opt.icon
+              return (
+                <motion.button
+                  key={opt.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setTransportMode(opt.id)
+                    setSelectedFlight(null) // Reset flight selection
+                  }}
+                  className={[
+                    'text-center rounded-2xl border-2 p-6 transition-all',
+                    isActive
+                      ? 'border-2 shadow-lg ring-2 ring-offset-2'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md',
+                  ].join(' ')}
+                  style={{
+                    borderColor: isActive ? opt.color : undefined,
+                    background: isActive ? opt.bg : undefined,
+                    ringColor: isActive ? opt.color + '40' : undefined,
+                  }}
+                >
+                  <Icon className="h-8 w-8 mx-auto mb-3" style={{ color: isActive ? opt.color : '#94a3b8' }} />
+                  <p className="text-lg font-bold text-slate-900">{opt.label}</p>
+                  <p className="text-xs text-slate-500 mt-1">{opt.desc}</p>
+                </motion.button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Flight Routes ── */}
+        <AnimatePresence mode="wait">
+          {transportMode === 'flight' && (
+            <motion.div
+              key="flight-selection"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Choose Your Flight Destination</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
             {[
               { id: 'covai', city: 'Coimbatore (Covai)', code: 'CJB', desc: 'Coimbatore International Airport' },
               { id: 'salem', city: 'Salem', code: 'SLV', desc: 'Salem Airport' },
@@ -130,11 +191,138 @@ export default function AttendTravel() {
               )
             })}
           </div>
-        </div>
+        </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Route Details ── */}
         <AnimatePresence mode="wait">
-          {selectedFlight === 'covai' && (
+          {/* Train Routes */}
+          {transportMode === 'train' && (
+            <motion.div
+              key="train-route"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Train className="h-5 w-5" style={{ color: '#5BCB2B' }} />
+                <h3 className="text-lg font-bold text-slate-900">Train Route to VYUGA</h3>
+              </div>
+
+              <StepCard number={1} title="Board Train to Erode Junction" delay={0}>
+                <p>Take a train to <strong>Erode Junction</strong> from your nearest railway station.</p>
+                <p className="mt-2 text-xs text-slate-500">Major trains from Chennai, Bangalore, Coimbatore connect to Erode.</p>
+              </StepCard>
+
+              <StepCard number={2} title="Arrive at Erode Junction" delay={STEP_DELAY}>
+                <p>Reach Erode Junction Railway Station.</p>
+              </StepCard>
+
+              <StepCard number={3} title="Travel Erode → Namakkal" delay={STEP_DELAY * 2}>
+                <p className="mb-1">Take Bus from Erode Bus Stand:</p>
+                <RouteLine segments={['Erode', 'KSR Stop', 'Tiruchengode', 'Namakkal']} />
+                <p className="mt-2 text-xs text-slate-500">Regular buses available from Erode to Namakkal via Tiruchengode.</p>
+              </StepCard>
+
+              <StepCard number={4} title="Arrive at KSR Bus Stop" delay={STEP_DELAY * 3}>
+                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                  <p className="text-sm font-bold text-green-800">Get down at: KSR Bus Stop</p>
+                  <p className="text-xs text-green-700 mt-0.5">KSR College of Technology, Tiruchengode</p>
+                </div>
+              </StepCard>
+            </motion.div>
+          )}
+
+          {/* Bus Routes */}
+          {transportMode === 'bus' && (
+            <motion.div
+              key="bus-route"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <Bus className="h-5 w-5" style={{ color: '#f59e0b' }} />
+                <h3 className="text-lg font-bold text-slate-900">Bus Route to VYUGA</h3>
+              </div>
+
+              <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm font-bold text-amber-900">Multiple Bus Options Available</p>
+                <p className="text-xs text-amber-700 mt-1">Choose the route that best suits your starting location.</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Option 1 */}
+                <div className="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
+                  <p className="text-sm font-bold text-slate-900 mb-3">Option 1: Via Erode</p>
+                  <StepCard number={1} title="Board bus to Erode" delay={0}>
+                    <p>Take a bus to <strong>Erode</strong> from your city.</p>
+                    <p className="mt-1 text-xs text-slate-500">Available from Chennai, Bangalore, Coimbatore, Salem, and other major cities.</p>
+                  </StepCard>
+
+                  <StepCard number={2} title="Travel Erode → Namakkal" delay={STEP_DELAY}>
+                    <p className="mb-1">Board bus from Erode to Namakkal:</p>
+                    <RouteLine segments={['Erode', 'KSR Stop', 'Tiruchengode', 'Namakkal']} />
+                  </StepCard>
+
+                  <StepCard number={3} title="Arrive at KSR Bus Stop" delay={STEP_DELAY * 2}>
+                    <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                      <p className="text-sm font-bold text-green-800">Get down at: KSR Bus Stop</p>
+                      <p className="text-xs text-green-700 mt-0.5">KSR College of Technology, Tiruchengode</p>
+                    </div>
+                  </StepCard>
+                </div>
+
+                {/* Option 2 */}
+                <div className="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
+                  <p className="text-sm font-bold text-slate-900 mb-3">Option 2: Via Salem</p>
+                  <StepCard number={1} title="Board bus to Salem" delay={0}>
+                    <p>Take a bus to <strong>Salem</strong> from your city.</p>
+                  </StepCard>
+
+                  <StepCard number={2} title="Travel Salem → Tiruchengode" delay={STEP_DELAY}>
+                    <p className="mb-1">Board bus from Salem to Erode (via Tiruchengode):</p>
+                    <RouteLine segments={['Salem', 'Tiruchengode', 'KSR Stop', 'Erode']} />
+                    <p className="mt-2 text-xs text-slate-500">Get down at KSR Bus Stop in Tiruchengode.</p>
+                  </StepCard>
+
+                  <StepCard number={3} title="Arrive at KSR Bus Stop" delay={STEP_DELAY * 2}>
+                    <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                      <p className="text-sm font-bold text-green-800">Get down at: KSR Bus Stop</p>
+                      <p className="text-xs text-green-700 mt-0.5">KSR College of Technology, Tiruchengode</p>
+                    </div>
+                  </StepCard>
+                </div>
+
+                {/* Option 3 */}
+                <div className="rounded-xl border-2 border-slate-200 bg-slate-50 p-5">
+                  <p className="text-sm font-bold text-slate-900 mb-3">Option 3: Direct to Namakkal</p>
+                  <StepCard number={1} title="Direct bus to Namakkal" delay={0}>
+                    <p>If available, take a <strong>direct bus to Namakkal</strong>.</p>
+                  </StepCard>
+
+                  <StepCard number={2} title="Travel to Tiruchengode" delay={STEP_DELAY}>
+                    <p className="mb-1">Get down at KSR Bus Stop:</p>
+                    <RouteLine segments={['Your City', 'Namakkal', 'Tiruchengode', 'KSR Stop', 'Erode']} />
+                  </StepCard>
+
+                  <StepCard number={3} title="Arrive at KSR Bus Stop" delay={STEP_DELAY * 2}>
+                    <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                      <p className="text-sm font-bold text-green-800">Get down at: KSR Bus Stop</p>
+                      <p className="text-xs text-green-700 mt-0.5">KSR College of Technology, Tiruchengode</p>
+                    </div>
+                  </StepCard>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {selectedFlight === 'covai' && transportMode === 'flight' && (
             <motion.div
               key="covai"
               initial={{ opacity: 0, y: 20 }}
@@ -175,7 +363,7 @@ export default function AttendTravel() {
             </motion.div>
           )}
 
-          {selectedFlight === 'salem' && (
+          {selectedFlight === 'salem' && transportMode === 'flight' && (
             <motion.div
               key="salem"
               initial={{ opacity: 0, y: 20 }}
@@ -224,7 +412,8 @@ export default function AttendTravel() {
           )}
         </AnimatePresence>
 
-        {/* ── Route Flow Diagram ── */}
+        {/* ── Route Flow Diagram - Only for flight mode ── */}
+        {transportMode === 'flight' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -297,6 +486,7 @@ export default function AttendTravel() {
             </div>
           </div>
         </motion.div>
+        )}
 
         {/* ── Key Info Cards ── */}
         <div className="grid gap-4 sm:grid-cols-3">
