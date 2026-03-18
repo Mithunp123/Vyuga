@@ -4,7 +4,7 @@ import { scheduleSummary } from '../data/homeData.js'
 import { Mic, Users, Wrench, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const iconByTitle = { Workshops: Wrench, 'Keynote Talks': Mic, Networking: Users }
+const iconByTitle = { 'Deep-Dive Workshops': Wrench, 'Keynote Sessions': Mic, 'The Mix & Sync': Users }
 
 export default function Schedule() {
   const ref = useRef(null)

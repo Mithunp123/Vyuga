@@ -126,9 +126,9 @@ export default function About() {
               className="lg:col-span-2"
             >
               <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
-                Vyuga 2026 brings together assistive innovators, inclusive designers, researchers,
-                educators, startups, and policy leaders for{' '}
-                <span className="font-marker text-slate-800">real-world impact.</span>
+               Accelerating inclusive technology. From R&D to real-world impact, join the collective shaping the next frontier of human ability.
+                {' '}
+              <span className="font-marker text-slate-800">real-world impact.</span>
               </p>
 
               <motion.blockquote

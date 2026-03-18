@@ -297,9 +297,7 @@ export default function Hero() {
                 transition={{ duration: 0.7, delay: 1.4 }}
                 className="max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg"
               >
-                Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers, engineers and advocates for
-                keynotes, workshops, and hands-on demos shaping inclusive technology
-                at India's premier ability carnival.
+                Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
               </motion.p>
 
               <motion.div

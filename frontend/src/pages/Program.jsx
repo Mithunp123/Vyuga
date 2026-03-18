@@ -4,7 +4,7 @@ import PageShell from './PageShell.jsx'
 
 const programs = [
   { href: '/projects/schedule', title: 'Schedule', desc: 'Timeline overview and daily agenda.', icon: Calendar, color: 'from-brand-cyan/15 to-brand-cyan/5' },
-  { href: '/projects/workshops', title: 'Workshops', desc: 'Hands-on sessions and labs.', icon: Wrench, color: 'from-brand-lime/15 to-brand-lime/5' },
+  { href: '/projects/workshops', title: 'Deep-Dive Workshops', desc: 'Hands-on sessions and labs.', icon: Wrench, color: 'from-brand-lime/15 to-brand-lime/5' },
   { href: '/projects/keynotes', title: 'Keynote Speakers', desc: 'Featured keynotes and speakers.', icon: Mic, color: 'from-purple-500/15 to-purple-500/5' },
   { href: '/projects/call-for-paper', title: 'Call for Paper', desc: 'Submission guidelines and important dates.', icon: FileText, color: 'from-blue-500/15 to-blue-500/5' },
 ]

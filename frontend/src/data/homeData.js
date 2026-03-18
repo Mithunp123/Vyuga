@@ -6,6 +6,7 @@ import mohamedAshikImg from '../assets/chie-guest/page7-block-5.png'
 import prateekMadhavImg from '../assets/chie-guest/page7-block-6.png'
 import vigneshGajendiranImg from '../assets/chie-guest/page7-block-7.png'
 import baskaranRamasamyImg from '../assets/chie-guest/page7-block-8.png'
+import brailleNextImg from '../assets/BrailleNext.png'
 
 export const navLinks = [
   { label: 'Home', to: '/' },
@@ -24,22 +25,22 @@ export const partnerBadges = [
 
 export const scheduleSummary = [
   {
-    title: 'Workshops',
+    title: 'Deep-Dive Workshops',
     time: 'Day 1 · Morning',
     description:
-      'Hands-on sessions on assistive tech, inclusive design, and rapid prototyping.',
+      'High-velocity sessions on Assistive Technology, inclusive UX, and rapid prototyping.',
   },
   {
-    title: 'Keynote Talks',
+    title: 'Keynote Sessions',
     time: 'Day 1–2 · Midday',
     description:
-      'Insights from global leaders shaping accessible technology and innovation.',
+      'Future-proofing accessibility. Global architects and industry leads on scaling inclusive ecosystems and the next frontier of AT.',
   },
   {
-    title: 'Networking',
+    title: 'The Mix & Sync',
     time: 'Day 2 · Evening',
     description:
-      'Meet researchers, founders, practitioners, and policy leaders in a relaxed setting.',
+      'Off-the-clock, high-impact. Bridge the gap between R&D, venture capital, and inclusive policy in a curated, relaxed environment.',
   },
 ]
 
@@ -113,25 +114,25 @@ export const exhibitors = [
   {
     name: 'BrailleNext',
     description:
-      'Next-gen refreshable braille displays and learning tools designed for speed and comfort.',
-    logo: 'https://logo.clearbit.com/humanware.com',
+      'The I/O Evolution: High-refresh tactile cells + Adaptive learning modules. Built for speed. Optimized for the human touch.',
+    logo: brailleNextImg,
   },
   {
     name: 'HearWell',
     description:
-      'AI-assisted captioning and hearing enhancement for classrooms and auditoriums.',
+      'The Auditory Stack: Edge-processed AI captions + Dynamic hearing enhancement. Precision clarity for auditoriums and high-density environments.',
     logo: 'https://logo.clearbit.com/oticon.com',
   },
   {
     name: 'AccessOS',
     description:
-      'Open accessibility toolkit for web, mobile, and enterprise design systems.',
+      'The Accessibility Core: Open-source toolkit. Cross-platform compatibility. Seamlessly integrated into web, mobile, and enterprise-scale architectures.',
     logo: 'https://logo.clearbit.com/github.com',
   },
   {
     name: 'MobilityWorks',
     description:
-      'Smart mobility solutions and adaptive hardware for independent living.',
+      'The Motion Stack: Sensor-fused hardware + Smart navigation algorithms. Precision mobility for the modern environment.',
     logo: 'https://logo.clearbit.com/bosch.com',
   },
 ]

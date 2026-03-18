@@ -68,15 +68,6 @@ export default function Exhibitors() {
                   {String(idx + 1).padStart(2, '0')}
                 </span>
 
-                {/* Logo */}
-                <img
-                  src={e.logo}
-                  alt={`${e.name} logo`}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-10 w-10 flex-shrink-0 object-contain opacity-40 transition-all duration-500 group-hover:opacity-100 group-hover:scale-110"
-                />
-
                 {/* Text */}
                 <div className="min-w-0 flex-1">
                   <h3 className="font-hero text-xl font-extrabold tracking-tight text-slate-900 transition-colors group-hover:text-brand-lime sm:text-2xl">
