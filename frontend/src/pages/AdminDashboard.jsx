@@ -12,6 +12,7 @@ const TABS = [
   { id: 'talent-org',         label: 'Talent Utsav – Organisations',     endpoint: '/api/admin/talent-org' },
   { id: 'talent-student',     label: 'Talent Utsav – Nominations',       endpoint: '/api/admin/talent-student' },
   { id: 'cricket',            label: 'Blind Cricket',                    endpoint: '/api/admin/cricket' },
+  { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
 ]
 
 const STATUS_CFG = {
@@ -70,6 +71,18 @@ const COLUMNS = {
     { key: 'contact_name',      label: 'Contact' },
     { key: 'contact_email',     label: 'Email' },
     { key: 'contact_phone',     label: 'Phone' },
+  ],
+  chess: [
+    { key: 'submitted_at',      label: 'Date',       fmt: fmtDate },
+    { key: 'participant_name',  label: 'Name' },
+    { key: 'email',             label: 'Email' },
+    { key: 'phone',             label: 'Phone' },
+    { key: 'age',               label: 'Age' },
+    { key: 'city',              label: 'City' },
+    { key: 'state',             label: 'State' },
+    { key: 'disability_type',   label: 'Disability' },
+    { key: 'experience_level',  label: 'Level' },
+    { key: 'has_played_before', label: 'Exp?',       fmt: (v) => (v ? 'Yes' : 'No') },
   ],
 }
 

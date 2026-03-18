@@ -19,6 +19,7 @@ const {
   sendTalentOrgConfirmation,
   sendTalentStudentConfirmation,
   sendCricketConfirmation,
+  sendChessConfirmation,
   sendStatusUpdateEmail,
 } = require('./mailer')
 
@@ -619,6 +620,63 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
   }
 })
 
+// ── 6. Blind Chess Competition ────────────────────────────────────────────────
+// POST /api/chess
+app.post('/api/chess', registrationLimiter, async (req, res) => {
+  try {
+    const {
+      participantName, email, phone, age,
+      city, state, disabilityType,
+      hasPlayedBefore, experienceLevel, additionalInfo,
+    } = req.body
+
+    // ── Validation ───────────────────────────────────────
+    const errors = validate([
+      { field: 'participantName', check: participantName && sanitizeText(participantName, 100).length > 0, msg: 'required, max 100 chars' },
+      { field: 'email', check: isValidEmail(email), msg: 'invalid email' },
+      { field: 'phone', check: isValidPhone(phone), msg: 'must be exactly 10 digits' },
+      { field: 'age', check: isValidInt(age, 5, 100), msg: 'must be 5–100' },
+      { field: 'city', check: city && sanitizeText(city, 100).length > 0, msg: 'required' },
+      { field: 'state', check: state && sanitizeText(state, 100).length > 0, msg: 'required' },
+      { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
+      { field: 'hasPlayedBefore', check: isValidEnum(hasPlayedBefore, ['yes', 'no']), msg: 'must be yes or no' },
+      { field: 'experienceLevel', check: isValidEnum(experienceLevel, ['beginner', 'intermediate', 'advanced']), msg: 'must be beginner, intermediate, or advanced' },
+    ])
+    if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    const { data, error } = await supabase
+      .from('blind_chess_registrations')
+      .insert([{
+        participant_name: sanitizeText(participantName, 100),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        age: parseInt(age, 10),
+        city: sanitizeText(city, 100),
+        state: sanitizeText(state, 100),
+        disability_type: sanitizeText(disabilityType, 100),
+        has_played_before: hasPlayedBefore === 'yes',
+        experience_level: experienceLevel,
+        additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
+      }])
+      .select()
+      .single()
+
+    if (error) {
+      await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    try {
+      sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType, hasPlayedBefore, experienceLevel, additionalInfo })
+    } catch (emailErr) {
+      await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    }
+    res.status(201).json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // ── Admin middleware ──────────────────────────────────────────────────────────
 function requireAdmin(req, res, next) {
   const token = req.headers['x-admin-token'] || req.query.token
@@ -737,6 +795,24 @@ app.get('/api/admin/cricket', requireAdmin, async (req, res) => {
   }
 })
 
+// ── Admin: all chess registrations ───────────────────────────────────────────
+app.get('/api/admin/chess', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('blind_chess_registrations')
+      .select('*')
+      .order('submitted_at', { ascending: false })
+    if (error) {
+      await logError({ source: 'admin', endpoint: '/api/admin/chess', method: 'GET', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: '/api/admin/chess', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // ── Admin: update registration status ────────────────────────────────────────
 // PATCH /api/admin/status/:table/:id
 // body: { status: 'approved'|'rejected'|'pending', adminNote? }
@@ -764,6 +840,12 @@ const TABLE_MAP = {
     emailField: 'contact_email',
     nameField: 'contact_name',
     event: 'Blind Cricket Tournament',
+  },
+  chess: {
+    table: 'blind_chess_registrations',
+    emailField: 'email',
+    nameField: 'participant_name',
+    event: 'Blind Chess Competition',
   },
 }
 

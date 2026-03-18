@@ -235,6 +235,30 @@ async function sendCricketConfirmation(d) {
   await sendMail(d.contactEmail, '✅ Interest Submitted – VYUGA Blind Cricket Tournament', html)
 }
 
+// ── 6. Blind Chess ───────────────────────────────────────────────────────────
+async function sendChessConfirmation(d) {
+  const html = shell('Registration Confirmed – Blind Chess Competition', `
+    ${section('Participant Details', [
+      row('Name', d.participantName),
+      row('Email', d.email),
+      row('Phone', d.phone),
+      row('Age', d.age),
+      row('City', d.city),
+      row('State', d.state),
+      row('Disability Type', d.disabilityType),
+    ].join(''))}
+    ${section('Chess Experience', [
+      row('Played Before?', d.hasPlayedBefore === 'yes' ? 'Yes' : 'No'),
+      row('Experience Level', d.experienceLevel ? d.experienceLevel.replace(/_/g, ' ') : ''),
+      row('Additional Info', d.additionalInfo),
+    ].join(''))}
+    <p style="font-size:13px;color:#475569;margin-top:16px;">
+      ♟️ Our team will reach out to you with competition details soon.
+    </p>
+  `)
+  await sendMail(d.email, '✅ Registration Confirmed – VYUGA Blind Chess Competition', html)
+}
+
 // ── Status update email ───────────────────────────────────────────────────────
 async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
   const STATUS_STYLES = {
@@ -268,5 +292,6 @@ module.exports = {
   sendTalentOrgConfirmation,
   sendTalentStudentConfirmation,
   sendCricketConfirmation,
+  sendChessConfirmation,
   sendStatusUpdateEmail,
 }

@@ -22,6 +22,7 @@ import InnovationPWDForm from './pages/InnovationPWDForm.jsx'
 import TalentOrgRegistration from './pages/TalentOrgRegistration.jsx'
 import TalentStudentNomination from './pages/TalentStudentNomination.jsx'
 import CricketTeamForm from './pages/CricketTeamForm.jsx'
+import BlindChessForm from './pages/BlindChessForm.jsx'
 
 import AdminLogin from './pages/AdminLogin.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
@@ -50,6 +51,7 @@ export default function App() {
       <Route path="/register/talent-org" element={<TalentOrgRegistration />} />
       <Route path="/register/talent-student" element={<TalentStudentNomination />} />
       <Route path="/register/cricket" element={<CricketTeamForm />} />
+      <Route path="/register/chess" element={<BlindChessForm />} />
 
       {/* ── Admin (private) ── */}
       <Route path="/vyuga-admin" element={<AdminLogin />} />

@@ -83,7 +83,7 @@ export default function About() {
             className="flex items-center gap-3"
           >
             <div className="gradient-line w-16" />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">ABOUT THE CONFERENCE</span>
+            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">ABOUT THE ABILITY CARNIVAL</span>
           </motion.div>
 
           {/* Giant headline with mixed fonts */}

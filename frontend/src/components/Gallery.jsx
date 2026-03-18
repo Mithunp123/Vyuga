@@ -49,7 +49,7 @@ export default function Gallery() {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               <span className="block font-hero text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                Conference
+              ABILITY CARNIVAL
               </span>
               <span className="block font-impact text-3xl tracking-[0.1em] gradient-text sm:text-4xl">
                 HIGHLIGHTS

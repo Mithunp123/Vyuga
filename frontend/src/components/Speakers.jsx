@@ -103,7 +103,7 @@ export default function Speakers() {
               </span>
             </motion.h2>
           </div>
-
+          {/* 
           <motion.a
             initial={{ opacity: 0, y: 14 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -113,8 +113,8 @@ export default function Speakers() {
           >
             Become a speaker →
           </motion.a>
+          */}
         </div>
-
         {/* Day 1 Speakers */}
         <div className="mt-16">
           <SectionLabel label="DAY 1 — SPEAKERS" inView={inView} delay={0.2} />

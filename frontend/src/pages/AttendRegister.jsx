@@ -61,6 +61,23 @@ const EVENTS = [
     details: [],
     registerLink: '/register/cricket',
   },
+  {
+    title: 'Blind Chess',
+    accent: 'Competition',
+    description:
+      'A competition designed to highlight the intellectual strength, focus, and strategic thinking of visually impaired individuals.',
+    details: [
+      {
+        label: 'Awards',
+        value: [
+          'Top performers receive trophies and cash prizes',
+          'All participants receive certificates',
+        ],
+      },
+      { label: 'Participation', value: 'Individual registration' },
+    ],
+    registerLink: '/register/chess',
+  },
 ]
 
 export default function AttendRegister() {
@@ -86,7 +103,7 @@ export default function AttendRegister() {
         </div>
         <div className="mt-3 flex items-center gap-3">
           <div className="h-[3px] w-16 rounded-full bg-gradient-to-r from-brand-cyan to-brand-lime animate-line-grow" />
-          <span className="font-marker text-sm text-brand-lime">4 events</span>
+          <span className="font-marker text-sm text-brand-lime">5 events</span>
         </div>
       </motion.div>
 
