@@ -10,9 +10,9 @@ function SpeakerCard({ s, idx, inView, delayOffset = 0 }) {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       whileHover={{ y: -10, scale: 1.015 }}
       transition={{ duration: 0.7, delay: delayOffset + idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      className="speaker-cinematic-card group relative"
+      className="speaker-cinematic-card group relative w-full"
     >
-      <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
+      <div className="relative aspect-[3/4] sm:aspect-[3/4] overflow-hidden rounded-2xl">
         <img
           src={s.image}
           alt={s.name}
@@ -24,16 +24,16 @@ function SpeakerCard({ s, idx, inView, delayOffset = 0 }) {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
           <motion.div
             className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0"
           >
-            <p className="font-hero text-xl font-extrabold text-white drop-shadow-lg">{s.name}</p>
-            <p className="mt-1 text-sm font-medium text-white/70">{s.role}</p>
-            <div className="mt-3 overflow-hidden">
+            <p className="font-hero text-base sm:text-lg font-extrabold text-white drop-shadow-lg">{s.name}</p>
+            <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-medium text-white/70 line-clamp-1">{s.role}</p>
+            <div className="mt-1.5 sm:mt-2 overflow-hidden">
               <div className="h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-brand-cyan to-brand-lime transition-transform duration-700 group-hover:scale-x-100" />
             </div>
-            <p className="mt-3 font-mono text-[10px] tracking-widest text-white/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+            <p className="mt-1.5 sm:mt-2 font-mono text-[8px] sm:text-[9px] tracking-widest text-white/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100 line-clamp-2">
               {s.org.toUpperCase()}
             </p>
           </motion.div>
@@ -118,9 +118,11 @@ export default function Speakers() {
         {/* Day 1 Speakers */}
         <div className="mt-16">
           <SectionLabel label="DAY 1 — SPEAKERS" inView={inView} delay={0.2} />
-          <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-wrap gap-6 sm:gap-10 justify-center max-w-5xl mx-auto px-2">
             {day1Speakers.map((s, idx) => (
-              <SpeakerCard key={s.name} s={s} idx={idx} inView={inView} delayOffset={0.3} />
+              <div key={s.name} className="w-[calc(50%-0.75rem)] sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-1.875rem)]">
+                <SpeakerCard s={s} idx={idx} inView={inView} delayOffset={0.3} />
+              </div>
             ))}
           </div>
         </div>
@@ -128,9 +130,11 @@ export default function Speakers() {
         {/* Day 2 Speakers */}
         <div className="mt-14">
           <SectionLabel label="DAY 2 — SPEAKERS" inView={inView} delay={0.4} />
-          <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-wrap gap-6 sm:gap-10 justify-center max-w-5xl mx-auto px-2">
             {day2Speakers.map((s, idx) => (
-              <SpeakerCard key={s.name} s={s} idx={idx} inView={inView} delayOffset={0.5} />
+              <div key={s.name} className="w-[calc(50%-0.75rem)] sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-1.875rem)]">
+                <SpeakerCard s={s} idx={idx} inView={inView} delayOffset={0.5} />
+              </div>
             ))}
           </div>
         </div>
@@ -138,9 +142,11 @@ export default function Speakers() {
         {/* Influencers */}
         <div className="mt-14">
           <SectionLabel label="INFLUENCERS" inView={inView} delay={0.6} />
-          <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-wrap gap-6 sm:gap-10 justify-center max-w-5xl mx-auto px-2">
             {influencers.map((s, idx) => (
-              <SpeakerCard key={s.name} s={s} idx={idx} inView={inView} delayOffset={0.7} />
+              <div key={s.name} className="w-[calc(50%-0.75rem)] sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-1.875rem)]">
+                <SpeakerCard s={s} idx={idx} inView={inView} delayOffset={0.7} />
+              </div>
             ))}
           </div>
         </div>
