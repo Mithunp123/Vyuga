@@ -122,20 +122,13 @@ export default function Navbar() {
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
           <NavLink to="/" className={navItemClass} end>Home</NavLink>
-          <NavLink to="/program" className={navItemClass}>Program</NavLink>
           <DesktopDropdown
             label="Attend"
             items={attendItems}
             open={attendOpen}
             setOpen={(v) => { setAttendOpen(v); if (v) setProjectsOpen(false) }}
           />
-          <DesktopDropdown
-            label="Projects"
-            items={projectsItems}
-            open={projectsOpen}
-            setOpen={(v) => { setProjectsOpen(v); if (v) setAttendOpen(false) }}
-          />
-          <NavLink to="/exhibitors" className={navItemClass}>Exhibitors</NavLink>
+
           <NavLink to="/sponsors" className={navItemClass}>Sponsors</NavLink>
           <NavLink to="/about" className={navItemClass}>About</NavLink>
         </nav>
@@ -173,11 +166,9 @@ export default function Navbar() {
                 <div className="grid gap-0.5">
                   {[
                     { to: '/', label: 'Home', end: true },
-                    { to: '/program', label: 'Program' },
                     { to: '/about', label: 'About' },
                     { to: '/speakers', label: 'Speakers' },
                     { to: '/sponsors', label: 'Sponsors' },
-                    { to: '/exhibitors', label: 'Exhibitors' },
                   ].map((item) => (
                     <NavLink
                       key={item.to}
@@ -196,11 +187,6 @@ export default function Navbar() {
                     <Link key={it.to} to={it.to} className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-brand-cyan/5 hover:text-brand-cyan" onClick={() => setMobileOpen(false)}>{it.label}</Link>
                   ))}
 
-                  <div className="my-2 h-px bg-gradient-to-r from-transparent via-brand-lime/15 to-transparent" />
-                  <p className="px-4 py-1 text-[10px] font-bold tracking-[0.2em] text-brand-lime">PROJECTS</p>
-                  {projectsItems.map((it) => (
-                    <Link key={it.to} to={it.to} className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-500 hover:bg-brand-lime/5 hover:text-brand-lime" onClick={() => setMobileOpen(false)}>{it.label}</Link>
-                  ))}
 
                   <div className="mt-3 px-1">
                     <Link to="/attend/register" className="inline-flex w-full items-center justify-center overflow-hidden rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-cyan/15 shimmer-btn" onClick={() => setMobileOpen(false)}>

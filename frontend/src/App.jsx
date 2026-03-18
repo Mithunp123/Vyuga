@@ -34,22 +34,13 @@ export default function App() {
     <AccessibilityWidget />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/program" element={<Program />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/speakers" element={<SpeakersPage />} />
       <Route path="/sponsors" element={<SponsorsPage />} />
-      <Route path="/exhibitors" element={<ExhibitorsPage />} />
 
-      <Route path="/projects/schedule" element={<ProjectsSchedule />} />
-      <Route path="/projects/workshops" element={<ProjectsWorkshops />} />
-      <Route path="/projects/keynotes" element={<ProjectsKeynotes />} />
-      <Route path="/projects/speakers" element={<ProjectsSpeakers />} />
-      <Route path="/projects/call-for-paper" element={<ProjectsCallForPaper />} />
-      <Route
-        path="/projects/student-design-challenge"
-        element={<ProjectsStudentDesignChallenge />}
-      />
 
+   
+ 
       <Route path="/attend/register" element={<AttendRegister />} />
       <Route path="/attend/accommodation" element={<AttendAccommodation />} />
       <Route path="/attend/travel-information" element={<AttendTravel />} />

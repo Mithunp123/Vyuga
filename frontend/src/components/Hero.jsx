@@ -297,6 +297,7 @@ export default function Hero() {
                 transition={{ duration: 0.7, delay: 1.4 }}
                 className="max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg"
               >
+                <span className="font-marker text-brand-cyan">Be part of the movement </span>
                 Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
               </motion.p>
 
@@ -316,12 +317,6 @@ export default function Hero() {
                     Register Now
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
-                </Link>
-                <Link
-                  to="/program"
-                  className="group inline-flex items-center justify-center gap-2.5 rounded-full border-2 border-slate-200 bg-white/60 px-10 py-5 text-sm font-bold text-slate-800 backdrop-blur-sm transition-all hover:border-brand-cyan/30 hover:bg-white hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Explore Program
                 </Link>
               </motion.div>
             </div>
