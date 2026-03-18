@@ -402,25 +402,26 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* ── Navbar (matches user site) ── */}
-      <header className="sticky top-0 left-0 right-0 z-50 glass shadow-lg shadow-brand-cyan/5 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+      <header className="sticky top-0 left-0 right-0 z-50 glass shadow-lg shadow-brand-cyan/5 bg-white backdrop-blur-xl border-b-2 border-slate-100">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-start gap-3 px-4 py-3 sm:px-6">
           {/* Logo */}
-          <button onClick={goHome} className="inline-flex items-center gap-2.5">
-            <img src={logoImg} alt="VYUGA" className="h-14 w-auto object-contain" />
+          <button onClick={goHome} className="inline-flex items-center gap-2.5 transition-transform hover:scale-105 relative z-10 flex-shrink-0">
+            <img src={logoImg} alt="VYUGA" className="h-12 w-auto object-contain drop-shadow-lg" />
           </button>
 
           {/* Desktop nav links */}
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Admin navigation">
+          <nav className="hidden flex-1 items-center gap-2 lg:flex" aria-label="Admin navigation">
             <button
               onClick={goHome}
               className={[
-                'text-sm font-semibold transition-all duration-300 relative py-1',
+                'px-3 py-2 text-xs font-bold transition-all duration-300 rounded-lg border-2 relative overflow-hidden',
                 !activeTab
-                  ? 'text-brand-cyan after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-gradient-to-r after:from-brand-cyan after:to-brand-lime'
-                  : 'text-slate-600 hover:text-brand-cyan',
+                  ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-[1.08] hover:-translate-y-0.5 ring-2 ring-cyan-300/50'
+                  : 'bg-white text-slate-700 border-slate-300 hover:border-cyan-500 hover:text-cyan-600 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-teal-50',
               ].join(' ')}
             >
-              Dashboard
+              <span className="relative z-10">Dashboard</span>
+              {!activeTab && <span className="absolute inset-0 bg-white/20 animate-pulse"></span>}
             </button>
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id
@@ -429,23 +430,24 @@ export default function AdminDashboard() {
                   key={tab.id}
                   onClick={() => openEvent(tab.id)}
                   className={[
-                    'text-sm font-semibold transition-all duration-300 relative py-1',
+                    'px-3 py-2 text-xs font-bold transition-all duration-300 rounded-lg border-2 relative overflow-hidden whitespace-nowrap',
                     isActive
-                      ? 'text-brand-cyan after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-gradient-to-r after:from-brand-cyan after:to-brand-lime'
-                      : 'text-slate-600 hover:text-brand-cyan',
+                      ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-[1.08] hover:-translate-y-0.5 ring-2 ring-cyan-300/50'
+                      : 'bg-white text-slate-700 border-slate-300 hover:border-cyan-500 hover:text-cyan-600 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-teal-50',
                   ].join(' ')}
                 >
-                  {tab.label}
+                  <span className="relative z-10">{tab.label}</span>
+                  {isActive && <span className="absolute inset-0 bg-white/20 animate-pulse"></span>}
                 </button>
               )
             })}
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 ml-auto flex-shrink-0">
             <button
               onClick={logout}
-              className="hidden items-center justify-center overflow-hidden rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-cyan/15 transition-all hover:shadow-brand-cyan/25 hover:scale-[1.04] md:inline-flex shimmer-btn"
+              className="hidden items-center justify-center overflow-hidden rounded-full px-4 py-2 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:shadow-cyan-500/30 hover:scale-[1.04] lg:inline-flex bg-gradient-to-r from-cyan-500 to-teal-500"
             >
               Logout
             </button>
