@@ -4,11 +4,23 @@ import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 
+const DISABILITY_TYPES = [
+  'Visual Impairment',
+  'Hearing Impairment',
+  'Mobility Impairment',
+  'Speech Impairment',
+  'Intellectual Disability',
+  'Autism Spectrum Disorder',
+  'Multiple Disabilities',
+  'Other',
+]
+
 const EMPTY = {
   participationType: 'individual',
   ideaTitle: '',
   ideaDescription: '',
-  member1Name: '', member1Email: '', member1Phone: '', member1DisabilityType: '',
+  member1Name: '', member1Email: '', member1Phone: '', member1DisabilityType: [],
+  member1DisabilityTypeOther: '',
   member2Name: '', member2Email: '', member2Phone: '',
   member3Name: '', member3Email: '', member3Phone: '',
 }
@@ -24,6 +36,25 @@ export default function InnovationPWDForm() {
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const handleDisabilityChange = (disability) => {
+    setForm((prevForm) => {
+      const currentDisabilities = prevForm.member1DisabilityType || []
+      const isSelected = currentDisabilities.includes(disability)
+      
+      if (isSelected) {
+        return {
+          ...prevForm,
+          member1DisabilityType: currentDisabilities.filter(d => d !== disability)
+        }
+      } else {
+        return {
+          ...prevForm,
+          member1DisabilityType: [...currentDisabilities, disability]
+        }
+      }
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -31,6 +62,12 @@ export default function InnovationPWDForm() {
     const phoneFields = [form.member1Phone, form.member2Phone, form.member3Phone].filter(Boolean)
     const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
     if (invalidPhone) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
+    if (!form.member1DisabilityType || form.member1DisabilityType.length === 0) { 
+      setError('Please select at least one disability type.'); setLoading(false); return 
+    }
+    if (form.member1DisabilityType.includes('Other') && !form.member1DisabilityTypeOther.trim()) { 
+      setError('Please enter the specific disability type.'); setLoading(false); return 
+    }
     try {
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
@@ -119,7 +156,35 @@ export default function InnovationPWDForm() {
           <Field label="Full Name" value={form.member1Name} onChange={set('member1Name')} required />
           <Field label="Email" type="email" value={form.member1Email} onChange={set('member1Email')} required />
           <Field label="Phone" type="tel" value={form.member1Phone} onChange={set('member1Phone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
-          <Field label="Type of Disability" value={form.member1DisabilityType} onChange={set('member1DisabilityType')} required />
+          <div>
+            <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+              Type of Disability <span className="text-red-500">*</span>
+            </label>
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+              {DISABILITY_TYPES.map((disability) => (
+                <label key={disability} className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={form.member1DisabilityType?.includes(disability) || false}
+                    onChange={() => handleDisabilityChange(disability)}
+                    className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#0197B2] focus:ring-[#0197B2] focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900 select-none">
+                    {disability}
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-slate-500">Select all that apply</p>
+          </div>
+          {form.member1DisabilityType?.includes('Other') && (
+            <Field 
+              label="Enter Disability Type" 
+              value={form.member1DisabilityTypeOther} 
+              onChange={set('member1DisabilityTypeOther')} 
+              required 
+            />
+          )}
         </Section>
 
         {isTeam && [2, 3].map((n) => (

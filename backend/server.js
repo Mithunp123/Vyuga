@@ -363,9 +363,22 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     const sM1Name = sanitizeText(member1Name, 100)
     const sM1Email = member1Email.trim().toLowerCase()
     const sM1Phone = member1Phone.trim()
-    const sDisability = String(member1DisabilityType).toLowerCase() === 'other'
-      ? sanitizeText(member1DisabilityTypeOther, 100)
-      : sanitizeText(member1DisabilityType, 100)
+    
+    // Handle disability types as array
+    let disabilityTypes = []
+    if (Array.isArray(member1DisabilityType)) {
+      disabilityTypes = member1DisabilityType
+    } else if (typeof member1DisabilityType === 'string' && member1DisabilityType) {
+      disabilityTypes = [member1DisabilityType]
+    }
+    
+    const processedDisabilities = disabilityTypes.map(type => 
+      String(type).toLowerCase() === 'other' 
+        ? sanitizeText(member1DisabilityTypeOther, 100) 
+        : sanitizeText(type, 100)
+    ).filter(Boolean)
+    
+    const sDisability = processedDisabilities.join(', ')
 
     const members = []
     if (sPartType === 'team') {
@@ -512,12 +525,15 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       { field: 'studentAge', check: isValidInt(studentAge, 1, 120), msg: 'must be a number 1–120' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
+      { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'guardianName', check: guardianName && sanitizeText(guardianName, 100).length > 0, msg: 'required' },
       { field: 'guardianPhone', check: isValidPhone(guardianPhone), msg: 'must be exactly 10 digits' },
     ])
     if (guardianEmail && guardianEmail.trim()) errors.push(...validate([{ field: 'guardianEmail', check: isValidEmail(guardianEmail), msg: 'invalid email' }]))
     if (videoLink && videoLink.trim()) errors.push(...validate([{ field: 'videoLink', check: isValidURL(videoLink), msg: 'must be a valid http/https URL' }]))
-    if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
+    if (disabilityType && Array.isArray(disabilityType) && disabilityType.includes('Other') && !sanitizeText(disabilityTypeOther, 100)) {
+      errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
+    } else if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
       errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
     }
     if (talentCategory && String(talentCategory).toLowerCase() === 'other' && !sanitizeText(talentCategoryOther, 100)) {
@@ -528,9 +544,22 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
-    const effectiveDisability = String(disabilityType).toLowerCase() === 'other'
-      ? sanitizeText(disabilityTypeOther, 100)
-      : sanitizeText(disabilityType, 100)
+    const effectiveDisability = (() => {
+      let disabilityTypes = []
+      if (Array.isArray(disabilityType)) {
+        disabilityTypes = disabilityType
+      } else if (typeof disabilityType === 'string' && disabilityType) {
+        disabilityTypes = [disabilityType]
+      }
+      
+      const processedDisabilities = disabilityTypes.map(type => 
+        String(type).toLowerCase() === 'other' 
+          ? sanitizeText(disabilityTypeOther, 100) 
+          : sanitizeText(type, 100)
+      ).filter(Boolean)
+      
+      return processedDisabilities.join(', ')
+    })()
     const effectiveTalentCategory = String(talentCategory).toLowerCase() === 'other'
       ? sanitizeText(talentCategoryOther, 100)
       : sanitizeText(talentCategory, 100)
@@ -603,6 +632,236 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
     res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/talent-student', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Combined Special Talent Utsav (Organization + Student/Team Nomination) ─────────
+// POST /api/talent-combined  (multipart/form-data; required performanceVideo field)
+app.post('/api/talent-combined', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
+  try {
+    console.log('=== Talent Combined Submission ===')
+    console.log('File received:', req.file ? 'Yes' : 'No')
+    console.log('Nomination type:', req.body.nominationType)
+    
+    const {
+      // Organization details
+      orgName, orgAddress, orgCity, orgState, orgZip, orgSize, orgDisabilityFocus,
+      contactName, contactDesignation, contactPhone, contactEmail,
+      
+      // Nomination details
+      nominationType, teamSize, teamMembers,
+      
+      // Student/team details
+      studentName, studentAge, disabilityType, disabilityTypeOther,
+      talentCategory, talentCategoryOther, talentDescription,
+      guardianName, guardianPhone, guardianEmail,
+      videoLink, performanceUrl
+    } = req.body
+
+    // ── Validation ───────────────────────────────────────
+    const errors = validate([
+      // Organization validation
+      { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required' },
+      { field: 'orgCity', check: orgCity && sanitizeText(orgCity, 100).length > 0, msg: 'required' },
+      { field: 'orgState', check: orgState && sanitizeText(orgState, 50).length > 0, msg: 'required' },
+      { field: 'orgSize', check: orgSize && ['<10', '10-30', '30-50', '50-100', '100+'].includes(orgSize), msg: 'invalid organization size' },
+      { field: 'orgDisabilityFocus', check: orgDisabilityFocus && ['single', 'multiple'].includes(orgDisabilityFocus), msg: 'must be single or multiple' },
+      { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
+      { field: 'contactPhone', check: contactPhone && /^\d{10}$/.test(contactPhone), msg: 'must be exactly 10 digits' },
+      { field: 'contactEmail', check: contactEmail && isValidEmail(contactEmail), msg: 'invalid email' },
+      
+      // Nomination validation
+      { field: 'nominationType', check: nominationType && ['individual', 'team'].includes(nominationType), msg: 'must be individual or team' },
+      
+      // Talent details (common)
+      { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
+      { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
+      { field: 'videoFile', check: req.file || videoLink || performanceUrl, msg: 'video file, video link, or performance URL is required' }
+    ])
+
+    // Individual nomination validation
+    if (nominationType === 'individual') {
+      errors.push(...validate([
+        { field: 'studentName', check: studentName && sanitizeText(studentName, 100).length > 0, msg: 'required' },
+        { field: 'studentAge', check: studentAge && Number.isInteger(+studentAge) && +studentAge >= 5 && +studentAge <= 25, msg: 'must be 5-25 years' },
+        { field: 'disabilityType', check: disabilityType && (Array.isArray(disabilityType) ? disabilityType.length > 0 : disabilityType.length > 0), msg: 'required' },
+        { field: 'guardianName', check: guardianName && sanitizeText(guardianName, 100).length > 0, msg: 'required' },
+        { field: 'guardianPhone', check: guardianPhone && /^\d{10}$/.test(guardianPhone), msg: 'must be exactly 10 digits' },
+        { field: 'guardianEmail', check: guardianEmail && isValidEmail(guardianEmail), msg: 'invalid email' }
+      ]))
+    }
+
+    // Team-specific validation
+    if (nominationType === 'team') {
+      try {
+        const teamMembersData = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : teamMembers
+        console.log('🔍 Debug - Raw team members data received:', JSON.stringify(teamMembersData, null, 2))
+        
+        errors.push(...validate([
+          { field: 'teamSize', check: teamSize && Number.isInteger(+teamSize) && +teamSize >= 2 && +teamSize <= 10, msg: 'team size must be 2-10 members' },
+          { field: 'teamMembers', check: teamMembersData && Array.isArray(teamMembersData) && teamMembersData.length == +teamSize, msg: 'team members count must match team size' }
+        ]))
+        
+        // Validate each team member
+        if (teamMembersData && Array.isArray(teamMembersData)) {
+          teamMembersData.forEach((member, index) => {
+            errors.push(...validate([
+              { field: `teamMembers[${index}].name`, check: member.name && sanitizeText(member.name, 100).length > 0, msg: 'required' },
+              { field: `teamMembers[${index}].age`, check: member.age && Number.isInteger(+member.age) && +member.age >= 5 && +member.age <= 25, msg: 'must be 5-25 years' },
+              { field: `teamMembers[${index}].disabilityType`, check: member.disabilityType && (Array.isArray(member.disabilityType) ? member.disabilityType.length > 0 : member.disabilityType.length > 0), msg: 'required' },
+              { field: `teamMembers[${index}].guardianName`, check: member.guardianName && sanitizeText(member.guardianName, 100).length > 0, msg: 'required' },
+              { field: `teamMembers[${index}].guardianPhone`, check: member.guardianPhone && isValidPhone(member.guardianPhone), msg: 'invalid phone' }
+            ]))
+          })
+        }
+      } catch (e) {
+        errors.push({ field: 'teamMembers', msg: 'invalid JSON format' })
+      }
+    }
+
+    if (errors.length > 0) {
+      console.log('❌ Validation failed:', errors)
+      return res.status(400).json({ success: false, errors })
+    }
+
+    console.log('✅ Validation passed')
+
+    // Validate and sanitize URLs if provided
+    const sanitizedPerformanceUrl = performanceUrl && performanceUrl.trim() ? 
+      (isValidURL(performanceUrl.trim()) ? performanceUrl.trim() : null) : null
+
+    // Process disability types (handle both arrays and single values)
+    let processedDisabilityType = disabilityType
+    if (Array.isArray(disabilityType)) {
+      processedDisabilityType = disabilityType.join(', ')
+    }
+    
+    // Add "Other" specification if needed
+    if (disabilityType?.includes('Other') && disabilityTypeOther) {
+      processedDisabilityType = processedDisabilityType.replace('Other', `Other: ${sanitizeText(disabilityTypeOther, 100)}`)
+    }
+
+    // Process talent category
+    let processedTalentCategory = sanitizeText(talentCategory, 100)
+    if (talentCategory === 'Other' && talentCategoryOther) {
+      processedTalentCategory = `Other: ${sanitizeText(talentCategoryOther, 100)}`
+    }
+
+    // ── File handling ────────────────────────────────────
+    console.log('🎥 Processing video file...')
+    let videoFilePath = null
+    if (req.file) {
+      try {
+        videoFilePath = await compressVideoWithFFmpeg(req.file.path)
+        console.log('✅ Video compression completed:', path.basename(videoFilePath))
+        // Note: compressVideoWithFFmpeg already handles cleanup of original file
+      } catch (e) {
+        console.error('❌ Video compression failed:', e.message)
+        videoFilePath = req.file.path // Use original file if compression fails
+        await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'upload_error', message: `ffmpeg compression error: ${e.message}`, req })
+      }
+    }
+    
+    // Store only the filename (not the full path)
+    const videoFileName = videoFilePath ? path.basename(videoFilePath) : null
+
+    // Process team members for database storage
+    let processedTeamMembers = null
+    if (nominationType === 'team' && teamMembers) {
+      try {
+        const teamMembersData = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : teamMembers
+        processedTeamMembers = teamMembersData.map(member => ({
+          name: sanitizeText(member.name, 100),
+          age: parseInt(member.age),
+          disabilityType: Array.isArray(member.disabilityType) ? 
+            member.disabilityType.join(', ') : 
+            sanitizeText(member.disabilityType, 200),
+          disabilityTypeOther: member.disabilityTypeOther ? sanitizeText(member.disabilityTypeOther, 100) : null,
+          guardianName: member.guardianName ? sanitizeText(member.guardianName, 100) : null,
+          guardianPhone: member.guardianPhone || null
+        }))
+      } catch (e) {
+        return res.status(400).json({ success: false, message: 'Invalid team members data' })
+      }
+    }
+
+    console.log('💾 Inserting into database...')
+    const { data, error } = await supabase
+      .from('talent_nominations')
+      .insert([{
+        // Organization details
+        org_name: sanitizeText(orgName, 200),
+        org_address: orgAddress ? sanitizeText(orgAddress, 300) : null,
+        org_city: sanitizeText(orgCity, 100),
+        org_state: sanitizeText(orgState, 50),
+        org_zip: orgZip ? sanitizeText(orgZip, 10) : null,
+        org_size: orgSize,
+        org_disability_focus: orgDisabilityFocus,
+        contact_name: sanitizeText(contactName, 100),
+        contact_designation: contactDesignation ? sanitizeText(contactDesignation, 100) : null,
+        contact_phone: contactPhone,
+        contact_email: contactEmail.toLowerCase(),
+        
+        // Nomination details
+        nomination_type: nominationType,
+        team_size: nominationType === 'team' ? parseInt(teamSize) : 1,
+        team_members: processedTeamMembers,
+        
+        // Student/team leader details (for individual nominations)
+        student_name: nominationType === 'individual' ? sanitizeText(studentName, 100) : 'Team Nomination',
+        student_age: nominationType === 'individual' ? parseInt(studentAge) : null,
+        disability_type: nominationType === 'individual' ? processedDisabilityType : 'Multiple (Team)',
+        talent_category: processedTalentCategory,
+        talent_desc: talentDescription ? sanitizeText(talentDescription, 500) : null,
+        guardian_name: nominationType === 'individual' ? sanitizeText(guardianName, 100) : null,
+        guardian_phone: nominationType === 'individual' ? guardianPhone : null,
+        guardian_email: nominationType === 'individual' && guardianEmail ? guardianEmail.toLowerCase() : null,
+        video_link: videoLink ? sanitizeText(videoLink, 500) : null,
+        video_file_path: videoFileName,
+        performance_url: sanitizedPerformanceUrl
+      }])
+
+    if (error) {
+      console.log('❌ Database error:', error.message)
+      await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    console.log('✅ Database insertion successful')
+
+    // Send confirmation emails
+    console.log('📧 Sending confirmation emails...')
+    try {
+      if (nominationType === 'individual') {
+        sendTalentStudentConfirmation({
+          orgName, studentName, studentAge, disabilityType: processedDisabilityType,
+          talentCategory: processedTalentCategory, talentDescription,
+          guardianName, guardianPhone, guardianEmail, videoLink: null,
+          orgContactEmail: contactEmail,
+          orgContactName: contactName,
+        })
+      } else {
+        // For team nominations, send email to organization contact
+        sendTalentStudentConfirmation({
+          orgName, studentName: `Team (${teamSize} members)`, studentAge: null, 
+          disabilityType: 'Multiple (Team)', talentCategory: processedTalentCategory, 
+          talentDescription, guardianName: null, guardianPhone: null, guardianEmail: null,
+          videoLink: null, orgContactEmail: contactEmail, orgContactName: contactName,
+        })
+      }
+      console.log('✅ Emails sent successfully')
+    } catch (emailErr) {
+      console.log('⚠️ Email error (non-critical):', emailErr.message)
+      await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    }
+
+    console.log('✅ Form submission completed successfully')
+    res.status(201).json({ success: true, data })
+  } catch (err) {
+    console.log('❌ Unexpected error:', err.message)
+    console.log('Stack trace:', err.stack)
+    await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
@@ -689,7 +948,9 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       { field: 'hasPlayedBefore', check: isValidEnum(hasPlayedBefore, ['yes', 'no']), msg: 'must be yes or no' },
       { field: 'experienceLevel', check: isValidEnum(experienceLevel, ['beginner', 'intermediate', 'advanced', 'other']), msg: 'must be beginner, intermediate, advanced, or other' },
     ])
-    if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
+    if (disabilityType && Array.isArray(disabilityType) && disabilityType.includes('Other') && !sanitizeText(disabilityTypeOther, 100)) {
+      errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
+    } else if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
       errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
     }
     if (experienceLevel && String(experienceLevel).toLowerCase() === 'other' && !sanitizeText(experienceLevelOther, 100)) {
@@ -697,9 +958,22 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
-    const effectiveDisability = String(disabilityType).toLowerCase() === 'other'
-      ? sanitizeText(disabilityTypeOther, 100)
-      : sanitizeText(disabilityType, 100)
+    const effectiveDisability = (() => {
+      let disabilityTypes = []
+      if (Array.isArray(disabilityType)) {
+        disabilityTypes = disabilityType
+      } else if (typeof disabilityType === 'string' && disabilityType) {
+        disabilityTypes = [disabilityType]
+      }
+      
+      const processedDisabilities = disabilityTypes.map(type => 
+        String(type).toLowerCase() === 'other' 
+          ? sanitizeText(disabilityTypeOther, 100) 
+          : sanitizeText(type, 100)
+      ).filter(Boolean)
+      
+      return processedDisabilities.join(', ')
+    })()
     const effectiveExperience = String(experienceLevel).toLowerCase() === 'other'
       ? sanitizeText(experienceLevelOther, 100)
       : experienceLevel

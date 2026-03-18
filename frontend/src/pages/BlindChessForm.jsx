@@ -11,7 +11,7 @@ const EMPTY = {
   age: '',
   city: '',
   state: '',
-  disabilityType: '',
+  disabilityType: [],
   disabilityTypeOther: '',
   hasPlayedBefore: '',
   experienceLevel: '',
@@ -24,6 +24,10 @@ const DISABILITY_TYPES = [
   'Low Vision',
   'Hearing Impairment',
   'Mobility Impairment',
+  'Speech Impairment',
+  'Intellectual Disability',
+  'Autism Spectrum Disorder',
+  'Multiple Disabilities',
   'Other',
 ]
 
@@ -36,12 +40,32 @@ export default function BlindChessForm() {
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const handleDisabilityChange = (disability) => {
+    setForm((prevForm) => {
+      const currentDisabilities = prevForm.disabilityType || []
+      const isSelected = currentDisabilities.includes(disability)
+      
+      if (isSelected) {
+        return {
+          ...prevForm,
+          disabilityType: currentDisabilities.filter(d => d !== disability)
+        }
+      } else {
+        return {
+          ...prevForm,
+          disabilityType: [...currentDisabilities, disability]
+        }
+      }
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
     if (!/^\d{10}$/.test(form.phone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
-    if (form.disabilityType === 'Other' && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); setLoading(false); return }
+    if (!form.disabilityType || form.disabilityType.length === 0) { setError('Please select at least one disability type.'); setLoading(false); return }
+    if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); setLoading(false); return }
     if (form.experienceLevel === 'other' && !form.experienceLevelOther.trim()) { setError('Please enter experience level.'); setLoading(false); return }
     try {
       await postJSON('/api/chess', form)
@@ -116,20 +140,27 @@ export default function BlindChessForm() {
           <Field label="City" value={form.city} onChange={set('city')} required />
           <Field label="State" value={form.state} onChange={set('state')} required />
           <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+            <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Disability Type <span className="text-red-500">*</span>
             </label>
-            <select
-              required
-              value={form.disabilityType}
-              onChange={set('disabilityType')}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
-            >
-              <option value="">Select</option>
-              {DISABILITY_TYPES.map((option) => <option key={option} value={option}>{option}</option>)}
-            </select>
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+              {DISABILITY_TYPES.map((disability) => (
+                <label key={disability} className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={form.disabilityType?.includes(disability) || false}
+                    onChange={() => handleDisabilityChange(disability)}
+                    className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-cyan focus:ring-brand-cyan focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900 select-none">
+                    {disability}
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-slate-500">Select all that apply</p>
           </div>
-          {form.disabilityType === 'Other' && (
+          {form.disabilityType?.includes('Other') && (
             <Field label="Enter Disability Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
           )}
         </Section>

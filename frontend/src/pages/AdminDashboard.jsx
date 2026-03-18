@@ -54,12 +54,16 @@ const COLUMNS = {
   'talent-student': [
     { key: 'submitted_at',    label: 'Date',        fmt: fmtDate },
     { key: 'org_name',        label: 'Organisation' },
-    { key: 'student_name',    label: 'Student' },
+    { key: 'org_city',        label: 'City' },
+    { key: 'org_disability_focus', label: 'Org Focus', fmt: (v) => v === 'single' ? 'Single' : v === 'multiple' ? 'Multi' : '-' },
+    { key: 'nomination_type', label: 'Type',        fmt: (v) => v === 'team' ? 'Team' : v === 'individual' ? 'Individual' : '-' },
+    { key: 'student_name',    label: 'Student/Team' },
     { key: 'student_age',     label: 'Age' },
+    { key: 'team_size',       label: 'Size',        fmt: (v, row) => (row && row.nomination_type === 'team') ? (v || '-') : '-' },
     { key: 'disability_type', label: 'Disability' },
     { key: 'talent_category', label: 'Talent' },
-    { key: 'guardian_name',   label: 'Guardian' },
-    { key: 'guardian_phone',  label: 'Phone' },
+    { key: 'contact_name',    label: 'Contact' },
+    { key: 'contact_phone',   label: 'Phone' },
   ],
   cricket: [
     { key: 'submitted_at',      label: 'Date',    fmt: fmtDate },
@@ -258,7 +262,102 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
         </div>
       )}
 
-      {/* ── All fields ── */}
+      {/* ── Organization & Nomination Details (for talent-student) ── */}
+      {tabId === 'talent-student' && (row.org_address || row.org_size || row.contact_name || row.nomination_type) && (
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
+            Organization & Nomination Details
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Organization Details */}
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Organization</p>
+              <div className="space-y-2">
+                {row.org_name && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Name</span>
+                    <span className="text-sm text-slate-800 font-medium">{row.org_name}</span>
+                  </div>
+                )}
+                {row.org_address && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Address</span>
+                    <span className="text-sm text-slate-700">{row.org_address}</span>
+                  </div>
+                )}
+                <div className="flex items-start gap-3">
+                  <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Location</span>
+                  <span className="text-sm text-slate-700">{row.org_city}{row.org_state && `, ${row.org_state}`}{row.org_zip && ` ${row.org_zip}`}</span>
+                </div>
+                {row.org_size && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Size</span>
+                    <span className="text-sm text-slate-700">{row.org_size} students</span>
+                  </div>
+                )}
+                {row.org_disability_focus && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Focus</span>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                      style={{ 
+                        backgroundColor: row.org_disability_focus === 'single' ? '#fef3c7' : '#dbeafe',
+                        color: row.org_disability_focus === 'single' ? '#d97706' : '#1d4ed8'
+                      }}>
+                      {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Disabilities'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Contact & Nomination Details */}
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Contact & Nomination</p>
+              <div className="space-y-2">
+                {row.contact_name && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Contact</span>
+                    <span className="text-sm text-slate-800 font-medium">{row.contact_name}</span>
+                  </div>
+                )}
+                {row.contact_designation && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Title</span>
+                    <span className="text-sm text-slate-700">{row.contact_designation}</span>
+                  </div>
+                )}
+                {row.contact_email && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Email</span>
+                    <span className="text-sm text-slate-700">{row.contact_email}</span>
+                  </div>
+                )}
+                {row.contact_phone && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Phone</span>
+                    <span className="text-sm text-slate-700">{row.contact_phone}</span>
+                  </div>
+                )}
+                {row.nomination_type && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Type</span>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                      style={{ 
+                        backgroundColor: row.nomination_type === 'team' ? '#e8f9de' : '#e0f6fa',
+                        color: row.nomination_type === 'team' ? '#16a34a' : '#0197B2'
+                      }}>
+                      {row.nomination_type === 'team' ? `Team (${row.team_size || 'Unknown'} members)` : 'Individual'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── All fields ──*/}
       <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

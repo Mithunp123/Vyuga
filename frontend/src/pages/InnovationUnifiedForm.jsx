@@ -17,11 +17,14 @@ const THEME_OPTIONS = [
   'Other',
 ]
 
-const DISABILITY_OPTIONS = [
+const DISABILITY_TYPES = [
   'Visual Impairment',
+  'Low Vision',
   'Hearing Impairment',
   'Mobility Impairment',
   'Speech Impairment',
+  'Intellectual Disability',
+  'Autism Spectrum Disorder',
   'Multiple Disabilities',
   'Other',
 ]
@@ -38,7 +41,7 @@ const EMPTY = {
   member1Name: '',
   member1Email: '',
   member1Phone: '',
-  member1DisabilityType: '',
+  member1DisabilityType: [],
   member1DisabilityTypeOther: '',
   member2Name: '',
   member2Email: '',
@@ -59,6 +62,25 @@ export default function InnovationUnifiedForm() {
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const handleDisabilityChange = (disability) => {
+    setForm((prevForm) => {
+      const currentDisabilities = prevForm.member1DisabilityType || []
+      const isSelected = currentDisabilities.includes(disability)
+      
+      if (isSelected) {
+        return {
+          ...prevForm,
+          member1DisabilityType: currentDisabilities.filter(d => d !== disability)
+        }
+      } else {
+        return {
+          ...prevForm,
+          member1DisabilityType: [...currentDisabilities, disability]
+        }
+      }
+    })
+  }
+
   const isForSpeciallyAbled = form.innovationType === 'for_specially_abled'
   const isBySpeciallyAbled = form.innovationType === 'by_specially_abled'
   const isTeamForBy = form.participationType === 'team'
@@ -75,7 +97,10 @@ export default function InnovationUnifiedForm() {
     if (invalidPhone) return 'Phone number must be exactly 10 digits.'
     if (!form.innovationType) return 'Please select whether registration is By or For specially abled.'
     if (form.theme === 'Other' && !form.themeOther.trim()) return 'Please enter a custom theme.'
-    if (isBySpeciallyAbled && form.member1DisabilityType === 'Other' && !form.member1DisabilityTypeOther.trim()) {
+    if (isBySpeciallyAbled && (!form.member1DisabilityType || form.member1DisabilityType.length === 0)) {
+      return 'Please select at least one disability type.'
+    }
+    if (isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && !form.member1DisabilityTypeOther.trim()) {
       return 'Please enter a disability type.'
     }
     return ''
@@ -284,23 +309,28 @@ export default function InnovationUnifiedForm() {
               />
               {isBySpeciallyAbled && (
                 <div>
-                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
                     Type of Disability <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    required
-                    value={form.member1DisabilityType}
-                    onChange={set('member1DisabilityType')}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
-                  >
-                    <option value="">Select disability type</option>
-                    {DISABILITY_OPTIONS.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                  <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+                    {DISABILITY_TYPES.map((disability) => (
+                      <label key={disability} className="flex items-start gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={form.member1DisabilityType?.includes(disability) || false}
+                          onChange={() => handleDisabilityChange(disability)}
+                          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-cyan focus:ring-brand-cyan focus:ring-offset-0"
+                        />
+                        <span className="text-sm text-slate-700 group-hover:text-slate-900 select-none">
+                          {disability}
+                        </span>
+                      </label>
                     ))}
-                  </select>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">Select all that apply</p>
                 </div>
               )}
-              {isBySpeciallyAbled && form.member1DisabilityType === 'Other' && (
+              {isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && (
                 <Field
                   label="Enter Disability Type"
                   value={form.member1DisabilityTypeOther}
