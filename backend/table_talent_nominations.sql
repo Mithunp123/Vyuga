@@ -16,8 +16,12 @@ CREATE TABLE IF NOT EXISTS talent_nominations (
   guardian_email  TEXT,
   video_link      TEXT        NOT NULL,
   video_file_path TEXT,        -- populated when a video file is uploaded via Multer
+  performance_url TEXT,        -- optional URL to online performance (e.g., YouTube, Vimeo)
   submitted_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_talent_nom_org
   ON talent_nominations (org_name);
+
+-- Run this if the table already exists:
+ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS performance_url TEXT;

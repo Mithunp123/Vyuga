@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS innovation_pwd_registrations (
   -- Extra team members (empty array for individual participation)
   members            JSONB       NOT NULL DEFAULT '[]'::jsonb,
   prototype_image_path TEXT,     -- saved locally as phonenumber_timestamp.ext
-  submitted_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+  prototype_url        TEXT,     -- optional URL to online prototype (e.g., GitHub, demo site)
+  submitted_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_innov_pwd_email
@@ -24,3 +25,4 @@ CREATE INDEX IF NOT EXISTS idx_innov_pwd_email
 
 -- Run this if the table already exists:
 -- ALTER TABLE innovation_pwd_registrations ADD COLUMN IF NOT EXISTS prototype_image_path TEXT;
+ALTER TABLE innovation_pwd_registrations ADD COLUMN IF NOT EXISTS prototype_url TEXT;

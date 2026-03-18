@@ -9,6 +9,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 const EMPTY = {
   orgName: '',
   orgType: '',
+  orgTypeOther: '',
   contactName: '',
   contactEmail: '',
   contactPhone: '',
@@ -32,6 +33,7 @@ export default function TalentOrgRegistration() {
     setLoading(true)
     setError('')
     if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
+    if (form.orgType === 'other' && !form.orgTypeOther.trim()) { setError('Please enter organization type.'); setLoading(false); return }
     try {
       await postJSON('/api/talent-org', form)
       setView('done')
@@ -154,6 +156,9 @@ export default function TalentOrgRegistration() {
               <option value="other">Other</option>
             </select>
           </div>
+          {form.orgType === 'other' && (
+            <Field label="Enter Organization Type" value={form.orgTypeOther} onChange={set('orgTypeOther')} required />
+          )}
           <Field label="Address" value={form.address} onChange={set('address')} />
           <Field label="Number of Students to Nominate" type="number" value={form.studentCount} onChange={set('studentCount')} required />
         </Section>

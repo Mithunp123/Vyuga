@@ -220,6 +220,7 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
   try {
     const {
       teamName, collegeName, theme, ideaTitle, ideaDescription,
+      themeOther, prototypeUrl,
       member1Name, member1Email, member1Phone,
       member2Name, member2Email, member2Phone,
       member3Name, member3Email, member3Phone,
@@ -240,6 +241,12 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
     if (member2Phone && member2Phone.trim()) errors.push(...validate([{ field: 'member2Phone', check: isValidPhone(member2Phone), msg: 'must be 10 digits' }]))
     if (member3Email && member3Email.trim()) errors.push(...validate([{ field: 'member3Email', check: isValidEmail(member3Email), msg: 'invalid email' }]))
     if (member3Phone && member3Phone.trim()) errors.push(...validate([{ field: 'member3Phone', check: isValidPhone(member3Phone), msg: 'must be 10 digits' }]))
+    if (theme && String(theme).toLowerCase() === 'other' && !sanitizeText(themeOther, 100)) {
+      errors.push({ field: 'themeOther', msg: 'required when theme is Other' })
+    }
+    if (prototypeUrl && prototypeUrl.trim() && !isValidURL(prototypeUrl)) {
+      errors.push({ field: 'prototypeUrl', msg: 'must be a valid http/https URL' })
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     // ── Magic byte check for image ───────────────────────
@@ -250,7 +257,9 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
     // ── Sanitize all text fields ─────────────────────────
     const sTeamName = sanitizeText(teamName, 100)
     const sCollegeName = sanitizeText(collegeName, 200)
-    const sTheme = sanitizeText(theme, 100)
+    const sTheme = String(theme).toLowerCase() === 'other'
+      ? sanitizeText(themeOther, 100)
+      : sanitizeText(theme, 100)
     const sIdeaTitle = sanitizeText(ideaTitle, 200)
     const sIdeaDesc = sanitizeText(ideaDescription, 2000)
     const sM1Name = sanitizeText(member1Name, 100)
@@ -284,6 +293,7 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
         leader_phone: sM1Phone,
         members,
         prototype_image_path: protoImagePath,
+        prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
       }])
       .select()
       .single()
@@ -294,7 +304,7 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
     }
     try {
       sendInnovationCollegeConfirmation({
-        teamName, collegeName, theme, ideaTitle, ideaDescription,
+        teamName, collegeName, theme: sTheme, ideaTitle, ideaDescription,
         member1Name, member1Email, member1Phone,
         member2Name, member2Email, member2Phone,
         member3Name, member3Email, member3Phone,
@@ -314,15 +324,15 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
 app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototypeImage'), async (req, res) => {
   try {
     const {
-      participationType, ideaTitle, ideaDescription,
-      member1Name, member1Email, member1Phone, member1DisabilityType,
+      participationType, ideaTitle, ideaDescription, prototypeUrl,
+      member1Name, member1Email, member1Phone, member1DisabilityType, member1DisabilityTypeOther,
       member2Name, member2Email, member2Phone,
       member3Name, member3Email, member3Phone,
     } = req.body
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
-      { field: 'participationType', check: isValidEnum(participationType, ['solo', 'team']), msg: 'must be solo or team' },
+      { field: 'participationType', check: isValidEnum(participationType, ['individual', 'team']), msg: 'must be individual or team' },
       { field: 'ideaTitle', check: ideaTitle && sanitizeText(ideaTitle, 200).length > 0, msg: 'required, max 200 chars' },
       { field: 'ideaDescription', check: ideaDescription && sanitizeText(ideaDescription, 2000).length > 0, msg: 'required, max 2000 chars' },
       { field: 'member1Name', check: member1Name && sanitizeText(member1Name, 100).length > 0, msg: 'required' },
@@ -334,6 +344,12 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     if (member2Phone && member2Phone.trim()) errors.push(...validate([{ field: 'member2Phone', check: isValidPhone(member2Phone), msg: 'must be 10 digits' }]))
     if (member3Email && member3Email.trim()) errors.push(...validate([{ field: 'member3Email', check: isValidEmail(member3Email), msg: 'invalid email' }]))
     if (member3Phone && member3Phone.trim()) errors.push(...validate([{ field: 'member3Phone', check: isValidPhone(member3Phone), msg: 'must be 10 digits' }]))
+    if (member1DisabilityType && String(member1DisabilityType).toLowerCase() === 'other' && !sanitizeText(member1DisabilityTypeOther, 100)) {
+      errors.push({ field: 'member1DisabilityTypeOther', msg: 'required when disability type is Other' })
+    }
+    if (prototypeUrl && prototypeUrl.trim() && !isValidURL(prototypeUrl)) {
+      errors.push({ field: 'prototypeUrl', msg: 'must be a valid http/https URL' })
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     if (req.file && !isValidImageBuffer(req.file.buffer)) {
@@ -347,7 +363,9 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     const sM1Name = sanitizeText(member1Name, 100)
     const sM1Email = member1Email.trim().toLowerCase()
     const sM1Phone = member1Phone.trim()
-    const sDisability = sanitizeText(member1DisabilityType, 100)
+    const sDisability = String(member1DisabilityType).toLowerCase() === 'other'
+      ? sanitizeText(member1DisabilityTypeOther, 100)
+      : sanitizeText(member1DisabilityType, 100)
 
     const members = []
     if (sPartType === 'team') {
@@ -376,6 +394,7 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
         disability_type: sDisability,
         members,
         prototype_image_path: protoImagePath,
+        prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
       }])
       .select()
       .single()
@@ -387,7 +406,7 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     try {
       sendInnovationPwdConfirmation({
         participationType, ideaTitle, ideaDescription,
-        member1Name, member1Email, member1Phone, member1DisabilityType,
+        member1Name, member1Email, member1Phone, member1DisabilityType: sDisability,
         member2Name, member2Email, member2Phone,
         member3Name, member3Email, member3Phone,
       })
@@ -424,7 +443,7 @@ app.get('/api/talent-org', async (req, res) => {
 // POST /api/talent-org
 app.post('/api/talent-org', registrationLimiter, async (req, res) => {
   try {
-    const { orgName, orgType, address, studentCount, contactName, contactEmail, contactPhone } = req.body
+    const { orgName, orgType, orgTypeOther, address, studentCount, contactName, contactEmail, contactPhone } = req.body
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
@@ -437,11 +456,18 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
     ])
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
+    const effectiveOrgType = String(orgType).toLowerCase() === 'other'
+      ? sanitizeText(orgTypeOther, 100)
+      : sanitizeText(orgType, 100)
+    if (!effectiveOrgType) {
+      return res.status(400).json({ success: false, message: 'Validation failed', errors: [{ field: 'orgTypeOther', msg: 'required when organization type is Other' }] })
+    }
+
     const { data, error } = await supabase
       .from('talent_organizations')
       .insert([{
         org_name: sanitizeText(orgName, 200),
-        org_type: sanitizeText(orgType, 100),
+        org_type: effectiveOrgType,
         address: address ? sanitizeText(address, 500) : null,
         student_count: parseInt(studentCount, 10) || 0,
         contact_name: sanitizeText(contactName, 100),
@@ -459,7 +485,7 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
     try {
-      sendTalentOrgConfirmation({ orgName, orgType, address, studentCount, contactName, contactEmail, contactPhone })
+      sendTalentOrgConfirmation({ orgName, orgType: effectiveOrgType, address, studentCount, contactName, contactEmail, contactPhone })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }
@@ -475,8 +501,8 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
 app.post('/api/talent-student', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
   try {
     const {
-      orgName, studentName, studentAge, disabilityType,
-      talentCategory, talentDescription, guardianName, guardianPhone, guardianEmail, videoLink,
+      orgName, studentName, studentAge, disabilityType, disabilityTypeOther,
+      talentCategory, talentCategoryOther, talentDescription, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl,
     } = req.body
 
     // ── Validation ───────────────────────────────────────
@@ -491,7 +517,23 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
     ])
     if (guardianEmail && guardianEmail.trim()) errors.push(...validate([{ field: 'guardianEmail', check: isValidEmail(guardianEmail), msg: 'invalid email' }]))
     if (videoLink && videoLink.trim()) errors.push(...validate([{ field: 'videoLink', check: isValidURL(videoLink), msg: 'must be a valid http/https URL' }]))
+    if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
+      errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
+    }
+    if (talentCategory && String(talentCategory).toLowerCase() === 'other' && !sanitizeText(talentCategoryOther, 100)) {
+      errors.push({ field: 'talentCategoryOther', msg: 'required when talent category is Other' })
+    }
+    if (performanceUrl && performanceUrl.trim() && !isValidURL(performanceUrl)) {
+      errors.push({ field: 'performanceUrl', msg: 'must be a valid http/https URL' })
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    const effectiveDisability = String(disabilityType).toLowerCase() === 'other'
+      ? sanitizeText(disabilityTypeOther, 100)
+      : sanitizeText(disabilityType, 100)
+    const effectiveTalentCategory = String(talentCategory).toLowerCase() === 'other'
+      ? sanitizeText(talentCategoryOther, 100)
+      : sanitizeText(talentCategory, 100)
 
     // ── Validate video magic bytes ───────────────────────
     if (req.file) {
@@ -523,14 +565,15 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         org_name: sanitizeText(orgName, 200),
         student_name: sanitizeText(studentName, 100),
         student_age: parseInt(studentAge, 10),
-        disability_type: sanitizeText(disabilityType, 100),
-        talent_category: sanitizeText(talentCategory, 100),
+        disability_type: effectiveDisability,
+        talent_category: effectiveTalentCategory,
         talent_desc: talentDescription ? sanitizeText(talentDescription, 2000) : null,
         guardian_name: sanitizeText(guardianName, 100),
         guardian_phone: guardianPhone.trim(),
         guardian_email: guardianEmail ? guardianEmail.trim().toLowerCase() : null,
         video_link: videoLink ? videoLink.trim() : '',
         video_file_path: videoFileName,
+        performance_url: performanceUrl ? performanceUrl.trim() : null,
       }])
       .select()
       .single()
@@ -539,7 +582,6 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       await logError({ source: 'user', endpoint: '/api/talent-student', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
-
     // Fetch org contact email so we can notify the organisation too
     const { data: orgData } = await supabase
       .from('talent_organizations')
@@ -549,8 +591,8 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
 
     try {
       sendTalentStudentConfirmation({
-        orgName, studentName, studentAge, disabilityType,
-        talentCategory, talentDescription,
+        orgName, studentName, studentAge, disabilityType: effectiveDisability,
+        talentCategory: effectiveTalentCategory, talentDescription,
         guardianName, guardianPhone, guardianEmail, videoLink,
         orgContactEmail: orgData?.contact_email || null,
         orgContactName: orgData?.contact_name || null,
@@ -572,6 +614,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
     const {
       teamName, city, state, playerCount,
       hasPlayedBefore, additionalInfo,
+      teamType, teamTypeOther,
       contactName, contactEmail, contactPhone,
     } = req.body
 
@@ -585,7 +628,11 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactEmail', check: isValidEmail(contactEmail), msg: 'invalid email' },
       { field: 'contactPhone', check: isValidPhone(contactPhone), msg: 'must be exactly 10 digits' },
+      { field: 'teamType', check: teamType && sanitizeText(teamType, 100).length > 0, msg: 'required' },
     ])
+    if (teamType && String(teamType).toLowerCase() === 'other' && !sanitizeText(teamTypeOther, 100)) {
+      errors.push({ field: 'teamTypeOther', msg: 'required when team type is Other' })
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     const { data, error } = await supabase
@@ -626,8 +673,8 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
   try {
     const {
       participantName, email, phone, age,
-      city, state, disabilityType,
-      hasPlayedBefore, experienceLevel, additionalInfo,
+      city, state, disabilityType, disabilityTypeOther,
+      hasPlayedBefore, experienceLevel, experienceLevelOther, additionalInfo,
     } = req.body
 
     // ── Validation ───────────────────────────────────────
@@ -640,9 +687,22 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       { field: 'state', check: state && sanitizeText(state, 100).length > 0, msg: 'required' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
       { field: 'hasPlayedBefore', check: isValidEnum(hasPlayedBefore, ['yes', 'no']), msg: 'must be yes or no' },
-      { field: 'experienceLevel', check: isValidEnum(experienceLevel, ['beginner', 'intermediate', 'advanced']), msg: 'must be beginner, intermediate, or advanced' },
+      { field: 'experienceLevel', check: isValidEnum(experienceLevel, ['beginner', 'intermediate', 'advanced', 'other']), msg: 'must be beginner, intermediate, advanced, or other' },
     ])
+    if (disabilityType && String(disabilityType).toLowerCase() === 'other' && !sanitizeText(disabilityTypeOther, 100)) {
+      errors.push({ field: 'disabilityTypeOther', msg: 'required when disability type is Other' })
+    }
+    if (experienceLevel && String(experienceLevel).toLowerCase() === 'other' && !sanitizeText(experienceLevelOther, 100)) {
+      errors.push({ field: 'experienceLevelOther', msg: 'required when experience level is Other' })
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    const effectiveDisability = String(disabilityType).toLowerCase() === 'other'
+      ? sanitizeText(disabilityTypeOther, 100)
+      : sanitizeText(disabilityType, 100)
+    const effectiveExperience = String(experienceLevel).toLowerCase() === 'other'
+      ? sanitizeText(experienceLevelOther, 100)
+      : experienceLevel
 
     const { data, error } = await supabase
       .from('blind_chess_registrations')
@@ -653,9 +713,9 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
         age: parseInt(age, 10),
         city: sanitizeText(city, 100),
         state: sanitizeText(state, 100),
-        disability_type: sanitizeText(disabilityType, 100),
+        disability_type: effectiveDisability,
         has_played_before: hasPlayedBefore === 'yes',
-        experience_level: experienceLevel,
+        experience_level: effectiveExperience,
         additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
       }])
       .select()
@@ -666,7 +726,7 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
     try {
-      sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType, hasPlayedBefore, experienceLevel, additionalInfo })
+      sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType: effectiveDisability, hasPlayedBefore, experienceLevel: effectiveExperience, additionalInfo })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }

@@ -11,12 +11,23 @@ const TALENT_CATEGORIES = [
   'Music', 'Dance', 'Art & Painting', 'Recitation / Poetry', 'Drama', 'Other',
 ]
 
+const DISABILITY_TYPES = [
+  'Visual Impairment',
+  'Hearing Impairment',
+  'Mobility Impairment',
+  'Speech Impairment',
+  'Multiple Disabilities',
+  'Other',
+]
+
 const EMPTY = {
   orgName: '',
   studentName: '',
   studentAge: '',
   disabilityType: '',
+  disabilityTypeOther: '',
   talentCategory: '',
+  talentCategoryOther: '',
   talentDescription: '',
   guardianName: '',
   guardianPhone: '',
@@ -31,6 +42,7 @@ export default function TalentStudentNomination() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [videoFile, setVideoFile] = useState(null)
+  const [performanceUrl, setPerformanceUrl] = useState('')
   const [compressProgress, setCompressProgress] = useState(null)
   const [orgs, setOrgs] = useState([])
   const [orgsLoading, setOrgsLoading] = useState(true)
@@ -65,6 +77,8 @@ export default function TalentStudentNomination() {
     if (!videoFile) { setError('Please upload the performance video.'); return }
     if (!form.orgName) { setError('Please select an organization.'); return }
     if (!/^\d{10}$/.test(form.guardianPhone)) { setError('Phone number must be exactly 10 digits.'); return }
+    if (form.disabilityType === 'Other' && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); return }
+    if (form.talentCategory === 'Other' && !form.talentCategoryOther.trim()) { setError('Please enter talent category.'); return }
     setLoading(true)
     setError('')
     try {
@@ -80,6 +94,7 @@ export default function TalentStudentNomination() {
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
       fd.append('performanceVideo', compressed)
+      if (performanceUrl.trim()) fd.append('performanceUrl', performanceUrl.trim())
       await postFormData('/api/talent-student', fd)
       setSubmitted(true)
     } catch (err) {
@@ -184,7 +199,23 @@ export default function TalentStudentNomination() {
         <Section title="Student Details">
           <Field label="Student Full Name" value={form.studentName} onChange={set('studentName')} required />
           <Field label="Age" type="number" value={form.studentAge} onChange={set('studentAge')} required />
-          <Field label="Type of Disability" value={form.disabilityType} onChange={set('disabilityType')} required />
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+              Type of Disability <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.disabilityType}
+              onChange={set('disabilityType')}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+            >
+              <option value="">Select disability type</option>
+              {DISABILITY_TYPES.map((option) => <option key={option} value={option}>{option}</option>)}
+            </select>
+          </div>
+          {form.disabilityType === 'Other' && (
+            <Field label="Enter Disability Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
+          )}
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
               Talent Category <span className="text-red-500">*</span>
@@ -199,6 +230,9 @@ export default function TalentStudentNomination() {
               {TALENT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+          {form.talentCategory === 'Other' && (
+            <Field label="Enter Talent Category" value={form.talentCategoryOther} onChange={set('talentCategoryOther')} required />
+          )}
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
               Brief Description of Talent
@@ -269,6 +303,20 @@ export default function TalentStudentNomination() {
               </div>
             </div>
           )}
+          
+          <div className="mt-4">
+            <label className="mb-2 block text-sm font-medium text-slate-600">
+              Performance URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+            </label>
+            <input
+              type="url"
+              placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+              value={performanceUrl}
+              onChange={(e) => setPerformanceUrl(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-1 focus:ring-[#0197B2] focus:outline-none"
+            />
+            <p className="mt-1 text-xs text-slate-500">Link to online performance video (YouTube, Vimeo, etc.)</p>
+          </div>
         </div>
 
         {/* Declaration */}

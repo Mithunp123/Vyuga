@@ -6,6 +6,8 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const EMPTY = {
   teamName: '',
+  teamType: '',
+  teamTypeOther: '',
   city: '',
   state: '',
   contactName: '',
@@ -30,6 +32,7 @@ export default function CricketTeamForm() {
     setLoading(true)
     setError('')
     if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
+    if (form.teamType === 'other' && !form.teamTypeOther.trim()) { setError('Please enter team type.'); setLoading(false); return }
     try {
       await postJSON('/api/cricket', form)
       setSubmitted(true)
@@ -74,6 +77,26 @@ export default function CricketTeamForm() {
         )}
         <Section title="Team Details">
           <Field label="Team Name" value={form.teamName} onChange={set('teamName')} required />
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Team Type <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.teamType}
+              onChange={set('teamType')}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            >
+              <option value="">Select</option>
+              <option value="school_team">School Team</option>
+              <option value="club_team">Club Team</option>
+              <option value="ngo_team">NGO Team</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          {form.teamType === 'other' && (
+            <Field label="Enter Team Type" value={form.teamTypeOther} onChange={set('teamTypeOther')} required />
+          )}
           <Field label="City" value={form.city} onChange={set('city')} required />
           <Field label="State" value={form.state} onChange={set('state')} required />
           <Field label="Number of Players" type="number" value={form.playerCount} onChange={set('playerCount')} required />

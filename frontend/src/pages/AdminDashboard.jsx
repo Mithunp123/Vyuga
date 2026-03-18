@@ -223,6 +223,41 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
         </div>
       )}
 
+      {/* ── URL Links ── */}
+      {(row.prototype_url || row.performance_url) && (
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
+            {row.performance_url ? 'Performance URL' : 'Prototype URL'}
+          </p>
+          {row.prototype_url && (
+            <div className="mb-3">
+              <p className="text-xs text-slate-500 mb-2">Prototype Link:</p>
+              <a 
+                href={row.prototype_url} 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+              >
+                {row.prototype_url.length > 50 ? `${row.prototype_url.substring(0, 47)}...` : row.prototype_url} ↗
+              </a>
+            </div>
+          )}
+          {row.performance_url && (
+            <div className="mb-3">
+              <p className="text-xs text-slate-500 mb-2">Performance Link:</p>
+              <a 
+                href={row.performance_url} 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+              >
+                {row.performance_url.length > 50 ? `${row.performance_url.substring(0, 47)}...` : row.performance_url} ↗
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── All fields ── */}
       <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
@@ -236,7 +271,13 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
                     ? (v ? 'Yes' : 'No')
                     : Array.isArray(v)
                       ? v.map((m, i) => <span key={i} className="block">{String(m)}</span>)
-                      : k.endsWith('_at') ? fmtDate(v) : String(v)
+                      : k.endsWith('_at') ? fmtDate(v) 
+                      : (k === 'prototype_url' || k === 'performance_url') && v.startsWith('http') ? (
+                        <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
+                          {v} ↗
+                        </a>
+                      )
+                      : String(v)
                   }
                 </p>
               </div>
@@ -773,11 +814,21 @@ export default function AdminDashboard() {
                             )
                           })}
                           <td className="px-4 py-4 text-right border-r border-slate-100">
-                            {!!(row.prototype_image_path || row.video_file_path) ? (
-                              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
-                                style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}>
-                                {row.video_file_path ? 'Video' : 'Image'}
-                              </span>
+                            {!!(row.prototype_image_path || row.video_file_path) || !!(row.prototype_url || row.performance_url) ? (
+                              <div className="flex flex-col gap-1">
+                                {!!(row.prototype_image_path || row.video_file_path) && (
+                                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+                                    style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' }}>
+                                    {row.video_file_path ? 'Video' : 'Image'}
+                                  </span>
+                                )}
+                                {!!(row.prototype_url || row.performance_url) && (
+                                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold"
+                                    style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}>
+                                    URL
+                                  </span>
+                                )}
+                              </div>
                             ) : (
                               <span className="text-slate-300 text-xs">—</span>
                             )}

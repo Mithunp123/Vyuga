@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS innovation_college_registrations (
   -- Members 2 & 3 stored as JSON array: [{name, email, phone}, ...]
   members          JSONB       NOT NULL DEFAULT '[]'::jsonb,
   prototype_image_path TEXT,   -- saved locally as phonenumber_timestamp.ext
+  prototype_url    TEXT,       -- optional URL to online prototype (e.g., GitHub, demo site)
   submitted_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -25,3 +26,4 @@ CREATE INDEX IF NOT EXISTS idx_innov_college_email
 
 -- Run this if the table already exists:
 -- ALTER TABLE innovation_college_registrations ADD COLUMN IF NOT EXISTS prototype_image_path TEXT;
+ALTER TABLE innovation_college_registrations ADD COLUMN IF NOT EXISTS prototype_url TEXT;

@@ -17,8 +17,7 @@ import ProjectsStudentDesignChallenge from './pages/ProjectsStudentDesignChallen
 import AttendRegister from './pages/AttendRegister.jsx'
 import AttendAccommodation from './pages/AttendAccommodation.jsx'
 import AttendTravel from './pages/AttendTravel.jsx'
-import InnovationCollegeForm from './pages/InnovationCollegeForm.jsx'
-import InnovationPWDForm from './pages/InnovationPWDForm.jsx'
+import InnovationUnifiedForm from './pages/InnovationUnifiedForm.jsx'
 import TalentOrgRegistration from './pages/TalentOrgRegistration.jsx'
 import TalentStudentNomination from './pages/TalentStudentNomination.jsx'
 import CricketTeamForm from './pages/CricketTeamForm.jsx'
@@ -46,8 +45,9 @@ export default function App() {
       <Route path="/attend/accommodation" element={<AttendAccommodation />} />
       <Route path="/attend/travel-information" element={<AttendTravel />} />
 
-      <Route path="/register/innovation-college" element={<InnovationCollegeForm />} />
-      <Route path="/register/innovation-pwd" element={<InnovationPWDForm />} />
+      <Route path="/register/innovation" element={<InnovationUnifiedForm />} />
+      <Route path="/register/innovation-college" element={<InnovationUnifiedForm />} />
+      <Route path="/register/innovation-pwd" element={<InnovationUnifiedForm />} />
       <Route path="/register/talent-org" element={<TalentOrgRegistration />} />
       <Route path="/register/talent-student" element={<TalentStudentNomination />} />
       <Route path="/register/cricket" element={<CricketTeamForm />} />

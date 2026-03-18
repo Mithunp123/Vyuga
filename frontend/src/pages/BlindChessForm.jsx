@@ -12,10 +12,20 @@ const EMPTY = {
   city: '',
   state: '',
   disabilityType: '',
+  disabilityTypeOther: '',
   hasPlayedBefore: '',
   experienceLevel: '',
+  experienceLevelOther: '',
   additionalInfo: '',
 }
+
+const DISABILITY_TYPES = [
+  'Visual Impairment',
+  'Low Vision',
+  'Hearing Impairment',
+  'Mobility Impairment',
+  'Other',
+]
 
 export default function BlindChessForm() {
   const [form, setForm] = useState(EMPTY)
@@ -31,6 +41,8 @@ export default function BlindChessForm() {
     setLoading(true)
     setError('')
     if (!/^\d{10}$/.test(form.phone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
+    if (form.disabilityType === 'Other' && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); setLoading(false); return }
+    if (form.experienceLevel === 'other' && !form.experienceLevelOther.trim()) { setError('Please enter experience level.'); setLoading(false); return }
     try {
       await postJSON('/api/chess', form)
       setSubmitted(true)
@@ -103,19 +115,23 @@ export default function BlindChessForm() {
           <Field label="Age" type="number" value={form.age} onChange={set('age')} required min={5} max={100} />
           <Field label="City" value={form.city} onChange={set('city')} required />
           <Field label="State" value={form.state} onChange={set('state')} required />
-          <div className="sm:col-span-2">
+          <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Disability Type <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <select
               required
               value={form.disabilityType}
               onChange={set('disabilityType')}
-              placeholder="e.g., Visual Impairment, Low Vision, etc."
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
-            />
+            >
+              <option value="">Select</option>
+              {DISABILITY_TYPES.map((option) => <option key={option} value={option}>{option}</option>)}
+            </select>
           </div>
+          {form.disabilityType === 'Other' && (
+            <Field label="Enter Disability Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
+          )}
         </Section>
 
         <Section title="Chess Experience">
@@ -148,8 +164,12 @@ export default function BlindChessForm() {
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
               <option value="advanced">Advanced</option>
+              <option value="other">Other</option>
             </select>
           </div>
+          {form.experienceLevel === 'other' && (
+            <Field label="Enter Experience Level" value={form.experienceLevelOther} onChange={set('experienceLevelOther')} required />
+          )}
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Additional Information

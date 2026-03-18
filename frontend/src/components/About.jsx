@@ -29,10 +29,17 @@ const stats = [
 ]
 
 const features = [
-  { text: 'Keynotes from global accessibility leaders', accent: 'font-marker text-brand-cyan' },
-  { text: 'Hands-on workshops and rapid prototyping', accent: 'font-serif italic text-brand-lime' },
-  { text: 'Assistive tech expo with live demos', accent: 'font-marker text-brand-cyan' },
-  { text: 'Networking with 1000+ attendees', accent: 'font-serif italic text-brand-lime' },
+  { text: 'A child who was never given a stage finally performs with confidence', accent: 'font-serif italic text-brand-cyan' },
+  { text: 'An innovator turns daily challenges into solutions for thousands', accent: 'font-marker text-brand-lime' },
+  { text: 'A player proves passion goes beyond physical limitations', accent: 'font-serif italic text-brand-cyan' },
+  { text: 'Society learns to see ability, not disability', accent: 'font-marker text-brand-lime' },
+]
+
+const aims = [
+  'Restore confidence',
+  'Create visibility', 
+  'Build independence',
+  'Inspire society to see ability, not disability'
 ]
 
 export default function About() {
@@ -83,7 +90,7 @@ export default function About() {
             className="flex items-center gap-3"
           >
             <div className="gradient-line w-16" />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">ABOUT THE ABILITY CARNIVAL</span>
+            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
           </motion.div>
 
           {/* Giant headline with mixed fonts */}
@@ -95,10 +102,10 @@ export default function About() {
               transition={{ duration: 0.7, delay: 0.1 }}
             >
               <span className="font-hero text-[8vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
-                Building{' '}
+                A voice for{' '}
               </span>
               <span className="font-serif text-[8vw] italic font-light leading-[0.9] text-brand-cyan sm:text-5xl lg:text-7xl">
-                technology
+                abilities
               </span>
             </motion.div>
             <motion.div
@@ -108,10 +115,10 @@ export default function About() {
               transition={{ duration: 0.7, delay: 0.2 }}
             >
               <span className="font-hero text-[8vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
-                for{' '}
+                often{' '}
               </span>
               <span className="font-marker text-[8vw] leading-[0.9] gradient-text sm:text-5xl lg:text-7xl">
-                everyone
+                unseen
               </span>
             </motion.div>
           </div>
@@ -126,9 +133,8 @@ export default function About() {
               className="lg:col-span-2"
             >
               <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
-               Accelerating inclusive technology. From R&D to real-world impact, join the collective shaping the next frontier of human ability.
-                {' '}
-              <span className="font-marker text-slate-800">real-world impact.</span>
+                Vyuga is not just an event — it's a space where differently abled individuals are celebrated, heard, and empowered. 
+                In a world where they are often limited by opportunities rather than their potential.
               </p>
 
               <motion.blockquote
@@ -139,17 +145,20 @@ export default function About() {
                 className="mt-10 border-l-2 border-brand-cyan/40 pl-6"
               >
                 <p className="font-serif text-xl italic text-slate-700 sm:text-2xl">
-                  "Build accessibility into every roadmap."
+                  "Disability is not a limitation — lack of opportunity is."
                 </p>
                 <cite className="mt-3 block font-mono text-[10px] not-italic tracking-[0.3em] text-slate-400">
-                  — VYUGA 2026 MISSION
+                  — VYUGA BELIEF
                 </cite>
               </motion.blockquote>
             </motion.div>
 
-            {/* Feature list — minimal lines, no boxes */}
+            {/* Platform examples */}
             <div className="lg:col-span-3">
-              <div className="space-y-0">
+              <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
+                It is a platform where:
+              </p>
+              <div className="space-y-0 mb-10">
                 {features.map((item, idx) => (
                   <motion.div
                     key={item.text}
@@ -157,17 +166,44 @@ export default function About() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                    className="group flex items-center gap-6 border-b border-slate-100 py-6 transition-colors hover:border-brand-cyan/30"
+                    className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-cyan/30"
                   >
-                    <span className="font-impact text-4xl text-slate-200 transition-colors group-hover:text-brand-cyan sm:text-5xl">
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
                     <span className={`text-base sm:text-lg transition-all duration-500 ${item.accent} group-hover:translate-x-2`}>
                       {item.text}
                     </span>
                   </motion.div>
                 ))}
               </div>
+
+              {/* Mission statement */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="rounded-2xl bg-gradient-to-br from-brand-cyan-light/20 to-brand-lime-light/20 p-6 border border-brand-cyan/10"
+              >
+                <p className="font-display text-sm font-bold text-slate-600 uppercase tracking-wider mb-4">
+                  Through innovation, talent, and sports, Vyuga aims to:
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {aims.map((aim, idx) => (
+                    <div key={aim} className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
+                      <span className="text-sm font-medium text-slate-700">{aim}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 pt-4 border-t border-brand-cyan/20">
+                  <p className="font-serif text-lg italic text-slate-700 text-center">
+                    This is more than a competition. This is more than a festival.
+                  </p>
+                  <p className="font-marker text-xl text-brand-cyan text-center mt-2">
+                    Vyuga is a movement that turns hidden strength into pride.
+                  </p>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>

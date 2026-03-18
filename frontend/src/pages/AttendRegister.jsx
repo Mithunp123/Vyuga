@@ -5,50 +5,57 @@ import EventCard from '../components/EventCard.jsx'
 const EVENTS = [
   {
     title: 'Inclusive Innovation Fest',
-    accent: 'For Specially Abled',
+    accent: 'By / For Specially Abled',
     description:
-      'College students should submit innovative solutions under given themes. Teams can present ideas or prototypes.',
+      'One unified registration form for both tracks. Participants choose whether their submission is by or for specially abled and continue with relevant fields.',
     details: [
+      {
+        label: 'Tracks',
+        value: [
+          'For Specially Abled: College teams (3 members)',
+          'By Specially Abled: Individual or team (max 3)',
+          'Type selection happens inside one form',
+        ],
+      },
       {
         label: 'Themes',
         value: [
           'Cognitive & Learning Accessibility',
           'Physical & Mobility Accessibility',
           'Visual & Hearing Accessibility',
+          'Other (add a new theme)',
         ],
       },
-      { label: 'Team Size', value: '3 members per team' },
-    ],
-    registerLink: '/register/innovation-college',
-  },
-  {
-    title: 'Inclusive Innovation Fest',
-    accent: 'By Specially Abled',
-    description:
-      'This category is for innovators with disabilities who want to create solutions for accessibility and independence.',
-    details: [
       {
-        label: 'Eligibility',
+        label: 'Event Flow',
         value: [
-          'Must be an innovator',
-          'Must not be a registered startup',
-          'Must be a person with disability',
+          'Round 1: Solution Submission (Online)',
+          'Round 2: Online Pitch',
+          'Round 3: Jury Shortlisting',
+          'Finals: Live pitch at Vyuga',
         ],
       },
-      { label: 'Participation', value: 'Individual or team (max 3 members)' },
-      { label: 'Theme', value: 'Assistive Technology' },
+      { label: 'Awards', value: 'Top 3 positions with cash prizes' },
     ],
-    registerLink: '/register/innovation-pwd',
+    registerLink: '/register/innovation',
   },
   {
     title: 'Special Talent',
-    accent: 'Utsav',
+    accent: 'Hunt',
     description:
-      'A platform for children with disabilities to showcase their talents on stage. Schools and organizations can nominate talented students.',
+      'A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!',
     details: [
       {
-        label: 'Process',
-        value: ['Organization registration', 'Student nomination', 'Video submission'],
+        label: 'Eligibility & Selection',
+        value: [
+          'Schools/organizations nominate 1 team or individual',
+          'Entries screened and shortlisted',
+          'Top 20 participants selected for live performance',
+        ],
+      },
+      {
+        label: 'Awards',
+        value: 'Top 3 performers receive special recognition and awards',
       },
     ],
     registerLink: '/register/talent-org',
@@ -57,15 +64,23 @@ const EVENTS = [
     title: 'Blind Cricket',
     accent: 'Tournament',
     description:
-      'Teams can submit their interest to participate in the blind cricket tournament.',
-    details: [],
+      'Promoting inclusive sportsmanship, teamwork, and resilience among visually impaired players. More than a match — a celebration of determination beyond limits.',
+    details: [
+      {
+        label: 'Awards',
+        value: [
+          'All participating teams receive cash prizes',
+          'Winner & Runner-up awarded trophies',
+        ],
+      },
+    ],
     registerLink: '/register/cricket',
   },
   {
     title: 'Blind Chess',
     accent: 'Competition',
     description:
-      'A competition designed to highlight the intellectual strength, focus, and strategic thinking of visually impaired individuals.',
+      'Highlighting the intellectual strength, focus, and strategic thinking of visually impaired individuals in an inclusive competitive environment.',
     details: [
       {
         label: 'Awards',
@@ -74,7 +89,6 @@ const EVENTS = [
           'All participants receive certificates',
         ],
       },
-      { label: 'Participation', value: 'Individual registration' },
     ],
     registerLink: '/register/chess',
   },
@@ -103,7 +117,7 @@ export default function AttendRegister() {
         </div>
         <div className="mt-3 flex items-center gap-3">
           <div className="h-[3px] w-16 rounded-full bg-gradient-to-r from-brand-cyan to-brand-lime animate-line-grow" />
-          <span className="font-marker text-sm text-brand-lime">5 events</span>
+          <span className="font-marker text-sm text-brand-lime">4 events</span>
         </div>
       </motion.div>
 

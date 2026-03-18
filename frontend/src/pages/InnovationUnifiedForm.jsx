@@ -1,0 +1,441 @@
+import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import PageShell from './PageShell.jsx'
+import { postFormData } from '../api'
+import SubmitLoader from '../components/SubmitLoader.jsx'
+
+const INNOVATION_TYPE_OPTIONS = [
+  { value: '', label: 'Select one' },
+  { value: 'for_specially_abled', label: 'For Specially Abled' },
+  { value: 'by_specially_abled', label: 'By Specially Abled' },
+]
+
+const THEME_OPTIONS = [
+  'Cognitive & Learning Accessibility',
+  'Physical & Mobility Accessibility',
+  'Visual & Hearing Accessibility',
+  'Other',
+]
+
+const DISABILITY_OPTIONS = [
+  'Visual Impairment',
+  'Hearing Impairment',
+  'Mobility Impairment',
+  'Speech Impairment',
+  'Multiple Disabilities',
+  'Other',
+]
+
+const EMPTY = {
+  innovationType: '',
+  teamName: '',
+  collegeName: '',
+  theme: '',
+  themeOther: '',
+  participationType: 'individual',
+  ideaTitle: '',
+  ideaDescription: '',
+  member1Name: '',
+  member1Email: '',
+  member1Phone: '',
+  member1DisabilityType: '',
+  member1DisabilityTypeOther: '',
+  member2Name: '',
+  member2Email: '',
+  member2Phone: '',
+  member3Name: '',
+  member3Email: '',
+  member3Phone: '',
+}
+
+export default function InnovationUnifiedForm() {
+  const [form, setForm] = useState(EMPTY)
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [declared, setDeclared] = useState(false)
+  const [protoFile, setProtoFile] = useState(null)
+  const [prototypeUrl, setPrototypeUrl] = useState('')
+
+  const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
+
+  const isForSpeciallyAbled = form.innovationType === 'for_specially_abled'
+  const isBySpeciallyAbled = form.innovationType === 'by_specially_abled'
+  const isTeamForBy = form.participationType === 'team'
+
+  const endpoint = useMemo(() => {
+    if (isForSpeciallyAbled) return '/api/innovation-college'
+    if (isBySpeciallyAbled) return '/api/innovation-pwd'
+    return ''
+  }, [isForSpeciallyAbled, isBySpeciallyAbled])
+
+  const validateCommon = () => {
+    const phoneFields = [form.member1Phone, form.member2Phone, form.member3Phone].filter(Boolean)
+    const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
+    if (invalidPhone) return 'Phone number must be exactly 10 digits.'
+    if (!form.innovationType) return 'Please select whether registration is By or For specially abled.'
+    if (form.theme === 'Other' && !form.themeOther.trim()) return 'Please enter a custom theme.'
+    if (isBySpeciallyAbled && form.member1DisabilityType === 'Other' && !form.member1DisabilityTypeOther.trim()) {
+      return 'Please enter a disability type.'
+    }
+    return ''
+  }
+
+  const buildPayload = () => {
+    const fd = new FormData()
+
+    if (isForSpeciallyAbled) {
+      fd.append('teamName', form.teamName)
+      fd.append('collegeName', form.collegeName)
+      fd.append('theme', form.theme)
+      fd.append('themeOther', form.themeOther)
+      fd.append('ideaTitle', form.ideaTitle)
+      fd.append('ideaDescription', form.ideaDescription)
+      fd.append('member1Name', form.member1Name)
+      fd.append('member1Email', form.member1Email)
+      fd.append('member1Phone', form.member1Phone)
+      fd.append('member2Name', form.member2Name)
+      fd.append('member2Email', form.member2Email)
+      fd.append('member2Phone', form.member2Phone)
+      fd.append('member3Name', form.member3Name)
+      fd.append('member3Email', form.member3Email)
+      fd.append('member3Phone', form.member3Phone)
+    } else {
+      fd.append('participationType', form.participationType)
+      fd.append('ideaTitle', form.ideaTitle)
+      fd.append('ideaDescription', form.ideaDescription)
+      fd.append('member1Name', form.member1Name)
+      fd.append('member1Email', form.member1Email)
+      fd.append('member1Phone', form.member1Phone)
+      fd.append('member1DisabilityType', form.member1DisabilityType)
+      fd.append('member1DisabilityTypeOther', form.member1DisabilityTypeOther)
+      if (isTeamForBy) {
+        fd.append('member2Name', form.member2Name)
+        fd.append('member2Email', form.member2Email)
+        fd.append('member2Phone', form.member2Phone)
+        fd.append('member3Name', form.member3Name)
+        fd.append('member3Email', form.member3Email)
+        fd.append('member3Phone', form.member3Phone)
+      }
+    }
+
+    if (protoFile) fd.append('prototypeImage', protoFile)
+    if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
+    return fd
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    const validationError = validateCommon()
+    if (validationError) {
+      setError(validationError)
+      setLoading(false)
+      return
+    }
+
+    try {
+      await postFormData(endpoint, buildPayload())
+      setSubmitted(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (submitted) {
+    const name = isForSpeciallyAbled ? form.teamName : form.member1Name
+    const categoryText = isForSpeciallyAbled ? 'For Specially Abled' : 'By Specially Abled'
+
+    return (
+      <PageShell title="Registration Successful" subtitle="Thank you for registering!">
+        <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
+          <p className="font-display text-lg font-bold text-slate-900">
+            Registration submitted successfully for <span className="text-brand-cyan">{name}</span> ({categoryText}).
+          </p>
+          <p className="mt-3 text-sm text-slate-500">We'll contact you at the provided email address.</p>
+        </div>
+      </PageShell>
+    )
+  }
+
+  return (
+    <PageShell
+      title="Inclusive Innovation Fest"
+      subtitle="Submit one form and choose whether your participation is For or By specially abled."
+    >
+      <SubmitLoader visible={loading} />
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-2xl space-y-8"
+      >
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        )}
+
+        <Section title="Registration Type">
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Is this registration by or for specially abled? <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.innovationType}
+              onChange={set('innovationType')}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            >
+              {INNOVATION_TYPE_OPTIONS.map((option) => (
+                <option key={option.value || 'empty'} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+        </Section>
+
+        <Section title="Innovation Details">
+          {isForSpeciallyAbled && (
+            <>
+              <Field label="Team Name" value={form.teamName} onChange={set('teamName')} required />
+              <Field label="College Name" value={form.collegeName} onChange={set('collegeName')} required />
+              <div>
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Theme <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  value={form.theme}
+                  onChange={set('theme')}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                >
+                  <option value="">Select a theme</option>
+                  {THEME_OPTIONS.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+              {form.theme === 'Other' && (
+                <Field
+                  label="Enter New Theme"
+                  value={form.themeOther}
+                  onChange={set('themeOther')}
+                  required
+                />
+              )}
+            </>
+          )}
+
+          {isBySpeciallyAbled && (
+            <div className="sm:col-span-2 flex gap-6">
+              {['individual', 'team'].map((type) => (
+                <label key={type} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+                  <input
+                    type="radio"
+                    name="participationType"
+                    value={type}
+                    checked={form.participationType === type}
+                    onChange={set('participationType')}
+                    className="accent-brand-cyan"
+                  />
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {(isForSpeciallyAbled || isBySpeciallyAbled) && (
+            <>
+              <Field label="Idea / Solution Title" value={form.ideaTitle} onChange={set('ideaTitle')} required />
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Brief Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={form.ideaDescription}
+                  onChange={set('ideaDescription')}
+                  placeholder="Describe your idea or prototype..."
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                />
+              </div>
+            </>
+          )}
+        </Section>
+
+        {(isForSpeciallyAbled || isBySpeciallyAbled) && (
+          <>
+            <Section title={isBySpeciallyAbled ? (isTeamForBy ? 'Member 1 (Team Leader)' : 'Participant Details') : 'Member 1 (Team Leader)'}>
+              <Field label="Full Name" value={form.member1Name} onChange={set('member1Name')} required />
+              <Field label="Email" type="email" value={form.member1Email} onChange={set('member1Email')} required />
+              <Field
+                label="Phone"
+                type="tel"
+                value={form.member1Phone}
+                onChange={set('member1Phone')}
+                required
+                pattern="\d{10}"
+                maxLength={10}
+                title="Enter exactly 10 digits"
+              />
+              {isBySpeciallyAbled && (
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                    Type of Disability <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={form.member1DisabilityType}
+                    onChange={set('member1DisabilityType')}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                  >
+                    <option value="">Select disability type</option>
+                    {DISABILITY_OPTIONS.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {isBySpeciallyAbled && form.member1DisabilityType === 'Other' && (
+                <Field
+                  label="Enter Disability Type"
+                  value={form.member1DisabilityTypeOther}
+                  onChange={set('member1DisabilityTypeOther')}
+                  required
+                />
+              )}
+            </Section>
+
+            {(isForSpeciallyAbled || (isBySpeciallyAbled && isTeamForBy)) && [2, 3].map((n) => (
+              <Section key={n} title={`Member ${n}`}>
+                <Field label="Full Name" value={form[`member${n}Name`]} onChange={set(`member${n}Name`)} required={isForSpeciallyAbled} />
+                <Field label="Email" type="email" value={form[`member${n}Email`]} onChange={set(`member${n}Email`)} required={isForSpeciallyAbled} />
+                <Field
+                  label="Phone"
+                  type="tel"
+                  value={form[`member${n}Phone`]}
+                  onChange={set(`member${n}Phone`)}
+                  required={isForSpeciallyAbled}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  title="Enter exactly 10 digits"
+                />
+              </Section>
+            ))}
+
+            <div>
+              <h2 className="mb-4 border-b border-slate-100 pb-2 font-display text-base font-bold text-slate-800">
+                Prototype Image Upload <span className="text-sm font-normal text-slate-400">(Optional)</span>
+              </h2>
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-[#0197B2]/50 hover:bg-slate-100">
+                <span className="text-2xl">Image</span>
+                <span className="text-sm font-medium text-slate-600">
+                  {protoFile ? protoFile.name : 'Click to upload prototype image'}
+                </span>
+                <span className="text-xs text-slate-400">PNG, JPG, JPEG, WEBP - max 5 MB</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  className="hidden"
+                  onChange={(e) => setProtoFile(e.target.files[0] || null)}
+                />
+              </label>
+              {protoFile && (
+                <button
+                  type="button"
+                  onClick={() => setProtoFile(null)}
+                  className="mt-2 text-xs text-red-500 hover:underline"
+                >
+                  Remove image
+                </button>
+              )}
+              
+              <div className="mt-4">
+                <label className="mb-2 block text-sm font-medium text-slate-600">
+                  Prototype URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://github.com/yourproject or https://yourapp.com"
+                  value={prototypeUrl}
+                  onChange={(e) => setPrototypeUrl(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-1 focus:ring-[#0197B2] focus:outline-none"
+                />
+                <p className="mt-1 text-xs text-slate-500">Link to your online prototype, demo, or repository</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4">
+          <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">Declaration</p>
+          <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={declared}
+              onChange={(e) => setDeclared(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#0197B2]"
+            />
+            I confirm that the information provided is correct and I agree to participate in VYUGA - Innovation Fest.
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading || !declared || !form.innovationType}
+          style={{ backgroundColor: '#0197B2' }}
+          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+        >
+          {loading ? 'Submitting...' : 'Submit Registration'}
+        </button>
+      </motion.form>
+    </PageShell>
+  )
+}
+
+function Section({ title, children }) {
+  return (
+    <div>
+      <h2 className="mb-4 border-b border-slate-100 pb-2 font-display text-base font-bold text-slate-800">
+        {title}
+      </h2>
+      <div className="grid gap-4 sm:grid-cols-2">{children}</div>
+    </div>
+  )
+}
+
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title }) {
+  const handlePhoneInput = (e) => {
+    if (type === 'tel') {
+      e.target.value = e.target.value.replace(/\D/g, '')
+    }
+    onChange(e)
+  }
+
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        type={type}
+        required={required}
+        value={value}
+        onChange={handlePhoneInput}
+        onKeyPress={(e) => {
+          if (type === 'tel' && !/\d/.test(e.key)) {
+            e.preventDefault()
+          }
+        }}
+        pattern={pattern}
+        maxLength={maxLength}
+        title={title}
+        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+      />
+    </div>
+  )
+}

@@ -20,6 +20,7 @@ export default function InnovationPWDForm() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [protoFile, setProtoFile] = useState(null)
+  const [prototypeUrl, setPrototypeUrl] = useState('')
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
@@ -34,6 +35,7 @@ export default function InnovationPWDForm() {
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
       if (protoFile) fd.append('prototypeImage', protoFile)
+      if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
       await postFormData('/api/innovation-pwd', fd)
       setSubmitted(true)
     } catch (err) {
@@ -155,6 +157,20 @@ export default function InnovationPWDForm() {
               Remove image
             </button>
           )}
+          
+          <div className="mt-4">
+            <label className="mb-2 block text-sm font-medium text-slate-600">
+              Prototype URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+            </label>
+            <input
+              type="url"
+              placeholder="https://github.com/yourproject or https://yourapp.com"
+              value={prototypeUrl}
+              onChange={(e) => setPrototypeUrl(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-1 focus:ring-[#0197B2] focus:outline-none"
+            />
+            <p className="mt-1 text-xs text-slate-500">Link to your online prototype, demo, or repository</p>
+          </div>
         </div>
 
         {/* Declaration */}
