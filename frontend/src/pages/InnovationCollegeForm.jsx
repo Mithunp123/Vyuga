@@ -192,6 +192,14 @@ function Section({ title, children }) {
 }
 
 function Field({ label, value, onChange, type = 'text', required = false, colSpan = false, pattern, maxLength, title }) {
+  const handlePhoneInput = (e) => {
+    if (type === 'tel') {
+      // Only allow digits
+      e.target.value = e.target.value.replace(/\D/g, '')
+    }
+    onChange(e)
+  }
+
   return (
     <div className={colSpan ? 'sm:col-span-2' : ''}>
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -201,7 +209,12 @@ function Field({ label, value, onChange, type = 'text', required = false, colSpa
         type={type}
         required={required}
         value={value}
-        onChange={onChange}
+        onChange={handlePhoneInput}
+        onKeyPress={(e) => {
+          if (type === 'tel' && !/\d/.test(e.key)) {
+            e.preventDefault()
+          }
+        }}
         pattern={pattern}
         maxLength={maxLength}
         title={title}

@@ -210,6 +210,14 @@ function Section({ title, children }) {
 }
 
 function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title }) {
+  const handlePhoneInput = (e) => {
+    if (type === 'tel') {
+      // Only allow digits
+      e.target.value = e.target.value.replace(/\D/g, '')
+    }
+    onChange(e)
+  }
+
   return (
     <div>
       <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
@@ -219,7 +227,12 @@ function Field({ label, value, onChange, type = 'text', required = false, patter
         type={type}
         required={required}
         value={value}
-        onChange={onChange}
+        onChange={handlePhoneInput}
+        onKeyPress={(e) => {
+          if (type === 'tel' && !/\d/.test(e.key)) {
+            e.preventDefault()
+          }
+        }}
         pattern={pattern}
         maxLength={maxLength}
         title={title}
