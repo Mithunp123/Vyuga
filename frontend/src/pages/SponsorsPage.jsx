@@ -43,7 +43,7 @@ function SponsorCTA() {
           Partner with us to reach 500+ accessibility innovators, designers, and engineers.
         </p>
         <a
-          href="mailto:info@vyuga.in"
+          href="mailto:connect@nexyugainnovations.com"
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 font-hero text-sm font-bold text-slate-900 transition-all hover:shadow-xl hover:scale-105"
         >
           Get in touch
