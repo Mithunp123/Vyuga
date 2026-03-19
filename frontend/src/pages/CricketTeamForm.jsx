@@ -15,6 +15,8 @@ const EMPTY = {
   contactPhone: '',
   playerCount: '',
   hasPlayedBefore: '',
+  tournamentCount: '',
+  tournamentEvents: '',
   additionalInfo: '',
 }
 
@@ -33,8 +35,26 @@ export default function CricketTeamForm() {
     setError('')
     if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
     if (form.teamType === 'other' && !form.teamTypeOther.trim()) { setError('Please enter team type.'); setLoading(false); return }
+    if (form.hasPlayedBefore === 'yes' && !form.tournamentCount.trim()) { setError('Please enter the number of tournaments played.'); setLoading(false); return }
+    if (form.hasPlayedBefore === 'yes' && (isNaN(form.tournamentCount) || parseInt(form.tournamentCount) < 1)) { setError('Tournament count must be a valid positive number.'); setLoading(false); return }
+    if (form.hasPlayedBefore === 'yes' && !form.tournamentEvents.trim()) { setError('Please enter the tournament/event names.'); setLoading(false); return }
+
+    // Prepare tournament experience data in JSON format
+    let tournamentExperience = {
+      hasPlayedBefore: form.hasPlayedBefore === 'yes'
+    }
+    if (form.hasPlayedBefore === 'yes') {
+      tournamentExperience.tournamentCount = parseInt(form.tournamentCount)
+      tournamentExperience.eventNames = form.tournamentEvents.trim()
+    }
+
+    const submitData = {
+      ...form,
+      tournamentExperience: JSON.stringify(tournamentExperience)
+    }
+
     try {
-      await postJSON('/api/cricket', form)
+      await postJSON('/api/cricket', submitData)
       setSubmitted(true)
     } catch (err) {
       setError(err.message)
@@ -76,7 +96,7 @@ export default function CricketTeamForm() {
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
         <Section title="Team Details">
-          <Field label="Team Name" value={form.teamName} onChange={set('teamName')} required />
+          <Field label="Team SPOC" value={form.teamName} onChange={set('teamName')} required />
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Team Type <span className="text-red-500">*</span>
@@ -115,6 +135,30 @@ export default function CricketTeamForm() {
               <option value="no">No</option>
             </select>
           </div>
+          {form.hasPlayedBefore === 'yes' && (
+            <>
+              <Field
+                label="How many tournaments has the team played?"
+                type="number"
+                value={form.tournamentCount}
+                onChange={set('tournamentCount')}
+                required
+              />
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Tournament/Event Names <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={form.tournamentEvents}
+                  onChange={set('tournamentEvents')}
+                  placeholder="Please list the tournaments/events your team has participated in (one per line or comma separated)"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                />
+              </div>
+            </>
+          )}
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Additional Information

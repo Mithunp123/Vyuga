@@ -357,15 +357,15 @@ export default function Hero() {
       {/* Marquee — outside scroll-fade wrapper */}
       <div className="relative z-10">
         <MarqueeBand />
-
-        {/* Co-presented by SRP Foundation */}
+{/*
+        
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 2.0 }}
           className="border-b border-brand-cyan/10 bg-gradient-to-r from-slate-50 via-white to-slate-50 py-5"
         >
-          <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 px-4">
+           Logos and text           <div className="mx-auto flex max-w-7xl items-center justify-center gap-4 px-4">
             <div className="hidden h-px w-16 bg-gradient-to-r from-transparent to-brand-cyan/30 sm:block" />
             <span className="font-marker text-sm text-brand-cyan">Co-presented by</span>
             <span className="font-hero text-lg font-extrabold tracking-[0.1em] text-slate-800 sm:text-xl">
@@ -373,7 +373,9 @@ export default function Hero() {
             </span>
             <div className="hidden h-px w-16 bg-gradient-to-l from-transparent to-brand-lime/30 sm:block" />
           </div>
-        </motion.div>
+         
+
+        </motion.div> */}
       </div>
     </section>
   )

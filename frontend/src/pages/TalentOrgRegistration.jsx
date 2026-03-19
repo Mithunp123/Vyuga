@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Building2, Users } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
@@ -18,8 +18,8 @@ const EMPTY = {
 }
 
 export default function TalentOrgRegistration() {
-  // 'choose' | 'new' | 'done'
-  const [view, setView] = useState('choose')
+  // 'new' | 'done'
+  const [view, setView] = useState('new')
   const [form, setForm] = useState(EMPTY)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -60,59 +60,6 @@ export default function TalentOrgRegistration() {
           >
             Nominate Students <ArrowRight className="h-4 w-4" />
           </button>
-        </div>
-      </PageShell>
-    )
-  }
-
-  /* ── Choice screen ── */
-  if (view === 'choose') {
-    return (
-      <PageShell
-        title="Special Talent Utsav"
-        subtitle="Schools and organizations: register or nominate students for the talent showcase."
-      >
-        <div className="max-w-2xl space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="grid gap-5 sm:grid-cols-2"
-          >
-            {/* Create new organization */}
-            <button
-              onClick={() => setView('new')}
-              className="group flex flex-col items-start gap-4 rounded-2xl border-2 border-slate-200 bg-white p-7 text-left shadow-sm transition-all hover:border-[#0197B2]/50 hover:shadow-lg"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ backgroundColor: '#e0f6fa' }}>
-                <Building2 className="h-6 w-6" style={{ color: '#0197B2' }} />
-              </span>
-              <div>
-                <p className="text-base font-bold text-slate-900">Register New Organization</p>
-                <p className="mt-1 text-sm text-slate-500">New to VYUGA? Register your school or NGO and begin your journey with us.</p>
-              </div>
-              <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold" style={{ color: '#0197B2' }}>
-                Create Organization <ArrowRight className="h-4 w-4" />
-              </span>
-            </button>
-
-            {/* Already registered */}
-            <button
-              onClick={() => navigate('/register/talent-student')}
-              className="group flex flex-col items-start gap-4 rounded-2xl border-2 border-slate-200 bg-white p-7 text-left shadow-sm transition-all hover:border-[#5BCB2B]/50 hover:shadow-lg"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ backgroundColor: '#e8f9de' }}>
-                <Users className="h-6 w-6" style={{ color: '#5BCB2B' }} />
-              </span>
-              <div>
-                <p className="text-base font-bold text-slate-900">Already Registered?</p>
-                <p className="mt-1 text-sm text-slate-500">Organization already registered on VYUGA? Go ahead and nominate students.</p>
-              </div>
-              <span className="mt-auto inline-flex items-center gap-1 text-sm font-semibold" style={{ color: '#5BCB2B' }}>
-                Nominate Students <ArrowRight className="h-4 w-4" />
-              </span>
-            </button>
-          </motion.div>
         </div>
       </PageShell>
     )
@@ -184,13 +131,6 @@ export default function TalentOrgRegistration() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => setView('choose')}
-            className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-          >
-            ← Back
-          </button>
           <button
             type="submit"
             disabled={loading || !declared}

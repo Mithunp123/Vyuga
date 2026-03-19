@@ -29,6 +29,10 @@ const COLUMNS = {
     { key: 'college_name',  label: 'College' },
     { key: 'theme',         label: 'Theme' },
     { key: 'idea_title',    label: 'Idea Title' },
+    { key: 'idea_description', label: 'Brief Description' },
+    { key: 'pain_point',    label: 'Pain Point' },
+    { key: 'solution',      label: 'Solution' },
+    { key: 'usp',           label: 'USP' },
     { key: 'leader_name',   label: 'Leader' },
     { key: 'leader_email',  label: 'Email' },
     { key: 'leader_phone',  label: 'Phone' },
@@ -37,6 +41,10 @@ const COLUMNS = {
     { key: 'submitted_at',       label: 'Date',      fmt: fmtDate },
     { key: 'participation_type', label: 'Type' },
     { key: 'idea_title',         label: 'Idea Title' },
+    { key: 'idea_description',   label: 'Brief Description' },
+    { key: 'pain_point',         label: 'Pain Point' },
+    { key: 'solution',           label: 'Solution' },
+    { key: 'usp',                label: 'USP' },
     { key: 'name',               label: 'Name' },
     { key: 'email',              label: 'Email' },
     { key: 'phone',              label: 'Phone' },
@@ -66,15 +74,16 @@ const COLUMNS = {
     { key: 'contact_phone',   label: 'Phone' },
   ],
   cricket: [
-    { key: 'submitted_at',      label: 'Date',    fmt: fmtDate },
-    { key: 'team_name',         label: 'Team' },
-    { key: 'city',              label: 'City' },
-    { key: 'state',             label: 'State' },
-    { key: 'player_count',      label: 'Players' },
-    { key: 'has_played_before', label: 'Exp?',    fmt: (v) => (v ? 'Yes' : 'No') },
-    { key: 'contact_name',      label: 'Contact' },
-    { key: 'contact_email',     label: 'Email' },
-    { key: 'contact_phone',     label: 'Phone' },
+    { key: 'submitted_at',           label: 'Date',              fmt: fmtDate },
+    { key: 'team_name',              label: 'Team' },
+    { key: 'city',                   label: 'City' },
+    { key: 'state',                  label: 'State' },
+    { key: 'player_count',           label: 'Players' },
+    { key: 'has_played_before',      label: 'Experience',        fmt: (v) => (v ? 'Yes' : 'No') },
+    { key: 'tournament_experience',  label: 'Tournament Details', fmt: fmtTournamentExperience },
+    { key: 'contact_name',           label: 'Contact' },
+    { key: 'contact_email',          label: 'Email' },
+    { key: 'contact_phone',          label: 'Phone' },
   ],
   chess: [
     { key: 'submitted_at',      label: 'Date',       fmt: fmtDate },
@@ -95,23 +104,197 @@ function fmtDate(v) {
   return new Date(v).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
+function fmtTournamentExperience(experience) {
+  if (!experience) return <span className="text-slate-400">No data</span>
+
+  let expData
+  try {
+    // If it's already an object, use it; if it's a string, parse it
+    expData = typeof experience === 'string' ? JSON.parse(experience) : experience
+  } catch (e) {
+    return <span className="text-red-500">Invalid data</span>
+  }
+
+  if (!expData.hasPlayedBefore) {
+    return <span className="text-slate-500">No previous experience</span>
+  }
+
+  return (
+    <div className="space-y-1">
+      <div className="font-medium text-green-600">✓ Has Experience</div>
+      {expData.tournamentCount && (
+        <div className="text-sm text-slate-600">
+          <span className="font-medium">Count:</span> {expData.tournamentCount}
+        </div>
+      )}
+      {expData.eventNames && (
+        <div className="text-sm text-slate-600">
+          <span className="font-medium">Events:</span>
+          <div className="mt-1 text-xs bg-slate-50 p-2 rounded border max-w-xs">
+            {expData.eventNames.split(/[,\n]/).map((event, idx) => (
+              <div key={idx} className="truncate">• {event.trim()}</div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function exportCSV(tabId, rows) {
   const cols = COLUMNS[tabId]
-  const header = cols.map((c) => c.label).join(',')
-  const lines = rows.map((r) =>
-    cols.map((c) => {
-      const raw = r[c.key]
-      const val = c.fmt ? c.fmt(raw) : (raw ?? '')
-      return `"${String(val).replace(/"/g, '""')}"`
-    }).join(',')
-  )
-  const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `vyuga_${tabId}_${Date.now()}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
+
+  // Special handling for talent-student to include team member details
+  if (tabId === 'talent-student') {
+    // Enhanced column headers for team member details
+    const enhancedCols = [
+      ...cols,
+      { key: 'member_number', label: 'Member #' },
+      { key: 'member_name', label: 'Member Name' },
+      { key: 'member_age', label: 'Member Age' },
+      { key: 'member_disability', label: 'Member Disability' },
+      { key: 'member_guardian_name', label: 'Guardian Name' },
+      { key: 'member_guardian_phone', label: 'Guardian Phone' }
+    ]
+
+    const header = enhancedCols.map((c) => c.label).join(',')
+    const lines = []
+
+    rows.forEach((r) => {
+      if (r.nomination_type === 'team' && r.team_members) {
+        // Parse team members data
+        let teamMembers = []
+        try {
+          teamMembers = typeof r.team_members === 'string' ? JSON.parse(r.team_members) : r.team_members
+        } catch (e) {
+          console.error('Error parsing team_members:', e)
+          teamMembers = []
+        }
+
+        // Create a row for each team member
+        if (Array.isArray(teamMembers) && teamMembers.length > 0) {
+          teamMembers.forEach((member, index) => {
+            const teamRow = enhancedCols.map((c) => {
+              let val = ''
+
+              // Handle original columns
+              if (cols.find(col => col.key === c.key)) {
+                const raw = r[c.key]
+                val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
+              }
+              // Handle team member specific columns
+              else if (c.key === 'member_number') {
+                val = index + 1
+              }
+              else if (c.key === 'member_name') {
+                val = member.name || ''
+              }
+              else if (c.key === 'member_age') {
+                val = member.age || ''
+              }
+              else if (c.key === 'member_disability') {
+                val = member.disabilityType || ''
+              }
+              else if (c.key === 'member_guardian_name') {
+                val = member.guardianName || ''
+              }
+              else if (c.key === 'member_guardian_phone') {
+                val = member.guardianPhone || ''
+              }
+
+              return `"${String(val).replace(/"/g, '""')}"`
+            }).join(',')
+
+            lines.push(teamRow)
+          })
+        } else {
+          // If no team members data, create one row with empty member columns
+          const emptyRow = enhancedCols.map((c) => {
+            let val = ''
+            if (cols.find(col => col.key === c.key)) {
+              const raw = r[c.key]
+              val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
+            }
+            return `"${String(val).replace(/"/g, '""')}"`
+          }).join(',')
+          lines.push(emptyRow)
+        }
+      } else {
+        // Individual nomination - use original row with empty member columns
+        const individualRow = enhancedCols.map((c) => {
+          let val = ''
+          if (cols.find(col => col.key === c.key)) {
+            const raw = r[c.key]
+            val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
+          }
+          // Leave team member columns empty for individual nominations
+          return `"${String(val).replace(/"/g, '""')}"`
+        }).join(',')
+        lines.push(individualRow)
+      }
+    })
+
+    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vyuga_${tabId}_${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  // Special handling for cricket to format tournament experience data
+  else if (tabId === 'cricket') {
+    const header = cols.map((c) => c.label).join(',')
+    const lines = rows.map((r) =>
+      cols.map((c) => {
+        const raw = r[c.key]
+        let val = raw ?? ''
+
+        // Special handling for tournament_experience
+        if (c.key === 'tournament_experience' && raw) {
+          try {
+            const expData = typeof raw === 'string' ? JSON.parse(raw) : raw
+            if (expData.hasPlayedBefore) {
+              val = `Experience: Yes | Count: ${expData.tournamentCount || 'N/A'} | Events: ${expData.eventNames || 'N/A'}`
+            } else {
+              val = 'No previous experience'
+            }
+          } catch (e) {
+            val = 'Invalid data'
+          }
+        } else {
+          val = c.fmt ? c.fmt(raw) : val
+        }
+
+        return `"${String(val).replace(/"/g, '""')}"`
+      }).join(',')
+    )
+    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vyuga_${tabId}_${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  else {
+    // Original logic for other tabs
+    const header = cols.map((c) => c.label).join(',')
+    const lines = rows.map((r) =>
+      cols.map((c) => {
+        const raw = r[c.key]
+        const val = c.fmt ? c.fmt(raw) : (raw ?? '')
+        return `"${String(val).replace(/"/g, '""')}"`
+      }).join(',')
+    )
+    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vyuga_${tabId}_${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 }
 
 // ── Status badge ──────────────────────────────────────────────────────────────
@@ -357,6 +540,72 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
         </div>
       )}
 
+      {/* ── Tournament Experience Details (for cricket) ── */}
+      {tabId === 'cricket' && row.tournament_experience && (
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
+            Tournament Experience
+          </p>
+
+          {(() => {
+            try {
+              const expData = typeof row.tournament_experience === 'string'
+                ? JSON.parse(row.tournament_experience)
+                : row.tournament_experience
+
+              if (!expData.hasPlayedBefore) {
+                return (
+                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                    <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                    <span className="text-sm font-medium text-slate-600">No previous tournament experience</span>
+                  </div>
+                )
+              }
+
+              return (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-sm font-semibold text-green-700">Has Tournament Experience</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {expData.tournamentCount && (
+                      <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <p className="text-xs font-semibold text-blue-600 mb-2 uppercase tracking-wider">Tournament Count</p>
+                        <p className="text-2xl font-bold text-blue-700">{expData.tournamentCount}</p>
+                        <p className="text-xs text-blue-600">tournaments played</p>
+                      </div>
+                    )}
+
+                    {expData.eventNames && (
+                      <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                        <p className="text-xs font-semibold text-purple-600 mb-3 uppercase tracking-wider">Event Names</p>
+                        <div className="space-y-1">
+                          {expData.eventNames.split(/[,\n]/).filter(Boolean).map((event, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2 flex-shrink-0"></div>
+                              <span className="text-sm text-purple-700 font-medium">{event.trim()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            } catch (e) {
+              return (
+                <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
+                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                  <span className="text-sm font-medium text-red-600">Invalid tournament experience data</span>
+                </div>
+              )
+            }
+          })()}
+        </div>
+      )}
+
       {/* ── All fields ──*/}
       <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
@@ -555,7 +804,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* ── Navbar (matches user site) ── */}
-      <header className="sticky top-0 left-0 right-0 z-50 glass shadow-lg shadow-brand-cyan/5 bg-white backdrop-blur-xl border-b-2 border-slate-100">
+      <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-lg border-b-2 border-slate-100">
         <div className="mx-auto flex max-w-[1600px] items-center justify-start gap-3 px-4 py-3 sm:px-6">
           {/* Logo */}
           <button onClick={goHome} className="inline-flex items-center gap-2.5 transition-transform hover:scale-105 relative z-10 flex-shrink-0">

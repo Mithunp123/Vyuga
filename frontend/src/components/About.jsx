@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 
+// Import logos
+import srpLogo from '../assets/present by/SRP.webp'
+import nexgugaLogo from '../assets/present by/nexguga.png'
+import ksrctLogo from '../assets/present by/ksrct logo.png'
+
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
   const ref = useRef(null)
@@ -50,23 +55,136 @@ export default function About() {
 
   return (
     <section id="about" className="relative overflow-hidden bg-white" ref={sectionRef}>
-      {/* ── Stats — inline horizontal flow, no cards ── */}
+      {/* ── Presented by section ── */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 via-white to-slate-50 py-8 sm:py-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-transparent to-brand-lime/5" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center"
+          >
+            <motion.h3
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-6"
+            >
+              Presented by
+            </motion.h3>
+
+            <div className="flex flex-col items-center gap-6">
+              {/* Main presenters */}
+              <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+                <motion.div
+                  initial={{ opacity: 0, x: -30, rotateY: -15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  whileHover={{ scale: 1.1, rotateY: 5 }}
+                  className="group relative perspective-1000"
+                >
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                    <img
+                      src={nexgugaLogo}
+                      alt="Nexyuga Innovation"
+                      className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="font-marker text-xl sm:text-2xl text-slate-400"
+                >
+                  &
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 30, rotateY: 15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  whileHover={{ scale: 1.1, rotateY: -5 }}
+                  className="group relative perspective-1000"
+                >
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                    <img
+                      src={srpLogo}
+                      alt="SRP Foundation"
+                      className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Association */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="flex items-center gap-3"
+              >
+                <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-slate-300" />
+                <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-slate-400">IN ASSOCIATION WITH</p>
+                <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-slate-300" />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                whileHover={{ scale: 1.1, rotateX: 5 }}
+                className="group relative perspective-1000"
+              >
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                  <img
+                    src={ksrctLogo}
+                    alt="KSRCT"
+                    className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ── Stats — enhanced boxes with hover effects ── */}
       <div className="relative overflow-hidden border-y border-slate-100 py-16 sm:py-20">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan-light/20 via-transparent to-brand-lime-light/20" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-wrap items-baseline justify-center gap-x-12 gap-y-6 sm:gap-x-20">
+          <div className="flex flex-wrap items-baseline justify-center gap-x-8 gap-y-6 sm:gap-x-12">
             {stats.map((s, idx) => (
               <motion.div
                 key={s.label}
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="text-center"
+                className="group relative overflow-hidden rounded-2xl bg-white/50 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer"
               >
-                <p className={`font-impact text-7xl tracking-wider sm:text-8xl lg:text-[7rem] ${s.accent}`}>
-                  <AnimatedCounter target={s.value} suffix={s.suffix} />
-                </p>
-                <p className="mt-1 font-mono text-[9px] tracking-[0.4em] text-slate-400">{s.label}</p>
+                {/* Flowing background animation on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/10 via-brand-lime/10 to-brand-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+
+                {/* Content */}
+                <div className="relative text-center px-6 py-8 sm:px-8 sm:py-10">
+                  <p className={`font-impact text-5xl sm:text-6xl lg:text-7xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:text-white group-hover:drop-shadow-lg`}>
+                    <AnimatedCounter target={s.value} suffix={s.suffix} />
+                  </p>
+                  <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-600 transition-colors duration-300">{s.label}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -90,7 +208,7 @@ export default function About() {
             className="flex items-center gap-3"
           >
             <div className="gradient-line w-16" />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
+            <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
           </motion.div>
 
           {/* Giant headline with mixed fonts */}

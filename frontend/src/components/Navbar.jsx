@@ -108,29 +108,24 @@ export default function Navbar() {
 
   return (
     <header
-      className={[
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-        scrolled
-          ? 'glass shadow-lg shadow-brand-cyan/5'
-          : 'bg-transparent',
-      ].join(' ')}
+      className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b-2 border-slate-100 transition-all duration-500"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link to="/" className="group inline-flex items-center gap-2.5">
           <img src={logoImg} alt="VYUGA" className="h-14 w-auto object-contain" />
         </Link>
-
+        
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
           <NavLink to="/" className={navItemClass} end>Home</NavLink>
+             <NavLink to="/about" className={navItemClass}>About</NavLink>
           <DesktopDropdown
             label="Attend"
             items={attendItems}
             open={attendOpen}
             setOpen={(v) => { setAttendOpen(v); if (v) setProjectsOpen(false) }}
           />
-
           <NavLink to="/sponsors" className={navItemClass}>Sponsors</NavLink>
-          <NavLink to="/about" className={navItemClass}>About</NavLink>
+       
         </nav>
 
         <div className="flex items-center gap-3">

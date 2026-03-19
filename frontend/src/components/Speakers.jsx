@@ -21,19 +21,19 @@ function SpeakerCard({ s, idx, inView, delayOffset = 0 }) {
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="pointer-events-none absolute inset-0 cinematic-sweep" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-cyan/35 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
           <motion.div
             className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0"
           >
             <p className="font-hero text-base sm:text-lg font-extrabold text-white drop-shadow-lg">{s.name}</p>
-            <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-medium text-white/70 line-clamp-1">{s.role}</p>
+            <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-medium text-white/80 line-clamp-1">{s.role}</p>
             <div className="mt-1.5 sm:mt-2 overflow-hidden">
               <div className="h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-brand-cyan to-brand-lime transition-transform duration-700 group-hover:scale-x-100" />
             </div>
-            <p className="mt-1.5 sm:mt-2 font-mono text-[8px] sm:text-[9px] tracking-widest text-white/50 opacity-0 transition-opacity duration-500 group-hover:opacity-100 line-clamp-2">
+            <p className="mt-1.5 sm:mt-2 font-mono text-[8px] sm:text-[9px] tracking-widest text-white/60 opacity-0 transition-opacity duration-500 group-hover:opacity-100 line-clamp-2">
               {s.org.toUpperCase()}
             </p>
           </motion.div>
@@ -49,7 +49,7 @@ function SectionLabel({ label, inView, delay = 0 }) {
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay }}
-      className="mb-6 font-impact text-2xl tracking-[0.08em] gradient-text sm:text-3xl text-center"
+      className="mb-6 font-impact text-2xl tracking-[0.08em] text-slate-700 sm:text-3xl text-center"
     >
       {label}
     </motion.h3>
@@ -61,15 +61,20 @@ export default function Speakers() {
   const inView = useInView(ref, { once: true, amount: 0.15 })
 
   return (
-    <section id="speakers" className="cinematic-speakers-bg relative overflow-hidden" ref={ref}>
-      {/* Noise overlay */}
-      <div className="absolute inset-0 noise-overlay pointer-events-none" />
-      <div className="absolute inset-0 cinematic-vignette pointer-events-none" />
+    <section id="speakers" className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden" ref={ref}>
+      {/* Light overlay pattern */}
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-transparent to-brand-lime/5 pointer-events-none" />
 
-      {/* Blobs */}
+      {/* Subtle geometric pattern */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+        backgroundImage: `radial-gradient(circle at 25% 25%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+                         radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)`
+      }} />
+
+      {/* Light theme blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-1/4 h-80 w-80 rounded-full bg-brand-cyan/6 blur-[100px] animate-morph" />
-        <div className="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-brand-lime/6 blur-[100px] animate-morph" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-20 left-1/4 h-80 w-80 rounded-full bg-brand-cyan/8 blur-[120px] animate-morph" />
+        <div className="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-brand-lime/8 blur-[120px] animate-morph" style={{ animationDelay: '4s' }} />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -83,7 +88,7 @@ export default function Speakers() {
               className="inline-flex items-center gap-2"
             >
               <div className="gradient-line w-12" />
-              <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-brand-cyan">
+              <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-slate-600">
                 SPEAKERS
               </span>
             </motion.div>
@@ -91,7 +96,7 @@ export default function Speakers() {
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="themes-guests-title"
+              className="themes-guests-title text-slate-800"
             >
               <span className="meet-word block text-4xl sm:text-5xl lg:text-6xl">
                 Meet the

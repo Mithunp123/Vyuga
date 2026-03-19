@@ -23,7 +23,6 @@ const EVENTS = [
           'Cognitive & Learning Accessibility',
           'Physical & Mobility Accessibility',
           'Visual & Hearing Accessibility',
-          'Other (add a new theme)',
         ],
       },
       {
@@ -38,6 +37,7 @@ const EVENTS = [
       { label: 'Awards', value: 'Top 3 positions with cash prizes' },
     ],
     registerLink: '/register/innovation',
+    buttonText: 'Register Now',
   },
   {
     title: 'Special Talent',
@@ -58,7 +58,8 @@ const EVENTS = [
         value: 'Top 3 performers receive special recognition and awards',
       },
     ],
-    registerLink: '/register/talent-org',
+    registerLink: '/register/talent-student',
+    buttonText: 'Register Now',
   },
   {
     title: 'Blind Cricket',
@@ -75,6 +76,7 @@ const EVENTS = [
       },
     ],
     registerLink: '/register/cricket',
+    buttonText: 'Entry Now',
   },
   {
     title: 'Blind Chess',
@@ -91,6 +93,8 @@ const EVENTS = [
       },
     ],
     registerLink: '/register/chess',
+    buttonText: 'Register will open soon',
+    disabled: true,
   },
 ]
 

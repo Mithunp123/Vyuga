@@ -19,6 +19,9 @@ const EMPTY = {
   participationType: 'individual',
   ideaTitle: '',
   ideaDescription: '',
+  painPoint: '',
+  solution: '',
+  usp: '',
   member1Name: '', member1Email: '', member1Phone: '', member1DisabilityType: [],
   member1DisabilityTypeOther: '',
   member2Name: '', member2Email: '', member2Phone: '',
@@ -139,13 +142,53 @@ export default function InnovationPWDForm() {
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Brief Description <span className="text-red-500">*</span>
+              <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
             </label>
             <textarea
               required
               rows={3}
               value={form.ideaDescription}
               onChange={set('ideaDescription')}
-              placeholder="Describe your assistive technology solution..."
+              placeholder="Provide a concise overview of your assistive technology solution in 50 words or less..."
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Pain Point <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={form.painPoint}
+              onChange={set('painPoint')}
+              placeholder="What specific challenge or barrier do you face that your solution addresses?"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Solution <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={4}
+              value={form.solution}
+              onChange={set('solution')}
+              placeholder="Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use?"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Unique Selling Proposition (USP) <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={form.usp}
+              onChange={set('usp')}
+              placeholder="What makes your solution unique? How is it different from existing assistive technologies?"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
           </div>

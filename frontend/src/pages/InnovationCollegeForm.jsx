@@ -16,6 +16,9 @@ const EMPTY = {
   theme: '',
   ideaTitle: '',
   ideaDescription: '',
+  painPoint: '',
+  solution: '',
+  usp: '',
   member1Name: '', member1Email: '', member1Phone: '',
   member2Name: '', member2Email: '', member2Phone: '',
   member3Name: '', member3Email: '', member3Phone: '',
@@ -105,13 +108,53 @@ export default function InnovationCollegeForm() {
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Brief Description <span className="text-red-500">*</span>
+              <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
             </label>
             <textarea
               required
               rows={3}
               value={form.ideaDescription}
               onChange={set('ideaDescription')}
-              placeholder="Describe your idea or prototype..."
+              placeholder="Provide a concise overview of your idea or prototype in 50 words or less..."
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Pain Point <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={form.painPoint}
+              onChange={set('painPoint')}
+              placeholder="What specific problem or challenge does your innovation address for specially abled individuals?"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Solution <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={4}
+              value={form.solution}
+              onChange={set('solution')}
+              placeholder="Explain how your innovation solves the problem. What technology, approach, or methodology do you use?"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Unique Selling Proposition (USP) <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={form.usp}
+              onChange={set('usp')}
+              placeholder="What makes your solution unique? How is it different from existing solutions?"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
           </div>

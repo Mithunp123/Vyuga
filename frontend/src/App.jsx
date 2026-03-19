@@ -48,7 +48,7 @@ export default function App() {
       <Route path="/register/innovation" element={<InnovationUnifiedForm />} />
       <Route path="/register/innovation-college" element={<InnovationUnifiedForm />} />
       <Route path="/register/innovation-pwd" element={<InnovationUnifiedForm />} />
-      <Route path="/register/talent-org" element={<TalentOrgRegistration />} />
+      <Route path="/register/talent-org" element={<Navigate to="/register/talent-student" replace />} />
       <Route path="/register/talent-student" element={<TalentStudentNomination />} />
       <Route path="/register/cricket" element={<CricketTeamForm />} />
       <Route path="/register/chess" element={<BlindChessForm />} />

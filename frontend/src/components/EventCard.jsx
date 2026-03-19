@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
-export default function EventCard({ title, accent, description, details, registerLink, index = 0 }) {
+export default function EventCard({ title, accent, description, details, registerLink, buttonText = 'Register Now', disabled = false, index = 0 }) {
   const navigate = useNavigate()
   const num = String(index + 1).padStart(2, '0')
 
@@ -76,11 +76,18 @@ export default function EventCard({ title, accent, description, details, registe
           <div className="mt-auto pt-4">
             <button
               type="button"
-              onClick={() => navigate(registerLink)}
-              className="group/btn inline-flex items-center gap-2.5 overflow-hidden rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg shadow-brand-cyan/15 transition-all duration-300 hover:shadow-xl hover:shadow-brand-cyan/25 hover:scale-[1.03] active:scale-[0.97] shimmer-btn"
+              disabled={disabled}
+              onClick={() => !disabled && navigate(registerLink)}
+              className={`group/btn inline-flex items-center gap-2.5 overflow-hidden rounded-full px-7 py-3 text-sm font-bold text-white transition-all duration-300 ${
+                disabled
+                  ? 'bg-slate-400 cursor-not-allowed shadow-none'
+                  : 'shadow-lg shadow-brand-cyan/15 hover:shadow-xl hover:shadow-brand-cyan/25 hover:scale-[1.03] active:scale-[0.97] shimmer-btn'
+              }`}
             >
-              <span className="font-display tracking-wide">Register Now</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+              <span className="font-display tracking-wide">{buttonText}</span>
+              <ArrowRight className={`h-4 w-4 transition-transform duration-300 ${
+                disabled ? '' : 'group-hover/btn:translate-x-1'
+              }`} />
             </button>
           </div>
         </div>

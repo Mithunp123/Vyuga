@@ -14,7 +14,6 @@ const THEME_OPTIONS = [
   'Cognitive & Learning Accessibility',
   'Physical & Mobility Accessibility',
   'Visual & Hearing Accessibility',
-  'Other',
 ]
 
 const DISABILITY_TYPES = [
@@ -38,6 +37,9 @@ const EMPTY = {
   participationType: 'individual',
   ideaTitle: '',
   ideaDescription: '',
+  painPoint: '',
+  solution: '',
+  usp: '',
   member1Name: '',
   member1Email: '',
   member1Phone: '',
@@ -96,7 +98,15 @@ export default function InnovationUnifiedForm() {
     const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
     if (invalidPhone) return 'Phone number must be exactly 10 digits.'
     if (!form.innovationType) return 'Please select whether registration is By or For specially abled.'
+    if (isForSpeciallyAbled && !form.teamName.trim()) return 'Team name is required.'
+    if (isForSpeciallyAbled && !form.collegeName.trim()) return 'College name is required.'
+    if (isForSpeciallyAbled && !form.theme) return 'Please select a theme.'
     if (form.theme === 'Other' && !form.themeOther.trim()) return 'Please enter a custom theme.'
+    if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.ideaTitle.trim()) return 'Idea/Solution title is required.'
+    if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.ideaDescription.trim()) return 'Brief description is required.'
+    if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.painPoint.trim()) return 'Pain point is required.'
+    if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.solution.trim()) return 'Solution is required.'
+    if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.usp.trim()) return 'USP is required.'
     if (isBySpeciallyAbled && (!form.member1DisabilityType || form.member1DisabilityType.length === 0)) {
       return 'Please select at least one disability type.'
     }
@@ -116,6 +126,9 @@ export default function InnovationUnifiedForm() {
       fd.append('themeOther', form.themeOther)
       fd.append('ideaTitle', form.ideaTitle)
       fd.append('ideaDescription', form.ideaDescription)
+      fd.append('painPoint', form.painPoint)
+      fd.append('solution', form.solution)
+      fd.append('usp', form.usp)
       fd.append('member1Name', form.member1Name)
       fd.append('member1Email', form.member1Email)
       fd.append('member1Phone', form.member1Phone)
@@ -129,6 +142,9 @@ export default function InnovationUnifiedForm() {
       fd.append('participationType', form.participationType)
       fd.append('ideaTitle', form.ideaTitle)
       fd.append('ideaDescription', form.ideaDescription)
+      fd.append('painPoint', form.painPoint)
+      fd.append('solution', form.solution)
+      fd.append('usp', form.usp)
       fd.append('member1Name', form.member1Name)
       fd.append('member1Email', form.member1Email)
       fd.append('member1Phone', form.member1Phone)
@@ -278,13 +294,59 @@ export default function InnovationUnifiedForm() {
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
                   Brief Description <span className="text-red-500">*</span>
+                  <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
                 </label>
                 <textarea
                   required
                   rows={3}
                   value={form.ideaDescription}
                   onChange={set('ideaDescription')}
-                  placeholder="Describe your idea or prototype..."
+                  placeholder="Provide a concise overview of your idea or prototype in 50 words or less..."
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Pain Point <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={form.painPoint}
+                  onChange={set('painPoint')}
+                  placeholder={isForSpeciallyAbled
+                    ? "What specific problem or challenge does your innovation address for specially abled individuals?"
+                    : "What specific challenge or barrier do you face that your solution addresses?"}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Solution <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={form.solution}
+                  onChange={set('solution')}
+                  placeholder={isForSpeciallyAbled
+                    ? "Explain how your innovation solves the problem. What technology, approach, or methodology do you use?"
+                    : "Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use?"}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                  Unique Selling Proposition (USP) <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={form.usp}
+                  onChange={set('usp')}
+                  placeholder={isForSpeciallyAbled
+                    ? "What makes your solution unique? How is it different from existing solutions?"
+                    : "What makes your solution unique? How is it different from existing assistive technologies?"}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 />
               </div>
