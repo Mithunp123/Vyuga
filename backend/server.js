@@ -220,6 +220,7 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
   try {
     const {
       teamName, collegeName, theme, ideaTitle, ideaDescription,
+      painPoint, solution, usp,
       themeOther, prototypeUrl,
       member1Name, member1Email, member1Phone,
       member2Name, member2Email, member2Phone,
@@ -232,7 +233,10 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
       { field: 'collegeName', check: collegeName && sanitizeText(collegeName, 200).length > 0, msg: 'required, max 200 chars' },
       { field: 'theme', check: theme && sanitizeText(theme, 100).length > 0, msg: 'required' },
       { field: 'ideaTitle', check: ideaTitle && sanitizeText(ideaTitle, 200).length > 0, msg: 'required, max 200 chars' },
-      { field: 'ideaDescription', check: ideaDescription && sanitizeText(ideaDescription, 2000).length > 0, msg: 'required, max 2000 chars' },
+      { field: 'ideaDescription', check: ideaDescription && sanitizeText(ideaDescription, 500).length > 0, msg: 'required, max 500 chars' },
+      { field: 'painPoint', check: painPoint && sanitizeText(painPoint, 1000).length > 0, msg: 'required, max 1000 chars' },
+      { field: 'solution', check: solution && sanitizeText(solution, 2000).length > 0, msg: 'required, max 2000 chars' },
+      { field: 'usp', check: usp && sanitizeText(usp, 1000).length > 0, msg: 'required, max 1000 chars' },
       { field: 'member1Name', check: member1Name && sanitizeText(member1Name, 100).length > 0, msg: 'required' },
       { field: 'member1Email', check: isValidEmail(member1Email), msg: 'invalid email' },
       { field: 'member1Phone', check: isValidPhone(member1Phone), msg: 'must be exactly 10 digits' },
@@ -261,7 +265,10 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
       ? sanitizeText(themeOther, 100)
       : sanitizeText(theme, 100)
     const sIdeaTitle = sanitizeText(ideaTitle, 200)
-    const sIdeaDesc = sanitizeText(ideaDescription, 2000)
+    const sIdeaDesc = sanitizeText(ideaDescription, 500)
+    const sPainPoint = sanitizeText(painPoint, 1000)
+    const sSolution = sanitizeText(solution, 2000)
+    const sUsp = sanitizeText(usp, 1000)
     const sM1Name = sanitizeText(member1Name, 100)
     const sM1Email = member1Email.trim().toLowerCase()
     const sM1Phone = member1Phone.trim()
@@ -288,6 +295,9 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
         theme: sTheme,
         idea_title: sIdeaTitle,
         idea_description: sIdeaDesc,
+        pain_point: sPainPoint,
+        solution: sSolution,
+        usp: sUsp,
         leader_name: sM1Name,
         leader_email: sM1Email,
         leader_phone: sM1Phone,
@@ -324,7 +334,8 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
 app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototypeImage'), async (req, res) => {
   try {
     const {
-      participationType, ideaTitle, ideaDescription, prototypeUrl,
+      participationType, ideaTitle, ideaDescription,
+      painPoint, solution, usp, prototypeUrl,
       member1Name, member1Email, member1Phone, member1DisabilityType, member1DisabilityTypeOther,
       member2Name, member2Email, member2Phone,
       member3Name, member3Email, member3Phone,
@@ -334,7 +345,10 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     const errors = validate([
       { field: 'participationType', check: isValidEnum(participationType, ['individual', 'team']), msg: 'must be individual or team' },
       { field: 'ideaTitle', check: ideaTitle && sanitizeText(ideaTitle, 200).length > 0, msg: 'required, max 200 chars' },
-      { field: 'ideaDescription', check: ideaDescription && sanitizeText(ideaDescription, 2000).length > 0, msg: 'required, max 2000 chars' },
+      { field: 'ideaDescription', check: ideaDescription && sanitizeText(ideaDescription, 500).length > 0, msg: 'required, max 500 chars' },
+      { field: 'painPoint', check: painPoint && sanitizeText(painPoint, 1000).length > 0, msg: 'required, max 1000 chars' },
+      { field: 'solution', check: solution && sanitizeText(solution, 2000).length > 0, msg: 'required, max 2000 chars' },
+      { field: 'usp', check: usp && sanitizeText(usp, 1000).length > 0, msg: 'required, max 1000 chars' },
       { field: 'member1Name', check: member1Name && sanitizeText(member1Name, 100).length > 0, msg: 'required' },
       { field: 'member1Email', check: isValidEmail(member1Email), msg: 'invalid email' },
       { field: 'member1Phone', check: isValidPhone(member1Phone), msg: 'must be exactly 10 digits' },
@@ -359,7 +373,10 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     // ── Sanitize ─────────────────────────────────────────
     const sPartType = participationType.trim()
     const sIdeaTitle = sanitizeText(ideaTitle, 200)
-    const sIdeaDesc = sanitizeText(ideaDescription, 2000)
+    const sIdeaDesc = sanitizeText(ideaDescription, 500)
+    const sPainPoint = sanitizeText(painPoint, 1000)
+    const sSolution = sanitizeText(solution, 2000)
+    const sUsp = sanitizeText(usp, 1000)
     const sM1Name = sanitizeText(member1Name, 100)
     const sM1Email = member1Email.trim().toLowerCase()
     const sM1Phone = member1Phone.trim()
@@ -401,6 +418,9 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
         participation_type: sPartType,
         idea_title: sIdeaTitle,
         idea_description: sIdeaDesc,
+        pain_point: sPainPoint,
+        solution: sSolution,
+        usp: sUsp,
         name: sM1Name,
         email: sM1Email,
         phone: sM1Phone,
@@ -875,6 +895,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       hasPlayedBefore, additionalInfo,
       teamType, teamTypeOther,
       contactName, contactEmail, contactPhone,
+      tournamentExperience,
     } = req.body
 
     // ── Validation ───────────────────────────────────────
@@ -892,6 +913,22 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
     if (teamType && String(teamType).toLowerCase() === 'other' && !sanitizeText(teamTypeOther, 100)) {
       errors.push({ field: 'teamTypeOther', msg: 'required when team type is Other' })
     }
+    // Validate tournament experience JSON
+    if (tournamentExperience) {
+      try {
+        const experience = JSON.parse(tournamentExperience)
+        if (experience.hasPlayedBefore === true) {
+          if (!experience.tournamentCount || !isValidInt(experience.tournamentCount, 1, 1000)) {
+            errors.push({ field: 'tournamentExperience', msg: 'tournament count must be a positive number between 1-1000' })
+          }
+          if (!experience.eventNames || !sanitizeText(experience.eventNames, 2000)) {
+            errors.push({ field: 'tournamentExperience', msg: 'event names are required when team has played before' })
+          }
+        }
+      } catch (jsonError) {
+        errors.push({ field: 'tournamentExperience', msg: 'invalid JSON format' })
+      }
+    }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     const { data, error } = await supabase
@@ -902,6 +939,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
         state: sanitizeText(state, 100),
         player_count: parseInt(playerCount, 10),
         has_played_before: hasPlayedBefore === 'yes',
+        tournament_experience: tournamentExperience ? tournamentExperience : null,
         additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
         contact_name: sanitizeText(contactName, 100),
         contact_email: contactEmail.trim().toLowerCase(),
