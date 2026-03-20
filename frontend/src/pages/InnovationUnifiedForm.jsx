@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
@@ -54,6 +55,7 @@ const EMPTY = {
 }
 
 export default function InnovationUnifiedForm() {
+  const location = useLocation()
   const [form, setForm] = useState(EMPTY)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -61,6 +63,16 @@ export default function InnovationUnifiedForm() {
   const [declared, setDeclared] = useState(false)
   const [protoFile, setProtoFile] = useState(null)
   const [prototypeUrl, setPrototypeUrl] = useState('')
+
+  // Auto-detect innovation type based on route
+  useEffect(() => {
+    const path = location.pathname
+    if (path.includes('innovation-college')) {
+      setForm(prev => ({ ...prev, innovationType: 'for_specially_abled' }))
+    } else if (path.includes('innovation-pwd')) {
+      setForm(prev => ({ ...prev, innovationType: 'by_specially_abled' }))
+    }
+  }, [location.pathname])
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
@@ -97,7 +109,11 @@ export default function InnovationUnifiedForm() {
     const phoneFields = [form.member1Phone, form.member2Phone, form.member3Phone].filter(Boolean)
     const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
     if (invalidPhone) return 'Phone number must be exactly 10 digits.'
-    if (!form.innovationType) return 'Please select whether registration is By or For specially abled.'
+    
+    // Only check for innovation type selection if not auto-detected from route
+    const isAutoDetected = location.pathname.includes('innovation-college') || location.pathname.includes('innovation-pwd')
+    if (!isAutoDetected && !form.innovationType) return 'Please select whether registration is By or For specially abled.'
+    
     if (isForSpeciallyAbled && !form.teamName.trim()) return 'Team name is required.'
     if (isForSpeciallyAbled && !form.collegeName.trim()) return 'College name is required.'
     if (isForSpeciallyAbled && !form.theme) return 'Please select a theme.'
@@ -203,10 +219,33 @@ export default function InnovationUnifiedForm() {
     )
   }
 
+  // Dynamic title and subtitle based on route
+  const getPageTitleAndSubtitle = () => {
+    const path = location.pathname
+    if (path.includes('innovation-college')) {
+      return {
+        title: "Inclusive Innovation Fest – For Specially Abled",
+        subtitle: "Register your college team to develop solutions for accessibility and inclusion."
+      }
+    } else if (path.includes('innovation-pwd')) {
+      return {
+        title: "Inclusive Innovation Fest – By Specially Abled", 
+        subtitle: "Register to showcase your innovative solutions and entrepreneurial ideas."
+      }
+    } else {
+      return {
+        title: "Inclusive Innovation Fest",
+        subtitle: "Submit one form and choose whether your participation is For or By specially abled."
+      }
+    }
+  }
+
+  const { title: pageTitle, subtitle: pageSubtitle } = getPageTitleAndSubtitle()
+
   return (
     <PageShell
-      title="Inclusive Innovation Fest"
-      subtitle="Submit one form and choose whether your participation is For or By specially abled."
+      title={pageTitle}
+      subtitle={pageSubtitle}
     >
       <SubmitLoader visible={loading} />
       <motion.form
@@ -220,23 +259,26 @@ export default function InnovationUnifiedForm() {
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
 
-        <Section title="Registration Type">
-          <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
-              Is this registration by or for specially abled? <span className="text-red-500">*</span>
-            </label>
-            <select
-              required
-              value={form.innovationType}
-              onChange={set('innovationType')}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
-            >
-              {INNOVATION_TYPE_OPTIONS.map((option) => (
-                <option key={option.value || 'empty'} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-        </Section>
+        {/* Only show Registration Type selector for the unified route */}
+        {!location.pathname.includes('innovation-college') && !location.pathname.includes('innovation-pwd') && (
+          <Section title="Registration Type">
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                Is this registration by or for specially abled? <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                value={form.innovationType}
+                onChange={set('innovationType')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+              >
+                {INNOVATION_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value || 'empty'} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
+          </Section>
+        )}
 
         <Section title="Innovation Details">
           {isForSpeciallyAbled && (

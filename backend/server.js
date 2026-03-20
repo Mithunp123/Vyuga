@@ -21,6 +21,7 @@ const {
   sendCricketConfirmation,
   sendChessConfirmation,
   sendStatusUpdateEmail,
+  transporter,
 } = require('./mailer')
 
 const app = express()
@@ -476,17 +477,25 @@ app.get('/api/talent-org', async (req, res) => {
 // POST /api/talent-org
 app.post('/api/talent-org', registrationLimiter, async (req, res) => {
   try {
-    const { orgName, orgType, orgTypeOther, address, studentCount, contactName, contactEmail, contactPhone } = req.body
+    const { orgName, orgType, orgTypeOther, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone } = req.body
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
       { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required, max 200 chars' },
       { field: 'orgType', check: orgType && sanitizeText(orgType, 100).length > 0, msg: 'required' },
+      { field: 'orgFocus', check: orgFocus && ['single', 'multiple'].includes(orgFocus), msg: 'must be single or multiple' },
+      { field: 'disabilityTypes', check: Array.isArray(disabilityTypes) && disabilityTypes.length > 0, msg: 'at least one disability type required' },
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactEmail', check: isValidEmail(contactEmail), msg: 'invalid email' },
       { field: 'contactPhone', check: isValidPhone(contactPhone), msg: 'must be exactly 10 digits' },
       { field: 'studentCount', check: !studentCount || isValidInt(studentCount, 0, 100000), msg: 'must be a number 0–100000' },
     ])
+    
+    // Validate focus-specific constraints
+    if (orgFocus === 'single' && Array.isArray(disabilityTypes) && disabilityTypes.length > 1) {
+      errors.push({ field: 'disabilityTypes', msg: 'single focus organizations can only select one disability type' })
+    }
+    
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     const effectiveOrgType = String(orgType).toLowerCase() === 'other'
@@ -501,6 +510,8 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       .insert([{
         org_name: sanitizeText(orgName, 200),
         org_type: effectiveOrgType,
+        org_focus: orgFocus,
+        disability_types: JSON.stringify(disabilityTypes),
         address: address ? sanitizeText(address, 500) : null,
         student_count: parseInt(studentCount, 10) || 0,
         contact_name: sanitizeText(contactName, 100),
@@ -518,7 +529,7 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
     try {
-      sendTalentOrgConfirmation({ orgName, orgType: effectiveOrgType, address, studentCount, contactName, contactEmail, contactPhone })
+      sendTalentOrgConfirmation({ orgName, orgType: effectiveOrgType, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }
@@ -663,10 +674,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     console.log('=== Talent Combined Submission ===')
     console.log('File received:', req.file ? 'Yes' : 'No')
     console.log('Nomination type:', req.body.nominationType)
+    console.log('orgDisabilityTypes received:', req.body.orgDisabilityTypes, 'Type:', typeof req.body.orgDisabilityTypes)
+    console.log('orgDisabilityFocus received:', req.body.orgDisabilityFocus)
     
     const {
       // Organization details
-      orgName, orgAddress, orgCity, orgState, orgZip, orgSize, orgDisabilityFocus,
+      orgName, orgAddress, orgCity, orgState, orgZip, orgSize, orgDisabilityFocus, orgDisabilityTypes,
       contactName, contactDesignation, contactPhone, contactEmail,
       
       // Nomination details
@@ -679,6 +692,20 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       videoLink, performanceUrl
     } = req.body
 
+    // Parse orgDisabilityTypes if it's a JSON string
+    let parsedOrgDisabilityTypes = orgDisabilityTypes
+    if (typeof orgDisabilityTypes === 'string' && orgDisabilityTypes.trim()) {
+      try {
+        parsedOrgDisabilityTypes = JSON.parse(orgDisabilityTypes)
+      } catch (e) {
+        console.warn('Failed to parse orgDisabilityTypes:', orgDisabilityTypes)
+        parsedOrgDisabilityTypes = []
+      }
+    } else if (!orgDisabilityTypes) {
+      parsedOrgDisabilityTypes = []
+    }
+    console.log('Parsed orgDisabilityTypes:', parsedOrgDisabilityTypes)
+
     // ── Validation ───────────────────────────────────────
     const errors = validate([
       // Organization validation
@@ -687,6 +714,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       { field: 'orgState', check: orgState && sanitizeText(orgState, 50).length > 0, msg: 'required' },
       { field: 'orgSize', check: orgSize && ['<10', '10-30', '30-50', '50-100', '100+'].includes(orgSize), msg: 'invalid organization size' },
       { field: 'orgDisabilityFocus', check: orgDisabilityFocus && ['single', 'multiple'].includes(orgDisabilityFocus), msg: 'must be single or multiple' },
+      { field: 'orgDisabilityTypes', check: Array.isArray(parsedOrgDisabilityTypes) && parsedOrgDisabilityTypes.length > 0, msg: 'at least one disability type required' },
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactPhone', check: contactPhone && /^\d{10}$/.test(contactPhone), msg: 'must be exactly 10 digits' },
       { field: 'contactEmail', check: contactEmail && isValidEmail(contactEmail), msg: 'invalid email' },
@@ -738,6 +766,11 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       } catch (e) {
         errors.push({ field: 'teamMembers', msg: 'invalid JSON format' })
       }
+    }
+
+    // Additional validation for organization disability focus
+    if (orgDisabilityFocus === 'single' && Array.isArray(parsedOrgDisabilityTypes) && parsedOrgDisabilityTypes.length > 1) {
+      errors.push({ field: 'orgDisabilityTypes', msg: 'single focus organizations can only select one disability type' })
     }
 
     if (errors.length > 0) {
@@ -818,6 +851,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         org_zip: orgZip ? sanitizeText(orgZip, 10) : null,
         org_size: orgSize,
         org_disability_focus: orgDisabilityFocus,
+        org_disability_types: JSON.stringify(parsedOrgDisabilityTypes),
         contact_name: sanitizeText(contactName, 100),
         contact_designation: contactDesignation ? sanitizeText(contactDesignation, 100) : null,
         contact_phone: contactPhone,
@@ -1049,6 +1083,238 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
   }
 })
 
+// ── 6. Accommodation Request ─────────────────────────────────────────────────────
+// POST /api/accommodation-request
+app.post('/api/accommodation-request', registrationLimiter, async (req, res) => {
+  try {
+    console.log('🏨 Accommodation Request Received:', req.body)
+
+    const {
+      fullName,
+      email,
+      phone,
+      organization,
+      arrivalDate,
+      departureDate,
+      roomType,
+      accessibilityNeeds,
+      specialRequests,
+      dietaryRequirements,
+      emergencyContactName,
+      emergencyContactPhone
+    } = req.body
+
+    // Validation
+    if (!fullName?.trim()) {
+      return res.status(400).json({ success: false, message: 'Full name is required' })
+    }
+    if (!email?.trim() || !/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ success: false, message: 'Valid email is required' })
+    }
+    if (!phone?.trim() || !/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
+      return res.status(400).json({ success: false, message: 'Valid 10-digit phone number is required' })
+    }
+    if (!arrivalDate || !departureDate) {
+      return res.status(400).json({ success: false, message: 'Arrival and departure dates are required' })
+    }
+    if (!roomType) {
+      return res.status(400).json({ success: false, message: 'Room type selection is required' })
+    }
+
+    // Date validation
+    const arrival = new Date(arrivalDate)
+    const departure = new Date(departureDate)
+    if (departure <= arrival) {
+      return res.status(400).json({ success: false, message: 'Departure date must be after arrival date' })
+    }
+
+    // Insert into database
+    const { data, error } = await supabase
+      .from('accommodation_requests')
+      .insert([{
+        full_name: sanitizeText(fullName, 100),
+        email: email.trim().toLowerCase(),
+        phone: phone.replace(/\D/g, ''),
+        organization: organization?.trim() || null,
+        arrival_date: arrivalDate,
+        departure_date: departureDate,
+        room_type: roomType,
+        accessibility_needs: accessibilityNeeds?.trim() || null,
+        special_requests: specialRequests?.trim() || null,
+        dietary_requirements: dietaryRequirements?.trim() || null,
+        emergency_contact_name: emergencyContactName?.trim() || null,
+        emergency_contact_phone: emergencyContactPhone?.replace(/\D/g, '') || null
+      }])
+      .select()
+      .single()
+
+    if (error) {
+      await logError({ source: 'user', endpoint: '/api/accommodation-request', method: 'POST', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    const requestId = data.id
+
+    // Send notification email to admin
+    try {
+      const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      })
+
+      const adminEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #0ea5e9 0%, #84cc16 100%); padding: 30px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">🏨 New Accommodation Request</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">VYUGA Event Portal</p>
+          </div>
+          
+          <div style="padding: 30px; background: #f8fafc;">
+            <h2 style="color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">
+              Request Details
+            </h2>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="color: #0ea5e9; margin: 0 0 15px 0;">Personal Information</h3>
+              <p><strong>Name:</strong> ${fullName}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Phone:</strong> ${phone}</p>
+              ${organization ? `<p><strong>Organization:</strong> ${organization}</p>` : ''}
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="color: #0ea5e9; margin: 0 0 15px 0;">Stay Details</h3>
+              <p><strong>Arrival:</strong> ${formatDate(arrivalDate)}</p>
+              <p><strong>Departure:</strong> ${formatDate(departureDate)}</p>
+              <p><strong>Room Type:</strong> ${roomType.replace(/^\w/, c => c.toUpperCase())}</p>
+            </div>
+            
+            ${accessibilityNeeds || specialRequests || dietaryRequirements ? `
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="color: #0ea5e9; margin: 0 0 15px 0;">Special Requirements</h3>
+              ${accessibilityNeeds ? `<p><strong>Accessibility Needs:</strong><br>${accessibilityNeeds}</p>` : ''}
+              ${dietaryRequirements ? `<p><strong>Dietary Requirements:</strong><br>${dietaryRequirements}</p>` : ''}
+              ${specialRequests ? `<p><strong>Special Requests:</strong><br>${specialRequests}</p>` : ''}
+            </div>
+            ` : ''}
+            
+            ${emergencyContactName || emergencyContactPhone ? `
+            <div style="background: white; padding: 20px; border-radius: 8px;">
+              <h3 style="color: #0ea5e9; margin: 0 0 15px 0;">Emergency Contact</h3>
+              ${emergencyContactName ? `<p><strong>Name:</strong> ${emergencyContactName}</p>` : ''}
+              ${emergencyContactPhone ? `<p><strong>Phone:</strong> ${emergencyContactPhone}</p>` : ''}
+            </div>
+            ` : ''}
+            
+            <div style="margin-top: 30px; padding: 20px; background: #e0f2fe; border-radius: 8px; text-align: center;">
+              <p style="margin: 0; color: #0369a1; font-size: 14px;">
+                <strong>Request ID:</strong> ${requestId}
+              </p>
+              <p style="margin: 5px 0 0 0; color: #64748b; font-size: 12px;">
+                Please contact the guest within 24-48 hours with availability and pricing details.
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || 'noreply@vyuga.org',
+        to: 'vikasthangavel@gmail.com',
+        subject: `🏨 New Accommodation Request - ${fullName}`,
+        html: adminEmailHtml
+      })
+
+      console.log('✅ Admin notification email sent successfully')
+    } catch (emailError) {
+      console.error('❌ Failed to send admin notification:', emailError)
+      // Don't fail the request if email fails
+    }
+
+    // Send confirmation email to user
+    try {
+      const confirmationEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #0ea5e9 0%, #84cc16 100%); padding: 30px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">🏨 Accommodation Request Received</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">VYUGA Event Portal</p>
+          </div>
+          
+          <div style="padding: 30px; background: #f8fafc;">
+            <p style="font-size: 16px; color: #1e293b; margin-bottom: 25px;">
+              Dear ${fullName},
+            </p>
+            
+            <p style="color: #475569; line-height: 1.6; margin-bottom: 20px;">
+              Thank you for submitting your accommodation request for the VYUGA event. We have received your request and our team will review it shortly.
+            </p>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="color: #0ea5e9; margin: 0 0 15px 0;">Your Request Summary</h3>
+              <p><strong>Arrival:</strong> ${formatDate(arrivalDate)}</p>
+              <p><strong>Departure:</strong> ${formatDate(departureDate)}</p>
+              <p><strong>Room Type:</strong> ${roomType.replace(/^\w/, c => c.toUpperCase())}</p>
+              <p style="margin: 0;"><strong>Request ID:</strong> ${requestId}</p>
+            </div>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0ea5e9; margin-bottom: 25px;">
+              <h3 style="color: #0369a1; margin: 0 0 10px 0;">What Happens Next?</h3>
+              <ul style="color: #475569; margin: 0; padding-left: 20px;">
+                <li>Our team will review your accommodation needs</li>
+                <li>We'll check availability with our partner hotels and campus facilities</li>
+                <li>You'll receive a detailed response within 24-48 hours with:</li>
+                <ul style="margin-top: 5px;">
+                  <li>Available accommodation options</li>
+                  <li>Pricing details</li>
+                  <li>Booking confirmation process</li>
+                </ul>
+              </ul>
+            </div>
+            
+            <p style="color: #475569; line-height: 1.6; margin-bottom: 25px;">
+              If you have any urgent questions, please don't hesitate to contact us at 
+              <a href="mailto:accommodation@vyuga.org" style="color: #0ea5e9;">accommodation@vyuga.org</a>.
+            </p>
+            
+            <p style="color: #64748b; font-size: 14px; margin: 0;">
+              Best regards,<br>
+              <strong>VYUGA Accommodation Team</strong>
+            </p>
+          </div>
+        </div>
+      `
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || 'noreply@vyuga.org',
+        to: email,
+        subject: '🏨 Accommodation Request Confirmed - VYUGA',
+        html: confirmationEmailHtml
+      })
+
+      console.log('✅ User confirmation email sent successfully')
+    } catch (emailError) {
+      console.error('❌ Failed to send user confirmation:', emailError)
+      // Don't fail the request if email fails
+    }
+
+    console.log('✅ Accommodation request processed successfully')
+    res.status(201).json({
+      success: true,
+      message: 'Accommodation request submitted successfully',
+      requestId
+    })
+
+  } catch (error) {
+    console.error('❌ Accommodation Request Error:', error)
+    await logError({ source: 'user', endpoint: '/api/accommodation-request', method: 'POST', errorType: 'server_error', message: error.message, stack: error.stack, req })
+    res.status(500).json({
+      success: false,
+      message: 'Failed to submit accommodation request'
+    })
+  }
+})
+
 // ── Admin middleware ──────────────────────────────────────────────────────────
 function requireAdmin(req, res, next) {
   const token = req.headers['x-admin-token'] || req.query.token
@@ -1181,6 +1447,24 @@ app.get('/api/admin/chess', requireAdmin, async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     await logError({ source: 'admin', endpoint: '/api/admin/chess', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: all accommodation requests ─────────────────────────────────────────
+app.get('/api/admin/accommodation', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('accommodation_requests')
+      .select('*')
+      .order('submitted_at', { ascending: false })
+    if (error) {
+      await logError({ source: 'admin', endpoint: '/api/admin/accommodation', method: 'GET', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: '/api/admin/accommodation', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })

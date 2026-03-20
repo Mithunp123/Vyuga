@@ -13,12 +13,15 @@ const TABS = [
   { id: 'talent-student',     label: 'Talent Utsav – Nominations',       endpoint: '/api/admin/talent-student' },
   { id: 'cricket',            label: 'Blind Cricket',                    endpoint: '/api/admin/cricket' },
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
+  { id: 'accommodation',      label: 'Accommodation Requests',           endpoint: '/api/admin/accommodation' },
 ]
 
 const STATUS_CFG = {
   approved: { label: 'Approved', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
   rejected: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   pending:  { label: 'Pending',  color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+  confirmed: { label: 'Confirmed', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  declined: { label: 'Declined', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
 }
 
 // ── Column definitions per tab ────────────────────────────────────────────────
@@ -97,6 +100,22 @@ const COLUMNS = {
     { key: 'experience_level',  label: 'Level' },
     { key: 'has_played_before', label: 'Exp?',       fmt: (v) => (v ? 'Yes' : 'No') },
   ],
+  accommodation: [
+    { key: 'submitted_at',           label: 'Submitted',      fmt: fmtDate },
+    { key: 'full_name',              label: 'Name' },
+    { key: 'email',                  label: 'Email' },
+    { key: 'phone',                  label: 'Phone' },
+    { key: 'organization',           label: 'Organization' },
+    { key: 'arrival_date',           label: 'Arrival',        fmt: fmtDateOnly },
+    { key: 'departure_date',         label: 'Departure',      fmt: fmtDateOnly },
+    { key: 'room_type',              label: 'Room Type',      fmt: fmtRoomType },
+    { key: 'accessibility_needs',    label: 'Accessibility',  fmt: fmtTruncate },
+    { key: 'special_requests',       label: 'Special Req',    fmt: fmtTruncate },
+    { key: 'dietary_requirements',   label: 'Dietary',        fmt: fmtTruncate },
+    { key: 'emergency_contact_name', label: 'Emergency Contact' },
+    { key: 'emergency_contact_phone', label: 'Emergency Phone' },
+    { key: 'admin_notes',            label: 'Admin Notes',    fmt: fmtTruncate },
+  ],
 }
 
 function fmtDate(v) {
@@ -139,6 +158,22 @@ function fmtTournamentExperience(experience) {
       )}
     </div>
   )
+}
+
+function fmtDateOnly(v) {
+  if (!v) return '—'
+  return new Date(v).toLocaleDateString('en-IN', { dateStyle: 'medium' })
+}
+
+function fmtRoomType(v) {
+  if (!v) return '—'
+  return v.charAt(0).toUpperCase() + v.slice(1)
+}
+
+function fmtTruncate(v) {
+  if (!v) return '—'
+  if (typeof v !== 'string') return v
+  return v.length > 30 ? v.substring(0, 30) + '...' : v
 }
 
 function exportCSV(tabId, rows) {

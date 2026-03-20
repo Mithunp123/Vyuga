@@ -144,10 +144,15 @@ async function sendInnovationPwdConfirmation(d) {
 
 // ── 3. Talent Utsav – Organization ───────────────────────────────────────────
 async function sendTalentOrgConfirmation(d) {
+  const focusText = d.orgFocus === 'single' ? 'Single Disability Type' : 'Multiple Disability Types'
+  const disabilityList = Array.isArray(d.disabilityTypes) ? d.disabilityTypes.join(', ') : (d.disabilityTypes || 'Not specified')
+  
   const html = shell('Organization Registered – Special Talent Utsav', `
     ${section('Organization Details', [
       row('Organization Name', d.orgName),
       row('Type', d.orgType ? d.orgType.replace(/_/g, ' ') : ''),
+      row('Focus', focusText),
+      row('Disability Types', disabilityList),
       row('Address', d.address),
       row('Students to Nominate', d.studentCount),
     ].join(''))}
@@ -294,4 +299,6 @@ module.exports = {
   sendCricketConfirmation,
   sendChessConfirmation,
   sendStatusUpdateEmail,
+  sendMail,
+  transporter,
 }

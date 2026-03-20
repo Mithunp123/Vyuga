@@ -137,42 +137,5 @@ export const exhibitors = [
   },
 ]
 
-export const galleryImages = [
-  {
-    alt: 'Conference keynote audience',
-    src: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Networking session',
-    src: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Workshop discussion',
-    src: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Panel talk on stage',
-    src: 'https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Expo booths',
-    src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Speaker close-up',
-    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Audience applauding',
-    src: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Volunteer help desk',
-    src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    alt: 'Team photo',
-    src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-  },
-]
+export const galleryImages = []
 

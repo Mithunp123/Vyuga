@@ -6,10 +6,24 @@ import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 
+const DISABILITY_TYPES = [
+  'Visual Impairment',
+  'Low Vision', 
+  'Hearing Impairment',
+  'Mobility Impairment',
+  'Speech Impairment',
+  'Intellectual Disability',
+  'Autism Spectrum Disorder',
+  'Multiple Disabilities',
+  'Other',
+]
+
 const EMPTY = {
   orgName: '',
   orgType: '',
   orgTypeOther: '',
+  orgFocus: '', // 'single' or 'multiple'
+  disabilityTypes: [], // array of selected disability types
   contactName: '',
   contactEmail: '',
   contactPhone: '',
@@ -28,12 +42,75 @@ export default function TalentOrgRegistration() {
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
+  const handleDisabilityTypeChange = (disability) => {
+    setForm((prevForm) => {
+      const currentTypes = prevForm.disabilityTypes || []
+      const isSelected = currentTypes.includes(disability)
+      
+      // If organization focuses on single disability, only allow one selection
+      if (prevForm.orgFocus === 'single') {
+        return {
+          ...prevForm,
+          disabilityTypes: isSelected ? [] : [disability]
+        }
+      }
+      
+      // For multiple disability focus, allow multiple selections
+      if (isSelected) {
+        return {
+          ...prevForm,
+          disabilityTypes: currentTypes.filter(type => type !== disability)
+        }
+      } else {
+        return {
+          ...prevForm,
+          disabilityTypes: [...currentTypes, disability]
+        }
+      }
+    })
+  }
+
+  // Reset disability types when focus changes
+  const handleFocusChange = (e) => {
+    setForm(prevForm => ({
+      ...prevForm,
+      orgFocus: e.target.value,
+      disabilityTypes: [] // Reset selections when focus type changes
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
-    if (form.orgType === 'other' && !form.orgTypeOther.trim()) { setError('Please enter organization type.'); setLoading(false); return }
+    
+    // Validation
+    if (!/^\d{10}$/.test(form.contactPhone)) { 
+      setError('Phone number must be exactly 10 digits.'); 
+      setLoading(false); 
+      return 
+    }
+    if (form.orgType === 'other' && !form.orgTypeOther.trim()) { 
+      setError('Please enter organization type.'); 
+      setLoading(false); 
+      return 
+    }
+    if (!form.orgFocus) {
+      setError('Please select organization focus.');
+      setLoading(false);
+      return
+    }
+    if (!form.disabilityTypes || form.disabilityTypes.length === 0) {
+      setError('Please select at least one disability type.');
+      setLoading(false);
+      return
+    }
+    if (form.orgFocus === 'single' && form.disabilityTypes.length > 1) {
+      setError('Single focus organizations can only select one disability type.');
+      setLoading(false);
+      return
+    }
+    
     try {
       await postJSON('/api/talent-org', form)
       setView('done')
@@ -108,6 +185,52 @@ export default function TalentOrgRegistration() {
           )}
           <Field label="Address" value={form.address} onChange={set('address')} />
           <Field label="Number of Students to Nominate" type="number" value={form.studentCount} onChange={set('studentCount')} required />
+        </Section>
+
+        <Section title="Organization Focus">
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+              Organization Focus <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.orgFocus}
+              onChange={handleFocusChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+              style={{ focusBorderColor: '#0197B2' }}
+            >
+              <option value="">Select focus</option>
+              <option value="single">Single Disability Type</option>
+              <option value="multiple">Multiple Disability Types</option>
+            </select>
+          </div>
+          
+          {form.orgFocus && (
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+                Disability Types Supported <span className="text-red-500">*</span>
+                {form.orgFocus === 'single' && <span className="text-xs normal-case text-slate-500"> (Select one)</span>}
+                {form.orgFocus === 'multiple' && <span className="text-xs normal-case text-slate-500"> (Select multiple)</span>}
+              </label>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {DISABILITY_TYPES.map((disability) => (
+                  <label
+                    key={disability}
+                    className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
+                  >
+                    <input
+                      type={form.orgFocus === 'single' ? 'radio' : 'checkbox'}
+                      name={form.orgFocus === 'single' ? 'singleDisability' : undefined}
+                      checked={form.disabilityTypes?.includes(disability) || false}
+                      onChange={() => handleDisabilityTypeChange(disability)}
+                      className="shrink-0 accent-[#0197B2]"
+                    />
+                    <span className="text-slate-700">{disability}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </Section>
 
         <Section title="Contact Person">
