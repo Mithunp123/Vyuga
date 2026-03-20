@@ -27,10 +27,34 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
 }
 
 const stats = [
-  { value: 2, suffix: '', label: 'DAYS', accent: 'text-brand-cyan' },
-  { value: 200, suffix: '+', label: 'INNOVATORS & SPECIAL ABLED', accent: 'text-brand-lime' },
-  { value: 1000, suffix: '+', label: 'ATTENDEES', accent: 'text-brand-cyan' },
-  { value: 50, suffix: '+', label: 'NGOs & SPECIAL SCHOOLS', accent: 'text-brand-lime' },
+  { 
+    value: 2, 
+    suffix: '', 
+    label: 'DAYS', 
+    description: 'Of innovation, talent showcase, and inclusive technology demonstrations',
+    accent: 'text-brand-cyan' 
+  },
+  { 
+    value: 200, 
+    suffix: '+', 
+    label: 'INNOVATORS & SPECIAL ABLED', 
+    description: 'Innovators, special bled children, and blind cricket players — where over 80% are persons with disabilities',
+    accent: 'text-brand-lime' 
+  },
+  { 
+    value: 1000, 
+    suffix: '+', 
+    label: 'ATTENDEES', 
+    description: 'NGOs, schools, families, volunteers, students',
+    accent: 'text-brand-cyan' 
+  },
+  { 
+    value: 50, 
+    suffix: '+', 
+    label: 'NGOs & SPECIAL SCHOOLS', 
+    description: 'NGOs & Special Schools Participation',
+    accent: 'text-brand-lime' 
+  },
 ]
 
 const features = [
@@ -179,11 +203,16 @@ export default function About() {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
 
                 {/* Content */}
-                <div className="relative text-center px-6 py-8 sm:px-8 sm:py-10">
-                  <p className={`font-impact text-5xl sm:text-6xl lg:text-7xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:text-white group-hover:drop-shadow-lg`}>
+                <div className="relative text-center px-4 py-6 sm:px-6 sm:py-8">
+                  <p className={`font-impact text-4xl sm:text-5xl lg:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:text-white group-hover:drop-shadow-lg`}>
                     <AnimatedCounter target={s.value} suffix={s.suffix} />
                   </p>
                   <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-600 transition-colors duration-300">{s.label}</p>
+                  {s.description && (
+                    <p className="mt-3 text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-700 transition-colors duration-300 max-w-40 mx-auto">
+                      {s.description}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             ))}
