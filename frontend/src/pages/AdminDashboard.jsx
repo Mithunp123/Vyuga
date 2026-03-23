@@ -9,7 +9,6 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const TABS = [
   { id: 'innovation-college', label: 'Innovation (For Specially Abled)', endpoint: '/api/admin/innovation-college' },
   { id: 'innovation-pwd',     label: 'Innovation (By Specially Abled)',  endpoint: '/api/admin/innovation-pwd' },
-  { id: 'talent-org',         label: 'Talent Utsav – Organisations',     endpoint: '/api/admin/talent-org' },
   { id: 'talent-student',     label: 'Talent Utsav – Nominations',       endpoint: '/api/admin/talent-student' },
   { id: 'cricket',            label: 'Blind Cricket',                    endpoint: '/api/admin/cricket' },
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
@@ -17,11 +16,9 @@ const TABS = [
 ]
 
 const STATUS_CFG = {
-  approved: { label: 'Approved', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  approved: { label: 'Selected', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
   rejected: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   pending:  { label: 'Pending',  color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
-  confirmed: { label: 'Confirmed', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
-  declined: { label: 'Declined', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
 }
 
 // ── Column definitions per tab ────────────────────────────────────────────────
@@ -722,6 +719,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [expandedRow, setExpandedRow] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const navigate = useNavigate()
 
   const token = sessionStorage.getItem('vyuga_admin_token')
@@ -837,62 +835,82 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      {/* ── Navbar (matches user site) ── */}
-      <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-lg border-b-2 border-slate-100">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-start gap-3 px-4 py-3 sm:px-6">
-          {/* Logo */}
-          <button onClick={goHome} className="inline-flex items-center gap-2.5 transition-transform hover:scale-105 relative z-10 flex-shrink-0">
-            <img src={logoImg} alt="VYUGA" className="h-12 w-auto object-contain drop-shadow-lg" />
+    <div className="flex h-screen bg-white text-slate-900 overflow-hidden">
+      {/* ── Sidebar (Desktop) ── */}
+      <aside className={`flex-col border-r border-slate-200 bg-white z-20 shadow-sm shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-72 hidden lg:flex' : 'w-0 hidden'}`}>
+        <div className="flex h-20 shrink-0 items-center justify-center border-b border-slate-100 overflow-hidden">
+          <button onClick={goHome} className="transition-transform hover:scale-105">
+            <img src={logoImg} alt="VYUGA" className="h-10 w-auto object-contain drop-shadow-lg" />
+          </button>
+        </div>
+        
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar overflow-x-hidden">
+          <button
+            onClick={goHome}
+            className={[
+              'w-full flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-300 rounded-xl relative overflow-hidden group text-left whitespace-nowrap',
+              !activeTab
+                ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white shadow-lg shadow-cyan-500/30'
+                : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-cyan-600',
+            ].join(' ')}
+          >
+             <span className="relative z-10">Dashboard</span>
           </button>
 
-          {/* Desktop nav links */}
-          <nav className="hidden flex-1 items-center gap-2 lg:flex" aria-label="Admin navigation">
-            <button
-              onClick={goHome}
-              className={[
-                'px-3 py-2 text-xs font-bold transition-all duration-300 rounded-lg border-2 relative overflow-hidden',
-                !activeTab
-                  ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-[1.08] hover:-translate-y-0.5 ring-2 ring-cyan-300/50'
-                  : 'bg-white text-slate-700 border-slate-300 hover:border-cyan-500 hover:text-cyan-600 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-teal-50',
-              ].join(' ')}
-            >
-              <span className="relative z-10">Dashboard</span>
-              {!activeTab && <span className="absolute inset-0 bg-white/20 animate-pulse"></span>}
-            </button>
-            {TABS.map((tab) => {
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => openEvent(tab.id)}
-                  className={[
-                    'px-3 py-2 text-xs font-bold transition-all duration-300 rounded-lg border-2 relative overflow-hidden whitespace-nowrap',
-                    isActive
-                      ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white border-cyan-400 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-[1.08] hover:-translate-y-0.5 ring-2 ring-cyan-300/50'
-                      : 'bg-white text-slate-700 border-slate-300 hover:border-cyan-500 hover:text-cyan-600 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-teal-50',
-                  ].join(' ')}
-                >
-                  <span className="relative z-10">{tab.label}</span>
-                  {isActive && <span className="absolute inset-0 bg-white/20 animate-pulse"></span>}
-                </button>
-              )
-            })}
-          </nav>
+          <div className="mt-6 mb-2 px-4 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase whitespace-nowrap">Events</div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-            <button
-              onClick={logout}
-              className="hidden items-center justify-center overflow-hidden rounded-full px-4 py-2 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition-all hover:shadow-cyan-500/30 hover:scale-[1.04] lg:inline-flex bg-gradient-to-r from-cyan-500 to-teal-500"
-            >
-              Logout
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                onClick={() => openEvent(tab.id)}
+                className={[
+                  'w-full flex items-center gap-3 px-4 py-3 text-sm font-bold transition-all duration-300 rounded-xl relative overflow-hidden text-left group whitespace-nowrap',
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-cyan-600',
+                ].join(' ')}
+              >
+                <span className="relative z-10 truncate">{tab.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="border-t border-slate-100 p-4 shrink-0 overflow-hidden">
+          <button
+            onClick={logout}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600 transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-100 whitespace-nowrap"
+          >
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main Content Wrapper ── */}
+      <div className="flex flex-1 flex-col h-screen overflow-hidden relative">
+      
+        {/* ── Desktop Toggle Button (Visible only on lg) ── */}
+        <div className="hidden lg:flex absolute top-4 left-4 z-40">
+           <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 bg-white rounded-lg shadow-md border border-slate-200 hover:bg-slate-50 transition-colors"
+          >
+            <Menu className="h-5 w-5 text-slate-600" />
+          </button>
+        </div>
+
+        {/* ── Mobile Header ── */}
+        <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-slate-100 lg:hidden shrink-0">
+          <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-3 sm:px-6">
+            <button onClick={goHome} className="inline-flex items-center gap-2.5 transition-transform hover:scale-105 relative z-10 flex-shrink-0">
+              <img src={logoImg} alt="VYUGA" className="h-8 w-auto object-contain drop-shadow-lg" />
             </button>
 
-            {/* Mobile menu toggle */}
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-xl border border-brand-cyan/15 bg-white/60 p-2.5 text-slate-700 backdrop-blur transition-all hover:bg-white hover:shadow-md lg:hidden"
+              className="inline-flex items-center justify-center rounded-xl border border-brand-cyan/15 bg-white/60 p-2.5 text-slate-700 backdrop-blur transition-all hover:bg-white hover:shadow-md"
               aria-label="Open menu"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
@@ -900,22 +918,19 @@ export default function AdminDashboard() {
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
-        </div>
 
-        {/* Mobile dropdown */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden lg:hidden"
-            >
-              <div className="mx-auto max-w-7xl px-4 pb-4 sm:px-6">
-                <div className="rounded-2xl border border-brand-cyan/10 bg-white/80 p-3 shadow-2xl shadow-brand-cyan/5 backdrop-blur-xl">
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden border-t border-slate-100 bg-white"
+              >
+                <div className="px-4 pb-4 sm:px-6 pt-2">
                   <div className="grid gap-0.5">
                     <button
-                      onClick={goHome}
+                      onClick={() => { goHome(); setMobileOpen(false); }}
                       className={[
                         'rounded-xl px-4 py-2.5 text-sm font-semibold text-left transition-all',
                         !activeTab ? 'bg-brand-cyan/5 text-brand-cyan' : 'text-slate-600 hover:bg-brand-cyan/5 hover:text-brand-cyan',
@@ -928,7 +943,7 @@ export default function AdminDashboard() {
                     {TABS.map((tab) => (
                       <button
                         key={tab.id}
-                        onClick={() => openEvent(tab.id)}
+                        onClick={() => { openEvent(tab.id); setMobileOpen(false); }}
                         className={[
                           'rounded-xl px-4 py-2.5 text-sm font-semibold text-left transition-all',
                           activeTab === tab.id ? 'bg-brand-cyan/5 text-brand-cyan' : 'text-slate-600 hover:bg-brand-cyan/5 hover:text-brand-cyan',
@@ -947,11 +962,12 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </header>
+
+        <main className="flex-1 overflow-y-auto bg-slate-50/30">
 
       {/* ══════════════ STATS OVERVIEW (default) ══════════════ */}
       {!activeTab && (
@@ -959,7 +975,7 @@ export default function AdminDashboard() {
           {/* Hero */}
          
 
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 pb-20 pt-8">
+          <div className="mx-auto max-w-7xl px-6 sm:px-8 pb-20 pt-16 lg:pt-8">
             {/* Total summary card */}
             <div className="mb-10 rounded-2xl border border-slate-200 p-8 shadow-sm" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #f4fef0 100%)' }}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1064,7 @@ export default function AdminDashboard() {
       {activeTab && (
         <>
           {/* Hero for event */}
-          <div className="relative overflow-hidden pt-12 pb-10" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #ffffff 60%, #e8f9de 100%)' }}>
+          <div className="relative overflow-hidden pt-16 lg:pt-12 pb-10" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #ffffff 60%, #e8f9de 100%)' }}>
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full opacity-20" style={{ background: '#0197B2', filter: 'blur(70px)' }} />
               <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full opacity-15" style={{ background: '#5BCB2B', filter: 'blur(70px)' }} />
@@ -1289,6 +1305,8 @@ export default function AdminDashboard() {
           </div>
         </>
       )}
+      </main>
+      </div>
     </div>
   )
 }

@@ -4,6 +4,17 @@ import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import CityAutocomplete from '../components/CityAutocomplete.jsx'
+
+const STATES = [
+  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam',
+  'Bihar', 'Chandigarh', 'Chattisgarh', 'Dadra and Nagar Haveli', 'Daman and Diu',
+  'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir',
+  'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh',
+  'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
+  'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+  'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+];
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -357,8 +368,29 @@ export default function TalentStudentNomination() {
           <div className="sm:col-span-2">
             <Field label="Organization Address" value={form.orgAddress} onChange={set('orgAddress')} />
           </div>
-          <Field label="City" value={form.orgCity} onChange={set('orgCity')} required />
-          <Field label="State" value={form.orgState} onChange={set('orgState')} required />
+          <CityAutocomplete
+            value={form.orgCity}
+            onChange={(val) => setForm((f) => ({ ...f, orgCity: val }))}
+            required={true}
+            label="City"
+          />
+          
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              State <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.orgState}
+              onChange={set('orgState')}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            >
+              <option value="">Select State</option>
+              {STATES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
           <Field label="ZIP Code" value={form.orgZip} onChange={set('orgZip')} placeholder="Optional" />
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
@@ -781,7 +813,7 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title }) {
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title, list }) {
   const handlePhoneInput = (e) => {
     if (type === 'tel') {
       // Only allow digits
@@ -808,6 +840,7 @@ function Field({ label, value, onChange, type = 'text', required = false, patter
         pattern={pattern}
         maxLength={maxLength}
         title={title}
+        list={list}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
       />
     </div>

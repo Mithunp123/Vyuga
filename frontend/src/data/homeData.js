@@ -42,6 +42,7 @@ export const scheduleSummary = [
     description:
       'Off-the-clock, high-impact. Bridge the gap between R&D, venture capital, and inclusive policy in a curated, relaxed environment.',
   },
+  
 ]
 
 export const day1Speakers = [

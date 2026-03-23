@@ -3,6 +3,17 @@ import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import CityAutocomplete from '../components/CityAutocomplete.jsx'
+
+const STATES = [
+  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam',
+  'Bihar', 'Chandigarh', 'Chattisgarh', 'Dadra and Nagar Haveli', 'Daman and Diu',
+  'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir',
+  'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh',
+  'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
+  'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+  'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+];
 
 const EMPTY = {
   participantName: '',
@@ -137,8 +148,29 @@ export default function BlindChessForm() {
           <Field label="Email" type="email" value={form.email} onChange={set('email')} required />
           <Field label="Phone" type="tel" value={form.phone} onChange={set('phone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <Field label="Age" type="number" value={form.age} onChange={set('age')} required min={5} max={100} />
-          <Field label="City" value={form.city} onChange={set('city')} required />
-          <Field label="State" value={form.state} onChange={set('state')} required />
+          <CityAutocomplete
+            value={form.city}
+            onChange={(val) => setForm((f) => ({ ...f, city: val }))}
+            required={true}
+            label="City"
+          />
+
+          <div>
+             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                State <span className="text-red-500">*</span>
+             </label>
+             <select
+                required
+                value={form.state}
+                onChange={set('state')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+             >
+                <option value="">Select State</option>
+                {STATES.map((s) => (
+                   <option key={s} value={s}>{s}</option>
+                ))}
+             </select>
+          </div>
           <div>
             <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Disability Type <span className="text-red-500">*</span>
@@ -253,7 +285,7 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title, min, max }) {
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title, min, max, list }) {
   const handlePhoneInput = (e) => {
     if (type === 'tel') {
       e.target.value = e.target.value.replace(/\D/g, '')
@@ -281,6 +313,7 @@ function Field({ label, value, onChange, type = 'text', required = false, patter
         title={title}
         min={min}
         max={max}
+        list={list}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
       />
     </div>
