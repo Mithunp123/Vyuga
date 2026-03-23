@@ -58,34 +58,6 @@ const sponsorshipTiers = [
   }
 ]
 
-function SponsorCTA() {
-  const ctaRef = useRef(null)
-
-  return (
-    <div ref={ctaRef} className="relative mt-20 bg-slate-950 py-16">
-      <div className="absolute inset-0 dot-grid opacity-10" />
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-        className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6"
-      >
-        <motion.p className="font-marker text-xl text-brand-lime sm:text-2xl">Become a sponsor</motion.p>
-        <p className="mt-4 font-serif text-lg italic text-white/60 sm:text-xl">
-          Partner with us to reach 500+ accessibility innovators, designers, and engineers through the VYUGA Ability Carnival.
-        </p>
-        <a
-          href="mailto:connect@nexyugainnovations.com"
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-10 py-4 font-hero text-sm font-bold text-slate-900 transition-all hover:shadow-xl hover:scale-105"
-        >
-          Get in touch
-        </a>
-      </motion.div>
-    </div>
-  )
-}
-
 export default function SponsorsPage() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
@@ -94,116 +66,109 @@ export default function SponsorsPage() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      {/* Hero — light with gradient accents */}
-      <section className="relative overflow-hidden pt-32 pb-16 sm:pt-40 sm:pb-24">
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-brand-cyan/[0.06] blur-[180px]" />
-        <div className="pointer-events-none absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-brand-lime/[0.04] blur-[120px]" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+      {/* Hero — compact */}
+      <section className="relative overflow-hidden pt-24 pb-8 sm:pt-28 sm:pb-10">
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[600px] rounded-full bg-brand-cyan/[0.06] blur-[120px]" />
+        
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-3"
-          >
-            <div className="h-[2px] w-16 bg-gradient-to-r from-brand-lime to-brand-cyan" />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.3em] text-brand-cyan">FOR SPONSORS!</span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="mt-6"
+            transition={{ duration: 0.6 }}
           >
-            <span className="font-hero text-5xl font-black tracking-tight text-slate-900 sm:text-7xl lg:text-8xl">
+            <span className="font-hero text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
               Sponsorship{' '}
             </span>
-            <br />
-            <span className="font-marker text-5xl gradient-text sm:text-7xl lg:text-8xl">
+            <span className="font-marker text-4xl gradient-text sm:text-5xl">
               Benefits
             </span>
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 max-w-lg font-serif text-lg italic text-slate-400 sm:text-xl"
-          >
-            Partner with us to gain national-level visibility and reach through the VYUGA Ability Carnival.
-          </motion.p>
         </div>
       </section>
 
       {/* Sponsorship Benefits Table */}
-      <section ref={ref} className="relative overflow-hidden pb-20">
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+      <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
+        <div className="mx-auto max-w-6xl">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-            className="overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden rounded-2xl bg-white shadow-xl border border-slate-200"
           >
-            {/* Table Header */}
-            <div className="grid grid-cols-4 bg-gradient-to-r from-slate-50 to-white">
-              <div className="p-6 sm:p-8">
-                <h2 className="text-2xl font-bold text-brand-cyan sm:text-3xl">Benefits</h2>
-              </div>
-              {sponsorshipTiers.map((tier, idx) => (
-                <div key={tier.name} className="p-6 text-center sm:p-8">
-                  <div className={`inline-flex items-center justify-center rounded-full px-4 py-2 bg-gradient-to-r ${tier.color} text-white font-bold text-sm sm:text-base mb-2`}>
-                    {tier.name}
-                  </div>
-                  <div className={`text-2xl font-bold ${tier.textColor} sm:text-3xl`}>
-                    {tier.price}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Table Body */}
-            <div className="divide-y divide-slate-100">
-              {sponsorshipTiers[0].benefits.map((benefit, benefitIdx) => (
-                <div key={benefitIdx} className="grid grid-cols-4 hover:bg-slate-50/50 transition-colors">
-                  <div className="p-4 sm:p-6 font-medium text-slate-700">
-                    {benefit.name}
-                  </div>
-                  {sponsorshipTiers.map((tier, tierIdx) => (
-                    <div key={tierIdx} className="p-4 sm:p-6 text-center">
-                      {tier.benefits[benefitIdx]?.included ? (
-                        <div className="flex flex-col items-center gap-1">
-                          <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {tier.benefits[benefitIdx]?.note && (
-                            <span className="text-xs font-medium text-green-600 italic">
-                              {tier.benefits[benefitIdx].note}
-                            </span>
-                          )}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200">
+                    <th className="p-4 text-sm font-bold text-slate-500 uppercase tracking-wider w-1/3">Benefit</th>
+                    {sponsorshipTiers.map((tier) => (
+                      <th key={tier.name} className="p-4 text-center w-1/5 align-bottom">
+                        <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold text-white mb-2 bg-gradient-to-r ${tier.color}`}>
+                          {tier.name}
                         </div>
-                      ) : (
-                        <span className="text-slate-400 text-xl">-</span>
-                      )}
-                    </div>
+                        <div className={`text-xl font-bold ${tier.textColor}`}>
+                          {tier.price}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {sponsorshipTiers[0].benefits.map((benefit, idx) => (
+                    <motion.tr
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.05, duration: 0.4 }}
+                      className="hover:bg-slate-50/60 transition-colors group"
+                    >
+                      <td className="p-3 pl-6 text-sm font-medium text-slate-700 group-hover:text-slate-900">
+                        {benefit.name}
+                      </td>
+                      {sponsorshipTiers.map((tier, tIdx) => {
+                        const item = tier.benefits[idx]
+                        return (
+                          <td key={tIdx} className="p-3 text-center align-middle">
+                            {item.included ? (
+                              <motion.div 
+                                initial={{ scale: 0 }}
+                                whileInView={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 200, delay: 0.1 + (idx * 0.05) }}
+                                className="flex flex-col items-center justify-center"
+                              >
+                                <div className={`flex items-center justify-center w-6 h-6 rounded-full ${tier.bgColor} text-green-600`}>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                                {item.note && (
+                                  <span className="mt-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                                    {item.note}
+                                  </span>
+                                )}
+                              </motion.div>
+                            ) : (
+                              <span className="block w-1.5 h-1.5 mx-auto rounded-full bg-slate-200" />
+                            )}
+                          </td>
+                        )
+                      })}
+                    </motion.tr>
                   ))}
-                </div>
-              ))}
+                </tbody>
+              </table>
             </div>
           </motion.div>
-
-          {/* Bottom Text */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 text-center font-serif text-lg text-slate-600"
-          >
-            Sponsors will gain national-level visibility and reach through the VYUGA Ability Carnival
-          </motion.p>
         </div>
-
-        <SponsorCTA />
+        
+        <div className="mt-8 text-center">
+             <a
+              href="mailto:connect@nexyugainnovations.com"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-brand-cyan/20 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-cyan/30"
+            >
+              Become a Sponsor
+            </a>
+        </div>
       </section>
 
       <Footer />
