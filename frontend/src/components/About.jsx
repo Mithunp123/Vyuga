@@ -74,6 +74,29 @@ const aims = [
   'Inspire society to see ability, not disability'
 ]
 
+const eventsList = [
+  {
+    title: "Innovation Fest for Differently Abled",
+    description: "Where students solve real disability-related problem statements in teams and build practical solutions.",
+    color: "text-brand-cyan"
+  },
+  {
+    title: "Innovation Fest by Differently Abled",
+    description: "An open challenge for disabled innovators and teams to present impactful ideas aligned with social goals.",
+    color: "text-brand-lime"
+  },
+  {
+    title: "Special Talent Utsav",
+    description: "A performance platform where schools and organizations nominate participants and top finalists showcase their talent on stage.",
+    color: "text-brand-cyan"
+  },
+  {
+    title: "Blind Cricket",
+    description: "A tournament for adults with disabilities where teams compete for prizes and a championship trophy.",
+    color: "text-brand-lime"
+  }
+]
+
 export default function About() {
   const sectionRef = useRef(null)
   const inView = useInView(sectionRef, { once: true, amount: 0.15 })
@@ -268,38 +291,30 @@ export default function About() {
 
           {/* Two-column text + feature list — no boxes */}
           <div className="mt-16 grid gap-16 lg:grid-cols-5">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+            <div
               className="lg:col-span-2"
             >
-              <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
+              <p className="text-lg leading-relaxed text-slate-800 font-medium sm:text-xl">
                 Vyuga is not just an event — it's a space where differently abled individuals are celebrated, heard, and empowered. 
                 In a world where they are often limited by opportunities rather than their potential.
               </p>
 
-              <motion.blockquote
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="mt-10 border-l-2 border-brand-cyan/40 pl-6"
+              <p className="mt-6 text-base leading-relaxed text-slate-700 sm:text-lg">
+                Vyuga features four major event experiences in a simple and inclusive format, designed to spotlight talent, innovation, and resilience.
+              </p>
+
+              <blockquote
+                className="mt-10 border-l-4 border-brand-cyan pl-6"
               >
-                <p className="font-serif text-xl italic text-slate-700 sm:text-2xl">
+                <p className="font-serif text-xl italic text-slate-900 font-bold sm:text-2xl">
                   "Disability is not a limitation — lack of opportunity is."
                 </p>
-                <cite className="mt-3 block font-mono text-[10px] not-italic tracking-[0.3em] text-slate-400">
+                <cite className="mt-3 block font-mono text-[10px] not-italic tracking-[0.3em] text-slate-500 font-bold">
                   — VYUGA BELIEF
                 </cite>
-              </motion.blockquote>
+              </blockquote>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.6 }}
+              <div
                 className="mt-12 max-w-[280px]"
               >
                 <img 
@@ -307,8 +322,8 @@ export default function About() {
                   alt="About Vyuga" 
                   className="w-full h-auto object-contain"
                 />
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
             {/* Platform examples */}
             <div className="lg:col-span-3">
@@ -317,28 +332,20 @@ export default function About() {
               </p>
               <div className="space-y-0 mb-10">
                 {features.map((item, idx) => (
-                  <motion.div
+                  <div
                     key={item.text}
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
                     className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-cyan/30"
                   >
                     <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                    <span className={`text-base sm:text-lg transition-all duration-500 ${item.accent} group-hover:translate-x-2`}>
+                    <span className={`text-base sm:text-lg transition-all duration-500 font-bold ${item.accent} group-hover:translate-x-2`}>
                       {item.text}
                     </span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
               {/* Mission statement */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.7 }}
+              <div
                 className="rounded-2xl bg-gradient-to-br from-brand-cyan-light/20 to-brand-lime-light/20 p-6 border border-brand-cyan/10"
               >
                 <p className="font-display text-sm font-bold text-slate-600 uppercase tracking-wider mb-4">
@@ -348,21 +355,43 @@ export default function About() {
                   {aims.map((aim, idx) => (
                     <div key={aim} className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
-                      <span className="text-sm font-medium text-slate-700">{aim}</span>
+                      <span className="text-sm font-bold text-slate-800">{aim}</span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-6 pt-4 border-t border-brand-cyan/20">
-                  <p className="font-serif text-lg italic text-slate-700 text-center">
+                  <p className="font-serif text-lg italic text-slate-900 font-bold text-center">
                     This is more than a competition. This is more than a festival.
                   </p>
-                  <p className="font-marker text-xl text-brand-cyan text-center mt-2">
+                  <p className="font-marker text-xl text-brand-cyan font-bold text-center mt-2">
                     Vyuga is a movement that turns hidden strength into pride.
                   </p>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ── EVENT DETAILS SECTION ── */}
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 border-t border-slate-100">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="gradient-line w-16" />
+          <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">EVENT EXPERIENCES</span>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2">
+          {eventsList.map((event, index) => (
+             <div key={index} className="group relative bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-brand-lime rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <h4 className={`font-display text-xl font-bold ${event.color} mb-3 uppercase tracking-wide`}>
+                  {event.title}
+                </h4>
+                <p className="text-slate-600 leading-relaxed font-medium">
+                  {event.description}
+                </p>
+             </div>
+          ))}
         </div>
       </div>
 
