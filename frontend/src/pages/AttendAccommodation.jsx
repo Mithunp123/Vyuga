@@ -87,7 +87,7 @@ export default function AttendAccommodation() {
     >
       <SubmitLoader visible={loading} />
       
-      {/* Information Section */}
+      {/* Information Section 
       <div className="mb-8 rounded-2xl bg-gradient-to-r from-brand-cyan-light/50 to-brand-lime-light/50 p-6">
         <h3 className="mb-4 font-hero text-xl font-bold text-slate-900">Accommodation Information</h3>
         <ul className="space-y-2 text-sm text-slate-600">
@@ -98,7 +98,9 @@ export default function AttendAccommodation() {
           <li>• Transportation assistance available on request</li>
         </ul>
       </div>
+      */}
 
+      {/* 
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}
@@ -195,6 +197,14 @@ export default function AttendAccommodation() {
           </button>
         </div>
       </motion.form>
+      */}
+      
+      <div className="mt-8 rounded-xl border-2 border-brand-cyan/20 bg-brand-cyan/5 p-8 text-center">
+        <h3 className="text-xl font-bold text-slate-800 mb-2">Registration Closed</h3>
+        <p className="text-slate-600">
+          Our team will contact you regarding accommodation after the registration of all events is closed.
+        </p>
+      </div>
     </PageShell>
   )
 }

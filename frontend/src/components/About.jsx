@@ -32,28 +32,28 @@ const stats = [
     value: 2, 
     suffix: '', 
     label: 'DAYS', 
-    description: 'Of innovation, talent showcase, and inclusive technology demonstrations',
+    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 200, 
     suffix: '+', 
-    label: 'INNOVATORS & SPECIAL ABLED', 
-    description: 'Innovators, special bled children, and blind cricket players — where over 80% are persons with disabilities',
+    label: 'ELITES & ADAPTIVE INNOVATORS', 
+    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design.',
     accent: 'text-brand-lime' 
   },
   { 
     value: 1000, 
     suffix: '+', 
     label: 'ATTENDEES', 
-    description: 'NGOs, schools, families, volunteers, students',
+    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 50, 
     suffix: '+', 
     label: 'NGOs & SPECIAL SCHOOLS', 
-    description: 'NGOs & Special Schools Participation',
+    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility.',
     accent: 'text-brand-lime' 
   },
 ]
