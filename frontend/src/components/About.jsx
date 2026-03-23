@@ -34,28 +34,28 @@ const stats = [
     value: 2, 
     suffix: '', 
     label: 'DAYS', 
-    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech.',
+    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech, inclusive storytelling, and real-world collaboration across every session.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 200, 
     suffix: '+', 
     label: 'ELITES & ADAPTIVE INNOVATORS', 
-    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design.',
+    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design and mentorship-led innovation.',
     accent: 'text-brand-lime' 
   },
   { 
     value: 1000, 
     suffix: '+', 
     label: 'ATTENDEES', 
-    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future.',
+    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future through shared ideas, strategic partnerships, and actionable outcomes.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 50, 
     suffix: '+', 
     label: 'NGOs & SPECIAL SCHOOLS', 
-    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility.',
+    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility, stronger community support systems, and sustainable impact beyond the event.',
     accent: 'text-brand-lime' 
   },
 ]
@@ -205,7 +205,7 @@ export default function About() {
                   </p>
                   <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-600 transition-colors duration-300">{s.label}</p>
                   {s.description && (
-                    <p className="mt-3 text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-700 transition-colors duration-300 max-w-40 mx-auto">
+                    <p className="mt-3 max-w-40 mx-auto text-justify text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-700 transition-colors duration-300">
                       {s.description}
                     </p>
                   )}
