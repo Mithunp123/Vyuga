@@ -146,159 +146,126 @@ function fmtTruncate(v) {
 }
 
 function exportCSV(tabId, rows) {
-  const cols = COLUMNS[tabId]
+  if (!rows || !rows.length) return
 
-  // Special handling for talent-student to include team member details
-  if (tabId === 'talent-student') {
-    // Enhanced column headers for team member details
-    const enhancedCols = [
-      ...cols,
+  // 1. Determine all unique keys in the dataset
+  const allKeys = new Set()
+  rows.forEach(r => Object.keys(r).forEach(k => allKeys.add(k)))
+  
+  // 2. Merge with defined COLUMNS to prefer specific ordering/formatting where available
+  const definedCols = COLUMNS[tabId] || []
+  const definedKeySet = new Set(definedCols.map(c => c.key))
+  
+  // Create column definitions for keys that aren't in COLUMNS
+  const extraCols = Array.from(allKeys)
+    .filter(k => !definedKeySet.has(k))
+    .map(k => ({ key: k, label: k })) // Raw key as label
+    
+  // Combine: Defined columns first, then extra columns
+  let finalCols = [...definedCols, ...extraCols]
+
+  // 3. Special handling for talent-student team members
+  const isTalentStudent = (tabId === 'talent-student')
+  if (isTalentStudent) {
+    const memberCols = [
       { key: 'member_number', label: 'Member #' },
       { key: 'member_name', label: 'Member Name' },
       { key: 'member_age', label: 'Member Age' },
       { key: 'member_disability', label: 'Member Disability' },
-      { key: 'member_guardian_name', label: 'Guardian Name' },
-      { key: 'member_guardian_phone', label: 'Guardian Phone' }
+      { key: 'member_guardian_name', label: 'Member Guardian' },
+      { key: 'member_guardian_phone', label: 'Member Guardian Phone' }
     ]
+    finalCols = [...finalCols, ...memberCols]
+  }
 
-    const header = enhancedCols.map((c) => c.label).join(',')
-    const lines = []
+  // Helper to escape CSV values
+  const escapeCsv = (val) => {
+    if (val === null || val === undefined) return ''
+    const str = String(val)
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    return str
+  }
 
-    rows.forEach((r) => {
-      if (r.nomination_type === 'team' && r.team_members) {
-        // Parse team members data
-        let teamMembers = []
-        try {
-          teamMembers = typeof r.team_members === 'string' ? JSON.parse(r.team_members) : r.team_members
-        } catch (e) {
-          console.error('Error parsing team_members:', e)
-          teamMembers = []
-        }
+  // 4. Generate CSV lines
+  const header = finalCols.map(c => escapeCsv(c.label)).join(',')
+  const lines = []
 
-        // Create a row for each team member
-        if (Array.isArray(teamMembers) && teamMembers.length > 0) {
-          teamMembers.forEach((member, index) => {
-            const teamRow = enhancedCols.map((c) => {
-              let val = ''
-
-              // Handle original columns
-              if (cols.find(col => col.key === c.key)) {
-                const raw = r[c.key]
-                val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
-              }
-              // Handle team member specific columns
-              else if (c.key === 'member_number') {
-                val = index + 1
-              }
-              else if (c.key === 'member_name') {
-                val = member.name || ''
-              }
-              else if (c.key === 'member_age') {
-                val = member.age || ''
-              }
-              else if (c.key === 'member_disability') {
-                val = member.disabilityType || ''
-              }
-              else if (c.key === 'member_guardian_name') {
-                val = member.guardianName || ''
-              }
-              else if (c.key === 'member_guardian_phone') {
-                val = member.guardianPhone || ''
-              }
-
-              return `"${String(val).replace(/"/g, '""')}"`
-            }).join(',')
-
-            lines.push(teamRow)
-          })
-        } else {
-          // If no team members data, create one row with empty member columns
-          const emptyRow = enhancedCols.map((c) => {
-            let val = ''
-            if (cols.find(col => col.key === c.key)) {
-              const raw = r[c.key]
-              val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
-            }
-            return `"${String(val).replace(/"/g, '""')}"`
-          }).join(',')
-          lines.push(emptyRow)
-        }
-      } else {
-        // Individual nomination - use original row with empty member columns
-        const individualRow = enhancedCols.map((c) => {
-          let val = ''
-          if (cols.find(col => col.key === c.key)) {
-            const raw = r[c.key]
-            val = c.fmt ? c.fmt(raw, r) : (raw ?? '')
-          }
-          // Leave team member columns empty for individual nominations
-          return `"${String(val).replace(/"/g, '""')}"`
-        }).join(',')
-        lines.push(individualRow)
+  rows.forEach(r => {
+    // Check if we need to expand rows (only for talent-student teams)
+    if (isTalentStudent && r.nomination_type === 'team' && r.team_members) {
+      let teamMembers = []
+      try {
+        teamMembers = typeof r.team_members === 'string' ? JSON.parse(r.team_members) : r.team_members
+      } catch (e) {
+        teamMembers = []
       }
-    })
+      
+      if (Array.isArray(teamMembers) && teamMembers.length > 0) {
+         teamMembers.forEach((member, idx) => {
+             const rowValues = finalCols.map(c => {
+                 // Check if it is a member column
+                 if (c.key === 'member_number') return idx + 1
+                 if (c.key === 'member_name') return member.name || ''
+                 if (c.key === 'member_age') return member.age || ''
+                 if (c.key === 'member_disability') return member.disabilityType || ''
+                 if (c.key === 'member_guardian_name') return member.guardianName || ''
+                 if (c.key === 'member_guardian_phone') return member.guardianPhone || ''
+                 
+                 const val = r[c.key]
+                 
+                 // Try formatter if available
+                 if (c.fmt) {
+                     try {
+                        const formatted = c.fmt(val, r)
+                        if (typeof formatted === 'string' || typeof formatted === 'number') {
+                            return formatted
+                        }
+                     } catch(e) {}
+                 }
+                 
+                 if (typeof val === 'object' && val !== null) return JSON.stringify(val)
+                 return val
+             })
+             lines.push(rowValues.map(escapeCsv).join(','))
+         })
+         return // Done with this row (expanded)
+      }
+    }
 
-    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `vyuga_${tabId}_${Date.now()}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-  // Special handling for cricket to format tournament experience data
-  else if (tabId === 'cricket') {
-    const header = cols.map((c) => c.label).join(',')
-    const lines = rows.map((r) =>
-      cols.map((c) => {
-        const raw = r[c.key]
-        let val = raw ?? ''
-
-        // Special handling for tournament_experience
-        if (c.key === 'tournament_experience' && raw) {
-          try {
-            const expData = typeof raw === 'string' ? JSON.parse(raw) : raw
-            if (expData.hasPlayedBefore) {
-              val = `Experience: Yes | Count: ${expData.tournamentCount || 'N/A'} | Events: ${expData.eventNames || 'N/A'}`
-            } else {
-              val = 'No previous experience'
-            }
-          } catch (e) {
-            val = 'Invalid data'
-          }
-        } else {
-          val = c.fmt ? c.fmt(raw) : val
+    // Default case (not expanded)
+    const rowValues = finalCols.map(c => {
+        // Member columns are empty for non-expanded rows
+        if (['member_number', 'member_name', 'member_age', 'member_disability', 'member_guardian_name', 'member_guardian_phone'].includes(c.key)) {
+            return ''
         }
+        
+        const val = r[c.key]
+        
+        // Try formatter if available
+        if (c.fmt) {
+             try {
+                const formatted = c.fmt(val, r)
+                if (typeof formatted === 'string' || typeof formatted === 'number') {
+                    return formatted
+                }
+             } catch(e) {}
+         }
 
-        return `"${String(val).replace(/"/g, '""')}"`
-      }).join(',')
-    )
-    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `vyuga_${tabId}_${Date.now()}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-  else {
-    // Original logic for other tabs
-    const header = cols.map((c) => c.label).join(',')
-    const lines = rows.map((r) =>
-      cols.map((c) => {
-        const raw = r[c.key]
-        const val = c.fmt ? c.fmt(raw) : (raw ?? '')
-        return `"${String(val).replace(/"/g, '""')}"`
-      }).join(',')
-    )
-    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `vyuga_${tabId}_${Date.now()}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+        if (typeof val === 'object' && val !== null) return JSON.stringify(val)
+        return val
+    })
+    lines.push(rowValues.map(escapeCsv).join(','))
+  })
+  
+  const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `vyuga_${tabId}_${Date.now()}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
 }
 
 // ── Status badge ──────────────────────────────────────────────────────────────

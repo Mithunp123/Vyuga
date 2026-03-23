@@ -86,8 +86,8 @@ export default function Home() {
       <main>
         <Hero />
         <About />
-        <Speakers />
-        <Sponsors />
+       {/* <Speakers />
+        <Sponsors /> */}
         <Gallery />
         <CTABanner />
       </main>
