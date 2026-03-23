@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 
 // Import logos
 import srpLogo from '../assets/present by/SRP.webp'
@@ -116,7 +117,7 @@ export default function About() {
                   onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
                     <img
                       src={nexgugaLogo}
                       alt="Nexyuga Innovation"
@@ -145,7 +146,7 @@ export default function About() {
                   onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
                     <img
                       src={srpLogo}
                       alt="SRP Foundation"
@@ -177,7 +178,7 @@ export default function About() {
                 className="group relative perspective-1000"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
+                <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
                   <img
                     src={ksrctLogo}
                     alt="KSRCT"
@@ -437,14 +438,25 @@ export default function About() {
                   transition={{ duration: 0.6, delay: 0.5 }}
                   className="mt-8"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-brand-cyan/10 flex items-center justify-center">
-                      <img src={nexgugaLogo} alt="Nexyuga" className="h-6 w-auto" />
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-full bg-brand-cyan/10 flex items-center justify-center">
+                        <img src={nexgugaLogo} alt="Nexyuga" className="h-6 w-auto" />
+                      </div>
+                      <div>
+                        <p className="font-hero text-lg font-bold text-slate-800">Tech for Good</p>
+                        <p className="text-xs font-mono text-slate-400 tracking-wider">CORE PHILOSOPHY</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-hero text-lg font-bold text-slate-800">Tech for Good</p>
-                      <p className="text-xs font-mono text-slate-400 tracking-wider">CORE PHILOSOPHY</p>
-                    </div>
+                    <a 
+                      href="https://nexyuga.in/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-2 rounded-full bg-slate-50 px-5 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-brand-cyan hover:text-white"
+                    >
+                      Visit Website
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </a>
                   </div>
                 </motion.div>
               </motion.div>
@@ -543,14 +555,25 @@ export default function About() {
                   transition={{ duration: 0.6, delay: 0.5 }}
                   className="mt-8"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-brand-lime/10 flex items-center justify-center">
-                      <img src={srpLogo} alt="SRP" className="h-6 w-auto" />
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/50 pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-full bg-brand-lime/10 flex items-center justify-center">
+                        <img src={srpLogo} alt="SRP" className="h-6 w-auto" />
+                      </div>
+                      <div>
+                        <p className="font-hero text-lg font-bold text-slate-800">Social Impact</p>
+                        <p className="text-xs font-mono text-slate-400 tracking-wider">CORE MISSION</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-hero text-lg font-bold text-slate-800">Social Impact</p>
-                      <p className="text-xs font-mono text-slate-400 tracking-wider">CORE MISSION</p>
-                    </div>
+                     <a 
+                      href="https://www.srf-foundation.org/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
+                    >
+                      Visit Website
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </a>
                   </div>
                 </motion.div>
               </motion.div>
