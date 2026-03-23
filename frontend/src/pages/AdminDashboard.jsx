@@ -24,94 +24,64 @@ const STATUS_CFG = {
 // ── Column definitions per tab ────────────────────────────────────────────────
 const COLUMNS = {
   'innovation-college': [
+    { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
     { key: 'team_name',     label: 'Team Name' },
     { key: 'college_name',  label: 'College' },
     { key: 'theme',         label: 'Theme' },
-    { key: 'idea_title',    label: 'Idea Title' },
-    { key: 'idea_description', label: 'Brief Description' },
-    { key: 'pain_point',    label: 'Pain Point' },
-    { key: 'solution',      label: 'Solution' },
-    { key: 'usp',           label: 'USP' },
-    { key: 'leader_name',   label: 'Leader' },
     { key: 'leader_email',  label: 'Email' },
     { key: 'leader_phone',  label: 'Phone' },
   ],
   'innovation-pwd': [
+    { key: 'id',                 label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',       label: 'Date',      fmt: fmtDate },
     { key: 'participation_type', label: 'Type' },
-    { key: 'idea_title',         label: 'Idea Title' },
-    { key: 'idea_description',   label: 'Brief Description' },
-    { key: 'pain_point',         label: 'Pain Point' },
-    { key: 'solution',           label: 'Solution' },
-    { key: 'usp',                label: 'USP' },
     { key: 'name',               label: 'Name' },
     { key: 'email',              label: 'Email' },
     { key: 'phone',              label: 'Phone' },
-    { key: 'disability_type',    label: 'Disability' },
   ],
   'talent-org': [
+    { key: 'id',             label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'registered_at',  label: 'Date',        fmt: fmtDate },
     { key: 'org_name',       label: 'Organisation' },
-    { key: 'org_type',       label: 'Type' },
     { key: 'contact_name',   label: 'Contact' },
     { key: 'contact_email',  label: 'Email' },
     { key: 'contact_phone',  label: 'Phone' },
-    { key: 'student_count',  label: 'Students' },
   ],
   'talent-student': [
+    { key: 'id',              label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',    label: 'Date',        fmt: fmtDate },
-    { key: 'org_name',        label: 'Organisation' },
-    { key: 'org_city',        label: 'City' },
-    { key: 'org_disability_focus', label: 'Org Focus', fmt: (v) => v === 'single' ? 'Single' : v === 'multiple' ? 'Multi' : '-' },
-    { key: 'nomination_type', label: 'Type',        fmt: (v) => v === 'team' ? 'Team' : v === 'individual' ? 'Individual' : '-' },
     { key: 'student_name',    label: 'Student/Team' },
-    { key: 'student_age',     label: 'Age' },
-    { key: 'team_size',       label: 'Size',        fmt: (v, row) => (row && row.nomination_type === 'team') ? (v || '-') : '-' },
-    { key: 'disability_type', label: 'Disability' },
+    { key: 'nomination_type', label: 'Type',        fmt: (v) => v === 'team' ? 'Team' : v === 'individual' ? 'Individual' : '-' },
     { key: 'talent_category', label: 'Talent' },
     { key: 'contact_name',    label: 'Contact' },
     { key: 'contact_phone',   label: 'Phone' },
   ],
   cricket: [
+    { key: 'id',                     label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',           label: 'Date',              fmt: fmtDate },
     { key: 'team_name',              label: 'Team' },
     { key: 'city',                   label: 'City' },
     { key: 'state',                  label: 'State' },
-    { key: 'player_count',           label: 'Players' },
-    { key: 'has_played_before',      label: 'Experience',        fmt: (v) => (v ? 'Yes' : 'No') },
-    { key: 'tournament_experience',  label: 'Tournament Details', fmt: fmtTournamentExperience },
     { key: 'contact_name',           label: 'Contact' },
-    { key: 'contact_email',          label: 'Email' },
     { key: 'contact_phone',          label: 'Phone' },
   ],
   chess: [
+    { key: 'id',                label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',      label: 'Date',       fmt: fmtDate },
     { key: 'participant_name',  label: 'Name' },
     { key: 'email',             label: 'Email' },
     { key: 'phone',             label: 'Phone' },
-    { key: 'age',               label: 'Age' },
     { key: 'city',              label: 'City' },
-    { key: 'state',             label: 'State' },
-    { key: 'disability_type',   label: 'Disability' },
-    { key: 'experience_level',  label: 'Level' },
-    { key: 'has_played_before', label: 'Exp?',       fmt: (v) => (v ? 'Yes' : 'No') },
   ],
   accommodation: [
+    { key: 'id',                     label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',           label: 'Submitted',      fmt: fmtDate },
     { key: 'full_name',              label: 'Name' },
     { key: 'email',                  label: 'Email' },
     { key: 'phone',                  label: 'Phone' },
-    { key: 'organization',           label: 'Organization' },
     { key: 'arrival_date',           label: 'Arrival',        fmt: fmtDateOnly },
     { key: 'departure_date',         label: 'Departure',      fmt: fmtDateOnly },
-    { key: 'room_type',              label: 'Room Type',      fmt: fmtRoomType },
-    { key: 'accessibility_needs',    label: 'Accessibility',  fmt: fmtTruncate },
-    { key: 'special_requests',       label: 'Special Req',    fmt: fmtTruncate },
-    { key: 'dietary_requirements',   label: 'Dietary',        fmt: fmtTruncate },
-    { key: 'emergency_contact_name', label: 'Emergency Contact' },
-    { key: 'emergency_contact_phone', label: 'Emergency Phone' },
-    { key: 'admin_notes',            label: 'Admin Notes',    fmt: fmtTruncate },
   ],
 }
 
@@ -380,45 +350,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
   return (
     <div className="px-6 py-6" style={{ background: 'linear-gradient(135deg, #f0fbfd 0%, #f4fef0 100%)' }}>
 
-      {/* ── Status controls (hidden for org tab) ── */}
-      {!isOrgTab && (
-        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>Review & Status</p>
-          <div className="flex flex-wrap gap-3 mb-4">
-            {Object.entries(STATUS_CFG).map(([key, s]) => (
-              <button
-                key={key}
-                onClick={() => setStatus(key)}
-                className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold border-2 transition-all"
-                style={status === key
-                  ? { background: s.bg, borderColor: s.color, color: s.color, boxShadow: `0 0 0 2px ${s.border}` }
-                  : { background: '#f8fafc', borderColor: '#e2e8f0', color: '#64748b' }
-                }
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-          <textarea
-            rows={2}
-            value={adminNote}
-            onChange={(e) => setAdminNote(e.target.value)}
-            placeholder="Optional note to registrant (included in status email)…"
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none resize-none mb-3"
-          />
-          <div className="flex items-center gap-3">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="rounded-xl px-5 py-2.5 text-sm font-bold text-white transition disabled:opacity-60"
-              style={{ backgroundColor: '#0197B2' }}
-            >
-              {saving ? 'Saving…' : 'Save Status & Notify'}
-            </button>
-            {saveMsg && <span className="text-sm font-medium text-slate-600">{saveMsg}</span>}
-          </div>
-        </div>
-      )}
+
 
       {/* ── Media preview ── */}
       {mediaUrl && (
@@ -641,12 +573,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
       {/* ── All fields ──*/}
       <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="flex flex-col gap-3">
           {Object.entries(row).filter(([k, v]) => k !== 'status' && !(Array.isArray(v) && v.length > 0 && typeof v[0] === 'object')).map(([k, v]) => (
             v !== null && v !== undefined && v !== '' ? (
-              <div key={k} className="rounded-xl border border-slate-200 px-3 py-2.5" style={{ background: '#f8fafc' }}>
-                <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">{k.replace(/_/g, ' ')}</p>
-                <p className="text-sm text-slate-800 font-medium break-words leading-snug">
+              <div key={k} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-slate-200 px-4 py-3" style={{ background: '#f8fafc' }}>
+                <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">{k.replace(/_/g, ' ')}</p>
+                <p className="text-sm text-slate-800 font-medium break-words leading-relaxed w-full">
                   {typeof v === 'boolean'
                     ? (v ? 'Yes' : 'No')
                     : Array.isArray(v)
@@ -665,8 +597,8 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
           ))}
           {/* Status at the end */}
           {row.status !== null && row.status !== undefined && (
-            <div className="rounded-xl border-2 border-slate-200 px-3 py-2.5" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
-              <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Status</p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 rounded-xl border-2 border-slate-200 px-4 py-3" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
+              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">Status</p>
               <p className="text-sm font-medium">
                 <StatusBadge status={row.status} />
               </p>
@@ -676,23 +608,23 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
 
         {/* ── Members / Players (array of objects) ── */}
         {Object.entries(row).filter(([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === 'object').map(([k, arr]) => (
-          <div key={k} className="mt-5">
+          <div key={k} className="mt-6">
             <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#0197B2' }}>
               {k.replace(/_/g, ' ')} ({arr.length})
             </p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="flex flex-col gap-3">
               {arr.map((member, i) => (
                 <div key={i} className="rounded-xl border-2 border-slate-200 bg-white overflow-hidden">
-                  <div className="px-3 py-2 border-b border-slate-100 flex items-center gap-2" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
+                  <div className="px-4 py-2 border-b border-slate-100 flex items-center gap-3" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
                     <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: '#0197B2' }}>{i + 1}</span>
                     <span className="text-sm font-bold text-slate-800">{member.name || member.student_name || member.player_name || `#${i + 1}`}</span>
                   </div>
-                  <div className="px-3 py-2.5 space-y-1.5">
+                  <div className="px-4 py-3 flex flex-col gap-2">
                     {Object.entries(member).map(([field, val]) => (
                       val !== null && val !== undefined && val !== '' ? (
-                        <div key={field} className="flex items-start gap-2">
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">{field.replace(/_/g, ' ')}</span>
-                          <span className="text-sm text-slate-700 font-medium break-words">
+                        <div key={field} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold min-w-[120px] shrink-0">{field.replace(/_/g, ' ')}</span>
+                          <span className="text-sm text-slate-700 font-medium break-words leading-relaxed w-full">
                             {typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}
                           </span>
                         </div>
@@ -705,6 +637,46 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
           </div>
         ))}
       </div>
+
+      {/* ── Status controls (hidden for org tab) ── */}
+      {!isOrgTab && (
+        <div className="mt-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>Review & Status</p>
+          <div className="flex flex-wrap gap-3 mb-4">
+            {Object.entries(STATUS_CFG).map(([key, s]) => (
+              <button
+                key={key}
+                onClick={() => setStatus(key)}
+                className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold border-2 transition-all"
+                style={status === key
+                  ? { background: s.bg, borderColor: s.color, color: s.color, boxShadow: `0 0 0 2px ${s.border}` }
+                  : { background: '#f8fafc', borderColor: '#e2e8f0', color: '#64748b' }
+                }
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            rows={2}
+            value={adminNote}
+            onChange={(e) => setAdminNote(e.target.value)}
+            placeholder="Optional note to registrant (included in status email)…"
+            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none resize-none mb-3"
+          />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={save}
+              disabled={saving}
+              className="rounded-xl px-5 py-2.5 text-sm font-bold text-white transition disabled:opacity-60"
+              style={{ backgroundColor: '#0197B2' }}
+            >
+              {saving ? 'Saving…' : 'Save Status & Notify'}
+            </button>
+            {saveMsg && <span className="text-sm font-medium text-slate-600">{saveMsg}</span>}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -719,7 +691,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [expandedRow, setExpandedRow] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
 
   const token = sessionStorage.getItem('vyuga_admin_token')
@@ -791,11 +763,13 @@ export default function AdminDashboard() {
   const openEvent = (tabId) => {
     setActiveTab(tabId)
     setMobileOpen(false)
+    setSidebarOpen(false)
   }
 
   const goHome = () => {
     setActiveTab(null)
     setMobileOpen(false)
+    setSidebarOpen(false)
   }
 
   // Computed values for list view
@@ -891,14 +865,23 @@ export default function AdminDashboard() {
       {/* ── Main Content Wrapper ── */}
       <div className="flex flex-1 flex-col h-screen overflow-hidden relative">
       
-        {/* ── Desktop Toggle Button (Visible only on lg) ── */}
-        <div className="hidden lg:flex absolute top-4 left-4 z-40">
+        {/* ── Desktop Toggle Button & Back Button (Visible only on lg) ── */}
+        <div className="hidden lg:flex absolute top-4 left-4 z-40 items-center gap-3">
            <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 bg-white rounded-lg shadow-md border border-slate-200 hover:bg-slate-50 transition-colors"
           >
             <Menu className="h-5 w-5 text-slate-600" />
           </button>
+          
+          {activeTab && (
+            <button 
+              onClick={goHome} 
+              className="px-4 py-2 bg-white rounded-lg shadow-md border border-slate-200 hover:bg-slate-50 transition-colors text-xs font-bold uppercase tracking-wider text-[#0197B2]"
+            >
+              ← Back to Dashboard
+            </button>
+          )}
         </div>
 
         {/* ── Mobile Header ── */}
@@ -975,7 +958,7 @@ export default function AdminDashboard() {
           {/* Hero */}
          
 
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 pb-20 pt-16 lg:pt-8">
+          <div className="mx-auto max-w-screen-2xl px-6 sm:px-8 pb-20 pt-20 lg:pt-20">
             {/* Total summary card */}
             <div className="mb-10 rounded-2xl border border-slate-200 p-8 shadow-sm" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #f4fef0 100%)' }}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1064,21 +1047,26 @@ export default function AdminDashboard() {
       {activeTab && (
         <>
           {/* Hero for event */}
-          <div className="relative overflow-hidden pt-16 lg:pt-12 pb-10" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #ffffff 60%, #e8f9de 100%)' }}>
+          <div className="relative overflow-hidden pt-16 lg:pt-16 pb-10" style={{ background: 'linear-gradient(135deg, #e0f6fa 0%, #ffffff 60%, #e8f9de 100%)' }}>
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full opacity-20" style={{ background: '#0197B2', filter: 'blur(70px)' }} />
               <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full opacity-15" style={{ background: '#5BCB2B', filter: 'blur(70px)' }} />
             </div>
-            <div className="relative mx-auto max-w-7xl px-6 sm:px-8">
-              <button onClick={goHome} className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase mb-3 transition-colors hover:opacity-80" style={{ color: '#0197B2' }}>
-                ← Back to Dashboard
-              </button>
-              <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                {TABS.find((t) => t.id === activeTab)?.label}
-              </h1>
-              <p className="mt-2 text-sm text-slate-600">
-                {rows.length} registration{rows.length !== 1 ? 's' : ''} total
-              </p>
+            <div className="relative mx-auto max-w-screen-2xl px-6 sm:px-8">
+              <div className="flex flex-col items-start gap-4">
+                {/* Mobile Back Button (Desktop uses top bar) */}
+                <button onClick={goHome} className="lg:hidden inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 transition-colors hover:bg-white hover:shadow-sm" style={{ color: '#0197B2' }}>
+                  ← Back to Dashboard
+                </button>
+                <div>
+                  <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                    {TABS.find((t) => t.id === activeTab)?.label}
+                  </h1>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {rows.length} registration{rows.length !== 1 ? 's' : ''} total
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 right-0">
               <svg viewBox="0 0 1440 40" className="w-full h-[40px]" preserveAspectRatio="none">
@@ -1189,7 +1177,7 @@ export default function AdminDashboard() {
                             {c.label}
                           </th>
                         ))}
-                        <th className="px-4 py-4 text-xs font-bold tracking-wider text-slate-600 uppercase text-right border-b-2 border-slate-200">Media</th>
+                        {/* <th className="px-4 py-4 text-xs font-bold tracking-wider text-slate-600 uppercase text-right border-b-2 border-slate-200">Media</th> */}
                         {activeTab !== 'talent-org' && (
                           <th className="px-4 py-4 text-left text-xs font-bold tracking-wider text-slate-600 uppercase border-b-2 border-slate-200">Status</th>
                         )}
@@ -1212,7 +1200,8 @@ export default function AdminDashboard() {
                               </td>
                             )
                           })}
-                          <td className="px-4 py-4 text-right border-r border-slate-100">
+                          {/* Media Column - Removed */}
+                          {/* <td className="px-4 py-4 text-right border-r border-slate-100">
                             {!!(row.prototype_image_path || row.video_file_path) || !!(row.prototype_url || row.performance_url) ? (
                               <div className="flex flex-col gap-1">
                                 {!!(row.prototype_image_path || row.video_file_path) && (
@@ -1231,14 +1220,19 @@ export default function AdminDashboard() {
                             ) : (
                               <span className="text-slate-300 text-xs">—</span>
                             )}
-                          </td>
+                          </td> */}
                           {activeTab !== 'talent-org' && (
                             <td className="px-4 py-4 border-r border-slate-100">
                               <StatusBadge status={row.status || 'pending'} />
                             </td>
                           )}
                           <td className="px-4 py-4 text-slate-400 text-sm text-right">
-                            👁
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setExpandedRow(expandedRow === row.id ? null : row.id); }}
+                              className="bg-[#0197B2] text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-[#017a90] transition-colors shadow-sm"
+                            >
+                              View Details
+                            </button>
                           </td>
                         </tr>
                       ))}

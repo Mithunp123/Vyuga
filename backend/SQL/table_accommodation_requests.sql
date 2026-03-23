@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS accommodation_requests (
   emergency_contact_name TEXT,
   emergency_contact_phone TEXT,
   submitted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'declined')),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'selected', 'rejected')),
   admin_notes TEXT
 );
 

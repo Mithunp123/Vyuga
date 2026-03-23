@@ -1503,6 +1503,12 @@ const TABLE_MAP = {
     nameField: 'participant_name',
     event: 'Blind Chess Competition',
   },
+  accommodation: {
+    table: 'accommodation_requests',
+    emailField: 'email',
+    nameField: 'full_name',
+    event: 'Accommodation Request',
+  },
 }
 
 app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
@@ -1561,6 +1567,110 @@ app.get('/api/admin/error-logs', requireAdmin, async (req, res) => {
     const { data, error } = await query
     if (error) return res.status(500).json({ success: false, message: error.message })
     res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Dev: Error Logs Middleware (Date-based Auth) ──────────────────────────────
+const requireDevAuth = (req, res, next) => {
+  const authHeader = req.headers['x-dev-auth']
+  
+  // Get current date in IST (Indian Standard Time)
+  const now = new Date()
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
+  const ist = new Date(utc + (3600000 * 5.5))
+  
+  const day = String(ist.getDate()).padStart(2, '0')
+  const month = String(ist.getMonth() + 1).padStart(2, '0')
+  const expectedPassword = `${day}${month}` // DDMM
+  
+  if (authHeader === expectedPassword) {
+    next()
+  } else {
+    // Also allow if it matches the main admin token for convenience
+    if (authHeader === process.env.ADMIN_TOKEN) {
+      return next()
+    }
+    return res.status(401).json({ success: false, message: 'Invalid dev password' })
+  }
+}
+
+// ── Dev: Login (Check Date Password) ──────────────────────────────────────────
+app.post('/api/dev/login', (req, res) => {
+  const { password } = req.body
+  
+  const now = new Date()
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
+  const ist = new Date(utc + (3600000 * 5.5))
+  
+  const day = String(ist.getDate()).padStart(2, '0')
+  const month = String(ist.getMonth() + 1).padStart(2, '0')
+  const expectedPassword = `${day}${month}`
+  
+  if (password === expectedPassword || password === process.env.ADMIN_TOKEN) {
+    res.json({ success: true, token: password })
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid password' })
+  }
+})
+
+// ── Dev: View Error Logs ──────────────────────────────────────────────────────
+app.get('/api/dev/error-logs', requireDevAuth, async (req, res) => {
+  try {
+    const { limit = 100, status } = req.query
+    const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 100, 1), 500)
+    
+    let query = supabase
+      .from('error_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(safeLimit)
+      
+    if (status) {
+      query = query.eq('status', status)
+    }
+    
+    const { data, error } = await query
+    
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Dev: Update Error Log Status ──────────────────────────────────────────────
+app.put('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { status } = req.body
+    
+    const { data, error } = await supabase
+      .from('error_logs')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Dev: Delete Error Log ─────────────────────────────────────────────────────
+app.delete('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
+  try {
+    const { id } = req.params
+    
+    const { error } = await supabase
+      .from('error_logs')
+      .delete()
+      .eq('id', id)
+      
+    if (error) throw error
+    res.json({ success: true, message: 'Deleted successfully' })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }

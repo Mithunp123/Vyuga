@@ -110,29 +110,29 @@ CREATE INDEX IF NOT EXISTS idx_cricket_email       ON cricket_team_registrations
 ALTER TABLE innovation_college_registrations
   ADD COLUMN IF NOT EXISTS prototype_image_path TEXT,
   ADD COLUMN IF NOT EXISTS status     TEXT NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending','approved','rejected')),
+                            CHECK (status IN ('pending','selected','rejected')),
   ADD COLUMN IF NOT EXISTS admin_note TEXT;
 
 ALTER TABLE innovation_pwd_registrations
   ADD COLUMN IF NOT EXISTS prototype_image_path TEXT,
   ADD COLUMN IF NOT EXISTS status     TEXT NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending','approved','rejected')),
+                            CHECK (status IN ('pending','selected','rejected')),
   ADD COLUMN IF NOT EXISTS admin_note TEXT;
 
 ALTER TABLE talent_organizations
   ADD COLUMN IF NOT EXISTS status     TEXT NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending','approved','rejected')),
+                            CHECK (status IN ('pending','selected','rejected')),
   ADD COLUMN IF NOT EXISTS admin_note TEXT;
 
 ALTER TABLE talent_nominations
   ADD COLUMN IF NOT EXISTS guardian_email TEXT,
   ADD COLUMN IF NOT EXISTS status         TEXT NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending','approved','rejected')),
+                            CHECK (status IN ('pending','selected','rejected')),
   ADD COLUMN IF NOT EXISTS admin_note     TEXT;
 
 ALTER TABLE cricket_team_registrations
   ADD COLUMN IF NOT EXISTS status     TEXT NOT NULL DEFAULT 'pending'
-                            CHECK (status IN ('pending','approved','rejected')),
+                            CHECK (status IN ('pending','selected','rejected')),
   ADD COLUMN IF NOT EXISTS admin_note TEXT;
 
 -- -----------------------------------------------------------------
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS blind_chess_registrations (
   additional_info TEXT,
   submitted_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   status          TEXT        NOT NULL DEFAULT 'pending'
-                    CHECK (status IN ('pending','approved','rejected')),
+                    CHECK (status IN ('pending','selected','rejected')),
   admin_note      TEXT
 );
 

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS blind_chess_registrations (
   additional_info TEXT,
   submitted_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   status          TEXT        NOT NULL DEFAULT 'pending'
-                    CHECK (status IN ('pending','approved','rejected')),
+                    CHECK (status IN ('pending','selected','rejected')),
   admin_note      TEXT
 );
 
