@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom'
 import srpLogo from '../assets/present by/SRP.webp'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
+import aboutImg from '../assets/about.png'
 
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
@@ -302,6 +303,20 @@ export default function About() {
                   — VYUGA BELIEF
                 </cite>
               </motion.blockquote>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.6 }}
+                className="mt-12"
+              >
+                <img 
+                  src={aboutImg} 
+                  alt="About Vyuga" 
+                  className="w-full h-auto object-contain"
+                />
+              </motion.div>
             </motion.div>
 
             {/* Platform examples */}
@@ -412,8 +427,8 @@ export default function About() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="lg:col-span-2"
               >
-                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
-                  Nexyuga Innovations Pvt Ltd is a pioneering technology firm committed to driving digital transformation. We specialize in building scalable solutions that bridge the gap between complex technology and human-centric design.
+                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl text-justify">
+                  A high-impact architect of digital equity, Nexyuga Innovations is engineering the next frontier of inclusive transformation. By synergizing scalable technical ecosystems with human-centric intuition, the firm translates complex engineering into seamless universal experiences that empower global enterprises and local communities alike. Nexyuga doesn't just build software; it bridges the gap between pioneering technology and meaningful human impact.
                 </p>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -518,8 +533,8 @@ export default function About() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="lg:col-span-2"
               >
-                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
-                  Dedicated to social upliftment, the SRP Foundation works tirelessly to create opportunities for the underrepresented. We believe in building a more equitable society through targeted initiatives.
+                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl text-justify">
+                  Operating as a high-velocity catalyst for social equity, SRP Foundation is re-engineering community empowerment through precision-driven impact models. By synergizing adaptive education, healthcare accessibility, and advanced skill ecosystems, the Foundation transforms systemic barriers into gateways of opportunity. SRP Foundation doesn’t simply provide aid; it architects a robust, inclusive infrastructure where human potential is the primary engine of progress.
                 </p>
                  <motion.div
                   initial={{ opacity: 0, y: 20 }}
