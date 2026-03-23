@@ -146,7 +146,7 @@ function RotatingBadge() {
         </text>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-12 w-12 rounded-full bg-slate-800 shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-700">
+        <div className="h-12 w-12 rounded-full bg-white shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-200">
         </div>
       </div>
     </div>
@@ -158,11 +158,11 @@ function MarqueeBand() {
   const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'KSRCT']
   const doubled = [...items, ...items]
   return (
-    <div className="relative overflow-hidden border-y-2 border-brand-cyan/20 bg-slate-950/50 backdrop-blur-sm">
+    <div className="relative overflow-hidden border-y-2 border-brand-cyan/20 bg-white/50 backdrop-blur-sm">
       <div className="animate-marquee flex w-max">
         {doubled.map((item, i) => (
           <span key={i} className="flex items-center gap-6 px-3">
-            <span className={`whitespace-nowrap py-5 font-impact text-5xl tracking-[0.06em] sm:text-7xl lg:text-[5.5rem] ${i % 2 === 0 ? 'text-white' : 'text-brand-cyan'}`}>
+            <span className={`whitespace-nowrap py-5 font-impact text-5xl tracking-[0.06em] sm:text-7xl lg:text-[5.5rem] ${i % 2 === 0 ? 'text-slate-900' : 'text-brand-cyan'}`}>
               {item}
             </span>
             <span className="text-2xl text-brand-lime select-none sm:text-3xl">◆</span>
@@ -184,7 +184,7 @@ export default function Hero() {
   const textInView = useInView(textRef, { once: true })
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
+    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden bg-white text-slate-900">
       <ParticleCanvas />
 
       {/* Gradient orbs */}
@@ -192,7 +192,6 @@ export default function Hero() {
         <div className="absolute -top-40 left-[8%] h-[600px] w-[600px] rounded-full bg-brand-cyan/[0.1] blur-[120px] animate-morph" />
         <div className="absolute -bottom-40 right-[5%] h-[500px] w-[500px] rounded-full bg-brand-lime/[0.1] blur-[120px] animate-morph" style={{ animationDelay: '6s' }} />
       </div>
-      <div className="absolute inset-0 noise-overlay pointer-events-none opacity-20" />
 
       <motion.div className="relative z-10" style={{ opacity, scale, y }}>
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 sm:px-6">
@@ -262,7 +261,7 @@ export default function Hero() {
                   initial={{ y: '120%' }}
                   animate={textInView ? { y: '0%' } : {}}
                   transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-white sm:text-[10vw] lg:text-[8vw]"
+                  className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-slate-900 sm:text-[10vw] lg:text-[8vw]"
                 >
                   ABILITY CARNIVAL
                 </motion.span>
@@ -282,7 +281,7 @@ export default function Hero() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.7, delay: 1.2 }}
-                  className="mb-[1vw] max-w-md font-serif text-base italic text-slate-400 sm:text-lg lg:text-xl"
+                  className="mb-[1vw] max-w-md font-serif text-base italic text-slate-600 sm:text-lg lg:text-xl"
                 >
                   Assistive Technology · Inclusive Design · Innovation
                 </motion.span>
@@ -295,7 +294,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.4 }}
-                className="max-w-lg text-base leading-relaxed text-slate-400 sm:text-lg"
+                className="max-w-lg text-base leading-relaxed text-slate-600 sm:text-lg"
               >
                 <span className="font-marker text-brand-cyan">Be part of the movement </span>
                 Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
@@ -337,7 +336,7 @@ export default function Hero() {
                   { v: countdown.seconds, l: 'SEC' },
                 ].map((t, i) => (
                   <div key={t.l} className="flex items-baseline">
-                    <span className="font-impact text-6xl tracking-wide text-white tabular-nums sm:text-7xl lg:text-8xl">
+                    <span className="font-impact text-6xl tracking-wide text-slate-800 tabular-nums sm:text-7xl lg:text-8xl">
                       {String(t.v).padStart(2, '0')}
                     </span>
                     <span className="ml-1 mr-3 font-mono text-[9px] font-bold tracking-[0.15em] text-brand-cyan">
