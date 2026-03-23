@@ -8,7 +8,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 const INNOVATION_TYPE_OPTIONS = [
   { value: '', label: 'Select one' },
   { value: 'for_specially_abled', label: 'For Specially Abled' },
-  { value: 'by_specially_abled', label: 'By Specially Abled' },
+  { value: 'by_specially_abled', label: 'Innovators (Specially Abled)' },
 ]
 
 const THEME_OPTIONS = [
@@ -35,7 +35,7 @@ const EMPTY = {
   collegeName: '',
   theme: '',
   themeOther: '',
-  participationType: 'individual',
+  participationType: 'innovators',
   ideaTitle: '',
   ideaDescription: '',
   painPoint: '',
@@ -62,6 +62,7 @@ export default function InnovationUnifiedForm() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [protoFile, setProtoFile] = useState(null)
+  const [udidFile, setUdidFile] = useState(null)
   const [prototypeUrl, setPrototypeUrl] = useState('')
 
   // Auto-detect innovation type based on route
@@ -116,8 +117,8 @@ export default function InnovationUnifiedForm() {
     
     if (isForSpeciallyAbled && !form.teamName.trim()) return 'Team name is required.'
     if (isForSpeciallyAbled && !form.collegeName.trim()) return 'College name is required.'
-    if (isForSpeciallyAbled && !form.theme) return 'Please select a theme.'
-    if (form.theme === 'Other' && !form.themeOther.trim()) return 'Please enter a custom theme.'
+    if (isForSpeciallyAbled && !form.theme) return 'Please select a Focus Sector.'
+    if (form.theme === 'Other' && !form.themeOther.trim()) return 'Please enter a custom Focus Sector.'
     if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.ideaTitle.trim()) return 'Idea/Solution title is required.'
     if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.ideaDescription.trim()) return 'Brief description is required.'
     if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.painPoint.trim()) return 'Pain point is required.'
@@ -129,6 +130,10 @@ export default function InnovationUnifiedForm() {
     if (isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && !form.member1DisabilityTypeOther.trim()) {
       return 'Please enter a disability type.'
     }
+    if (isBySpeciallyAbled && !udidFile) {
+      return 'Please upload the UDID card.'
+    }
+    if (udidFile && udidFile.size > 5 * 1024 * 1024) return 'UDID card must be less than 5MB.'
     return ''
   }
 
@@ -155,7 +160,10 @@ export default function InnovationUnifiedForm() {
       fd.append('member3Email', form.member3Email)
       fd.append('member3Phone', form.member3Phone)
     } else {
-      fd.append('participationType', form.participationType)
+      // Map 'innovators' to 'individual' for backend compatibility
+      const typeToSend = form.participationType === 'innovators' ? 'individual' : form.participationType
+      fd.append('participationType', typeToSend)
+      
       fd.append('ideaTitle', form.ideaTitle)
       fd.append('ideaDescription', form.ideaDescription)
       fd.append('painPoint', form.painPoint)
@@ -177,6 +185,7 @@ export default function InnovationUnifiedForm() {
     }
 
     if (protoFile) fd.append('prototypeImage', protoFile)
+    if (udidFile) fd.append('udidCard', udidFile)
     if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
     return fd
   }
@@ -185,7 +194,11 @@ export default function InnovationUnifiedForm() {
     e.preventDefault()
     setLoading(true)
     setError('')
-
+    
+    // Map 'innovators' back to 'individual' for backend compatibility if needed, or update backend.
+    // Assuming backend expects 'individual' or 'team'.
+    // If backend is strict, we might need to map it in buildPayload.
+    
     const validationError = validateCommon()
     if (validationError) {
       setError(validationError)
@@ -287,7 +300,7 @@ export default function InnovationUnifiedForm() {
               <Field label="College Name" value={form.collegeName} onChange={set('collegeName')} required />
               <div>
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
-                  Theme <span className="text-red-500">*</span>
+                  Focus Sector <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -295,7 +308,8 @@ export default function InnovationUnifiedForm() {
                   onChange={set('theme')}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 >
-                  <option value="">Select a theme</option>
+                  <option value="" disabled hidden>Assistive Technology</option>
+                  <option value="Assistive Technology" className="font-bold">Assistive Technology (General)</option>
                   {THEME_OPTIONS.map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}
@@ -303,7 +317,7 @@ export default function InnovationUnifiedForm() {
               </div>
               {form.theme === 'Other' && (
                 <Field
-                  label="Enter New Theme"
+                  label="Enter New Sector"
                   value={form.themeOther}
                   onChange={set('themeOther')}
                   required
@@ -314,7 +328,7 @@ export default function InnovationUnifiedForm() {
 
           {isBySpeciallyAbled && (
             <div className="sm:col-span-2 flex gap-6">
-              {['individual', 'team'].map((type) => (
+              {['innovators', 'team'].map((type) => (
                 <label key={type} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
                   <input
                     type="radio"
@@ -324,7 +338,7 @@ export default function InnovationUnifiedForm() {
                     onChange={set('participationType')}
                     className="accent-brand-cyan"
                   />
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type === 'innovators' ? 'Innovators' : 'Team'}
                 </label>
               ))}
             </div>
@@ -412,7 +426,8 @@ export default function InnovationUnifiedForm() {
                 title="Enter exactly 10 digits"
               />
               {isBySpeciallyAbled && (
-                <div>
+                <>
+                <div className="sm:col-span-2">
                   <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
                     Type of Disability <span className="text-red-500">*</span>
                   </label>
@@ -433,6 +448,21 @@ export default function InnovationUnifiedForm() {
                   </div>
                   <p className="mt-2 text-xs text-slate-500">Select all that apply</p>
                 </div>
+
+                <div className="mt-6 sm:col-span-2">
+                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                    Upload UDID Card <span className="text-red-500">*</span>
+                    <span className="text-slate-400 font-normal text-xs ml-1">(One card per team/individual)</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    onChange={(e) => setUdidFile(e.target.files[0])}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-brand-cyan/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-brand-cyan hover:file:bg-brand-cyan/20"
+                  />
+                  <p className="mt-1 text-xs text-slate-500">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
+                </div>
+                </>
               )}
               {isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && (
                 <Field

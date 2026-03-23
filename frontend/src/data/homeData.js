@@ -49,13 +49,13 @@ export const day1Speakers = [
   {
     name: 'Mariyappan Thangavelu',
     role: 'Paralympic High Jumper',
-    org: 'Theme: Special Talent Utsav',
+    org: '',
     image: mariyappanThangaveluImg,
   },
   {
     name: 'Shekar Naik',
     role: 'India Blind Cricket Team',
-    org: 'Theme: Blind Cricket',
+    org: '',
     image: shekarNaikImg,
   },
 ]
@@ -64,25 +64,25 @@ export const day2Speakers = [
   {
     name: 'Raghava Lawrence',
     role: 'Actor & Choreographer',
-    org: 'Theme: Inclusion & Awareness',
+    org: '',
     image: raghavaLawrenceImg,
   },
   {
     name: 'KPY Bala',
     role: 'Actor & Comedian',
-    org: 'Theme: Innovation Fest Spotlight',
+    org: '',
     image: kpyBalaImg,
   },
   {
     name: 'Baskaran Ramasamy',
     role: 'Managing Director · Goodwill Wealth Management',
-    org: 'Theme: Investing In Your Future',
+    org: '',
     image: baskaranRamasamyImg,
   },
   {
     name: 'Prateek Madhav',
     role: 'Chief Guest · CEO & Co-Founder',
-    org: 'AssisTech Foundation · Theme: Assistive Technology',
+    org: '',
     image: prateekMadhavImg,
   },
 ]
@@ -91,13 +91,13 @@ export const influencers = [
   {
     name: 'Mohamed Ashik',
     role: 'Social Activist · 1.2M Followers',
-    org: 'Theme: Visual & Hearing Accessibility',
+    org: '',
     image: mohamedAshikImg,
   },
   {
     name: 'Vignesh Gajendiran',
     role: 'Social Activist · 922K Followers',
-    org: 'Theme: Cognitive & Learning Accessibility',
+    org: '',
     image: vigneshGajendiranImg,
   },
 ]

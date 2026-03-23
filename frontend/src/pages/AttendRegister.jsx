@@ -5,24 +5,22 @@ import EventCard from '../components/EventCard.jsx'
 
 const INNOVATION_MAIN_EVENT = {
   title: 'Inclusive Innovation Fest',
-  accent: 'By / For Specially Abled',
+  accent: 'Innovators / For Specially Abled',
   description:
-    'One unified registration form for both tracks. Participants choose whether their submission is by or for specially abled and continue with relevant fields.',
+    'One unified registration form for both tracks. Participants choose whether their submission is by specially abled (Innovators) or for specially abled and continue with relevant fields.',
   details: [
     {
       label: 'Tracks',
       value: [
         'For Specially Abled: College teams (3 members)',
-        'By Specially Abled: Individual or team (max 3)',
+        'By Specially Abled: Innovators with or without team members',
         'Type selection happens inside one form',
       ],
     },
     {
-      label: 'Themes',
+      label: 'Focus Sector',
       value: [
-        'Cognitive & Learning Accessibility',
-        'Physical & Mobility Accessibility',
-        'Visual & Hearing Accessibility',
+        'Assistive Technology',
       ],
     },
     {
@@ -56,7 +54,7 @@ const INNOVATION_TRACKS = [
         ],
       },
       {
-        label: 'Themes',
+        label: 'Focus Sector',
         value: [
           'Cognitive & Learning Accessibility',
           'Physical & Mobility Accessibility', 
@@ -74,7 +72,7 @@ const INNOVATION_TRACKS = [
       },
       { 
         label: 'Awards', 
-        value: 'Top 3 teams receive cash prizes and certificates'
+        value: 'Top three winners will receive cash prizes, mentorship opportunities, and certificates will be awarded to all finalists'
       },
     ],
     registerLink: '/register/innovation-college',
@@ -82,22 +80,22 @@ const INNOVATION_TRACKS = [
   },
   {
     title: 'Innovation Fest',
-    accent: 'By Specially Abled',
+    accent: 'Innovators (Specially Abled)',
     description:
       'Specially abled individuals showcase their innovative solutions and entrepreneurial ideas to create an inclusive world.',
     details: [
       {
         label: 'Eligibility',
         value: [
-          'Open to specially abled individuals',
-          'Individual or team participation (max 3 members)',
-          'Age limit: 16+ years',
+          'Open to specially abled innovators',
+          'Innovators or team participation (max 3 members)',
+          'Innovators from any age group',
         ],
       },
       {
-        label: 'Themes',
+        label: 'Focus Sector',
         value: [
-          'Assistive Technology Solutions',
+          'Assistive Technology',
         ],
       },
       {
@@ -111,7 +109,7 @@ const INNOVATION_TRACKS = [
       },
       { 
         label: 'Awards', 
-        value: 'Top 3 positions with cash prizes and mentorship opportunities'
+        value: 'Top three winners will receive cash prizes, mentorship opportunities, and certificates will be awarded to all finalists'
       },
     ],
     registerLink: '/register/innovation-pwd',
@@ -136,7 +134,7 @@ const OTHER_EVENTS = [
       },
       {
         label: 'Awards',
-        value: 'Top 3 performers receive special recognition and awards',
+        value: 'Top three winners will receive cash prizes, mentorship opportunities, and certificates will be awarded to all finalists',
       },
     ],
     registerLink: '/register/talent-student',

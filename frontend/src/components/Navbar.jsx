@@ -110,9 +110,9 @@ export default function Navbar() {
     <header
       className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b-2 border-slate-100 transition-all duration-500"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6">
         <Link to="/" className="group inline-flex items-center gap-2.5">
-          <img src={logoImg} alt="VYUGA" className="h-14 w-auto object-contain" />
+          <img src={logoImg} alt="VYUGA" className="h-10 w-auto object-contain" />
         </Link>
         
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
@@ -131,14 +131,14 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             to="/attend/register"
-            className="hidden items-center justify-center overflow-hidden rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-cyan/15 transition-all hover:shadow-brand-cyan/25 hover:scale-[1.04] focus:outline-none focus:ring-4 focus:ring-brand-cyan/15 md:inline-flex shimmer-btn"
+            className="hidden items-center justify-center overflow-hidden rounded-full px-4 py-1.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-brand-cyan/15 transition-all hover:shadow-brand-cyan/25 hover:scale-[1.04] focus:outline-none focus:ring-4 focus:ring-brand-cyan/15 md:inline-flex shimmer-btn"
           >
             Register Now
           </Link>
 
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-xl border border-brand-cyan/15 bg-white/60 p-2.5 text-slate-700 backdrop-blur transition-all hover:bg-white hover:shadow-md md:hidden"
+            className="inline-flex items-center justify-center rounded-xl border border-brand-cyan/15 bg-white/60 p-2 text-slate-700 backdrop-blur transition-all hover:bg-white hover:shadow-md md:hidden"
             aria-label="Open menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}

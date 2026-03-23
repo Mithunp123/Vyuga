@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import logoImg from '../assets/logo.png'
+import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -39,6 +40,7 @@ const COLUMNS = {
     { key: 'name',               label: 'Name' },
     { key: 'email',              label: 'Email' },
     { key: 'phone',              label: 'Phone' },
+    { key: 'udid_card_path',     label: 'UDID',      fmt: (v) => v ? <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View File</a> : '—' },
   ],
   'talent-org': [
     { key: 'id',             label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
@@ -311,7 +313,7 @@ function StatusBadge({ status }) {
 }
 
 // ── Expanded detail panel ─────────────────────────────────────────────────────
-function ExpandedPanel({ row, tabId, token, onStatusChange }) {
+function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
   const [status, setStatus] = useState(row.status || 'pending')
   const [adminNote, setAdminNote] = useState(row.admin_note || '')
   const [saving, setSaving] = useState(false)
@@ -328,6 +330,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
   const mediaUrl = mediaFilename ? `${API_BASE}/uploads/${mediaFilename}` : null
 
   const save = async () => {
+    // Check if status has changed
+    if (status === (row.status || 'pending')) {
+      alert("There is no change on status so does not send any mail")
+      return
+    }
+
     setSaving(true)
     setSaveMsg('')
     try {
@@ -338,8 +346,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
       })
       const json = await res.json()
       if (!json.success) throw new Error(json.message)
-      setSaveMsg('✅ Saved & email sent')
+      
+      // Show popup and close modal
+      alert('✅ Saved & email sent')
       onStatusChange(row.id, status, adminNote)
+      if (onClose) onClose()
+      
     } catch (err) {
       setSaveMsg('❌ ' + err.message)
     } finally {
@@ -348,7 +360,9 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
   }
 
   return (
-    <div className="px-6 py-6" style={{ background: 'linear-gradient(135deg, #f0fbfd 0%, #f4fef0 100%)' }}>
+    <>
+      <SubmitLoader visible={saving} />
+      <div className="px-6 py-6" style={{ background: 'linear-gradient(135deg, #f0fbfd 0%, #f4fef0 100%)' }}>
 
 
 
@@ -677,7 +691,8 @@ function ExpandedPanel({ row, tabId, token, onStatusChange }) {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 
@@ -1196,7 +1211,7 @@ export default function AdminDashboard() {
                             const val = c.fmt ? c.fmt(row[c.key]) : (row[c.key] ?? '—')
                             return (
                               <td key={c.key} className="px-4 py-4 text-slate-700 text-sm max-w-[200px] truncate border-r border-slate-100">
-                                {String(val)}
+                                {c.fmt ? val : String(val)}
                               </td>
                             )
                           })}
@@ -1288,6 +1303,7 @@ export default function AdminDashboard() {
                           tabId={activeTab}
                           token={token}
                           onStatusChange={handleStatusChange}
+                          onClose={() => setExpandedRow(null)}
                         />
                       </div>
                     </motion.div>

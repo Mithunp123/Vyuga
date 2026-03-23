@@ -104,7 +104,7 @@ export default function InnovationPWDForm() {
   return (
     <PageShell
       title="Inclusive Innovation Fest – By Specially Abled"
-      subtitle="Innovators with disabilities: register individually or as a team (max 3 members). Theme: Assistive Technology."
+      subtitle="Innovators with disabilities: Theme: Assistive Technology."
     >
       <SubmitLoader visible={loading} />
       <motion.form
@@ -144,7 +144,7 @@ export default function InnovationPWDForm() {
               Brief Description <span className="text-red-500">*</span>
               <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
             </label>
-            <textarea
+            <textareaindivi
               required
               rows={3}
               value={form.ideaDescription}

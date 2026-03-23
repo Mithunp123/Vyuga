@@ -88,9 +88,6 @@ export default function Speakers() {
               className="inline-flex items-center gap-2"
             >
               <div className="gradient-line w-12" />
-              <span className="font-mono text-[11px] font-semibold tracking-[0.25em] text-slate-600">
-                SPEAKERS
-              </span>
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -102,8 +99,6 @@ export default function Speakers() {
                 Meet the
               </span>
               <span className="block text-4xl tracking-[0.08em] sm:text-5xl lg:text-6xl">
-                <span className="themes-word">THEMES</span>
-                <span className="amp-word"> &amp; </span>
                 <span className="guests-word">GUESTS</span>
               </span>
             </motion.h2>
@@ -122,7 +117,7 @@ export default function Speakers() {
         </div>
         {/* Day 1 Speakers */}
         <div className="mt-16">
-          <SectionLabel label="DAY 1 — SPEAKERS" inView={inView} delay={0.2} />
+          <SectionLabel label="DAY 1" inView={inView} delay={0.2} />
           <div className="flex flex-wrap gap-6 sm:gap-10 justify-center max-w-5xl mx-auto px-2">
             {day1Speakers.map((s, idx) => (
               <div key={s.name} className="w-[calc(50%-0.75rem)] sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-1.875rem)]">
@@ -134,7 +129,7 @@ export default function Speakers() {
 
         {/* Day 2 Speakers */}
         <div className="mt-14">
-          <SectionLabel label="DAY 2 — SPEAKERS" inView={inView} delay={0.4} />
+          <SectionLabel label="DAY 2 " inView={inView} delay={0.4} />
           <div className="flex flex-wrap gap-6 sm:gap-10 justify-center max-w-5xl mx-auto px-2">
             {day2Speakers.map((s, idx) => (
               <div key={s.name} className="w-[calc(50%-0.75rem)] sm:w-[calc(50%-1.25rem)] lg:w-[calc(25%-1.875rem)]">

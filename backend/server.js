@@ -32,6 +32,8 @@ const MAX_MB = parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10)
 
 // Ensure uploads folder exists
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+const ID_DIR = path.join(UPLOAD_DIR, 'ID')
+if (!fs.existsSync(ID_DIR)) fs.mkdirSync(ID_DIR, { recursive: true })
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }))
@@ -73,20 +75,32 @@ const errorReportLimiter = rateLimit({
   message: { success: false, message: 'Too many error reports.' },
 })
 
-// ── Multer – prototype images (innovation forms) ──────────────────────────────
+// ── Multer – Innovation Forms (Prototype & UDID) ──────────────────────────────
 // Uses memory storage so we can rename using the phone number from req.body
-const protoStorage = multer.memoryStorage()
+const memStorage = multer.memoryStorage()
 const ALLOWED_IMAGE_EXT = /\.(png|jpe?g|webp)$/i
-const protoUpload = multer({
-  storage: protoStorage,
+const ALLOWED_DOC_EXT = /\.(pdf|png|jpe?g|webp)$/i
+
+const innovationUpload = multer({
+  storage: memStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (!ALLOWED_IMAGE_EXT.test(file.originalname)) {
-      return cb(new Error('Only image files (PNG, JPG, WEBP) are allowed'))
-    }
-    const safeMime = /^image\/(png|jpe?g|webp)$/i
-    if (!safeMime.test(file.mimetype)) {
-      return cb(new Error('Invalid image MIME type'))
+    if (file.fieldname === 'prototypeImage') {
+      if (!ALLOWED_IMAGE_EXT.test(file.originalname)) {
+        return cb(new Error('Only image files (PNG, JPG, WEBP) are allowed for prototype'))
+      }
+      const safeMime = /^image\/(png|jpe?g|webp)$/i
+      if (!safeMime.test(file.mimetype)) {
+        return cb(new Error('Invalid image MIME type'))
+      }
+    } else if (file.fieldname === 'udidCard') {
+      if (!ALLOWED_DOC_EXT.test(file.originalname)) {
+        return cb(new Error('Only PDF or image files are allowed for UDID card'))
+      }
+      const safeMime = /^(image\/(png|jpe?g|webp)|application\/pdf)$/i
+      if (!safeMime.test(file.mimetype)) {
+        return cb(new Error('Invalid file type for UDID card'))
+      }
     }
     cb(null, true)
   },
@@ -217,7 +231,7 @@ app.post('/api/log-error', errorReportLimiter, async (req, res) => {
 
 // ── 1. Innovation Fest – College Category ─────────────────────────────────────
 // POST /api/innovation-college
-app.post('/api/innovation-college', registrationLimiter, protoUpload.single('prototypeImage'), async (req, res) => {
+app.post('/api/innovation-college', registrationLimiter, innovationUpload.single('prototypeImage'), async (req, res) => {
   try {
     const {
       teamName, collegeName, theme, ideaTitle, ideaDescription,
@@ -332,7 +346,7 @@ app.post('/api/innovation-college', registrationLimiter, protoUpload.single('pro
 
 // ── 2. Innovation Fest – PWD Category ────────────────────────────────────────
 // POST /api/innovation-pwd
-app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototypeImage'), async (req, res) => {
+app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'udidCard', maxCount: 1 }]), async (req, res) => {
   try {
     const {
       participationType, ideaTitle, ideaDescription,
@@ -367,9 +381,13 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
-    if (req.file && !isValidImageBuffer(req.file.buffer)) {
-      return res.status(400).json({ success: false, message: 'Uploaded file is not a valid image' })
+    if (req.files && req.files['prototypeImage']) {
+      const file = req.files['prototypeImage'][0]
+      if (!isValidImageBuffer(file.buffer)) {
+         return res.status(400).json({ success: false, message: 'Uploaded prototype file is not a valid image' })
+      }
     }
+    // (Optional: Add buffer validation for UDID if strict check needed, skipping for PDF complexity)
 
     // ── Sanitize ─────────────────────────────────────────
     const sPartType = participationType.trim()
@@ -405,12 +423,23 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
     }
 
     let protoImagePath = null
-    if (req.file) {
+    if (req.files && req.files['prototypeImage']) {
+      const file = req.files['prototypeImage'][0]
       const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
-      const ext = path.extname(sanitizeFilename(req.file.originalname))
-      const filename = `${phone}_${Date.now()}${ext}`
-      fs.writeFileSync(path.join(UPLOAD_DIR, filename), req.file.buffer)
-      protoImagePath = filename  // store filename only
+      const ext = path.extname(sanitizeFilename(file.originalname))
+      const filename = `${phone}_proto_${Date.now()}${ext}`
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), file.buffer)
+      protoImagePath = filename
+    }
+
+    let udidCardPath = null
+    if (req.files && req.files['udidCard']) {
+      const file = req.files['udidCard'][0]
+      const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
+      const ext = path.extname(sanitizeFilename(file.originalname))
+      const filename = `${phone}_udid_${Date.now()}${ext}`
+      fs.writeFileSync(path.join(ID_DIR, filename), file.buffer)
+      udidCardPath = `ID/${filename}`
     }
 
     const { data, error } = await supabase
@@ -428,6 +457,7 @@ app.post('/api/innovation-pwd', registrationLimiter, protoUpload.single('prototy
         disability_type: sDisability,
         members,
         prototype_image_path: protoImagePath,
+        udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
       }])
       .select()

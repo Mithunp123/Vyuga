@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 
 // Import logos
 import srpLogo from '../assets/present by/SRP.webp'
@@ -76,6 +77,7 @@ export default function About() {
   const inView = useInView(sectionRef, { once: true, amount: 0.15 })
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
   const parallaxY = useTransform(scrollYProgress, [0, 1], [60, -60])
+  const location = useLocation()
 
   return (
     <section id="about" className="relative overflow-hidden bg-white" ref={sectionRef}>
@@ -109,14 +111,15 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                   whileHover={{ scale: 1.1, rotateY: 5 }}
-                  className="group relative perspective-1000"
+                  className="group relative perspective-1000 cursor-pointer"
+                  onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
                     <img
                       src={nexgugaLogo}
                       alt="Nexyuga Innovation"
-                      className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                      className="h-16 sm:h-24 w-auto object-contain mx-auto"
                     />
                   </div>
                 </motion.div>
@@ -137,14 +140,15 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                   whileHover={{ scale: 1.1, rotateY: -5 }}
-                  className="group relative perspective-1000"
+                  className="group relative perspective-1000 cursor-pointer"
+                  onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
                     <img
                       src={srpLogo}
                       alt="SRP Foundation"
-                      className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                      className="h-16 sm:h-24 w-auto object-contain mx-auto"
                     />
                   </div>
                 </motion.div>
@@ -172,11 +176,11 @@ export default function About() {
                 className="group relative perspective-1000"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
                   <img
                     src={ksrctLogo}
                     alt="KSRCT"
-                    className="h-10 sm:h-14 w-auto object-contain mx-auto"
+                    className="h-16 sm:h-24 w-auto object-contain mx-auto"
                   />
                 </div>
               </motion.div>
@@ -189,14 +193,14 @@ export default function About() {
       <div className="relative overflow-hidden border-y border-slate-100 py-16 sm:py-20">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan-light/20 via-transparent to-brand-lime-light/20" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="flex flex-wrap items-baseline justify-center gap-x-8 gap-y-6 sm:gap-x-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((s, idx) => (
               <motion.div
                 key={s.label}
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative overflow-hidden rounded-2xl bg-white/50 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer"
+                className="group relative overflow-hidden rounded-2xl bg-white/50 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer h-full"
               >
                 {/* Flowing background animation on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/10 via-brand-lime/10 to-brand-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -355,6 +359,218 @@ export default function About() {
           </div>
         </div>
       </div>
+
+      {/* ── ABOUT NEXYUGA ── */}
+      {location.pathname === '/about' && (
+        <div id="about-nexyuga" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 border-t border-slate-100">
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-3"
+            >
+              <div className="gradient-line w-16" />
+              <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">ABOUT NEXYUGA</span>
+            </motion.div>
+
+            <div className="mt-8 space-y-1">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+              >
+                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                  Driving digital{' '}
+                </span>
+                <span className="font-serif text-[6vw] italic font-light leading-[0.9] text-brand-cyan sm:text-4xl lg:text-6xl">
+                  transformation
+                </span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+              >
+                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                  with{' '}
+                </span>
+                <span className="font-marker text-[6vw] leading-[0.9] gradient-text sm:text-4xl lg:text-6xl">
+                  inclusive innovation
+                </span>
+              </motion.div>
+            </div>
+
+            <div className="mt-12 grid gap-16 lg:grid-cols-5">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="lg:col-span-2"
+              >
+                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
+                  Nexyuga Innovations Pvt Ltd is a pioneering technology firm committed to driving digital transformation. We specialize in building scalable solutions that bridge the gap between complex technology and human-centric design.
+                </p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="mt-8"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-brand-cyan/10 flex items-center justify-center">
+                      <img src={nexgugaLogo} alt="Nexyuga" className="h-6 w-auto" />
+                    </div>
+                    <div>
+                      <p className="font-hero text-lg font-bold text-slate-800">Tech for Good</p>
+                      <p className="text-xs font-mono text-slate-400 tracking-wider">CORE PHILOSOPHY</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              <div className="lg:col-span-3">
+                 <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
+                  We focus on:
+                </p>
+                <div className="space-y-0">
+                  {[
+                    'Scalable Enterprise Solutions',
+                    'Human-Centric Digital Design',
+                    'Inclusive Tech Ecosystems',
+                    'Empowering Local Communities'
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: 30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                      className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-cyan/30"
+                    >
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
+                      <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                        {item}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ABOUT SRP ── */}
+      {location.pathname === '/about' && (
+        <div id="about-srp" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 border-t border-slate-100 bg-slate-50/50">
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-3"
+            >
+              <div className="gradient-line w-16" />
+              <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-lime">ABOUT SRP FOUNDATION</span>
+            </motion.div>
+
+            <div className="mt-8 space-y-1">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+              >
+                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                  Uplifting{' '}
+                </span>
+                <span className="font-serif text-[6vw] italic font-light leading-[0.9] text-brand-lime sm:text-4xl lg:text-6xl">
+                  communities
+                </span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+              >
+                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                  through{' '}
+                </span>
+                <span className="font-marker text-[6vw] leading-[0.9] text-brand-lime sm:text-4xl lg:text-6xl">
+                  empowerment
+                </span>
+              </motion.div>
+            </div>
+
+            <div className="mt-12 grid gap-16 lg:grid-cols-5">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="lg:col-span-2"
+              >
+                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl">
+                  Dedicated to social upliftment, the SRP Foundation works tirelessly to create opportunities for the underrepresented. We believe in building a more equitable society through targeted initiatives.
+                </p>
+                 <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  className="mt-8"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-brand-lime/10 flex items-center justify-center">
+                      <img src={srpLogo} alt="SRP" className="h-6 w-auto" />
+                    </div>
+                    <div>
+                      <p className="font-hero text-lg font-bold text-slate-800">Social Impact</p>
+                      <p className="text-xs font-mono text-slate-400 tracking-wider">CORE MISSION</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              <div className="lg:col-span-3">
+                 <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
+                  Our initiatives cover:
+                </p>
+                <div className="space-y-0">
+                  {[
+                    'Accessible Education for All',
+                    'Community Healthcare Support',
+                    'Skill Development Workshops',
+                    'Sustainable Livelihood Programs'
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: 30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                      className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-lime/30"
+                    >
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
+                      <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                        {item}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

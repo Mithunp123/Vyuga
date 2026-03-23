@@ -146,7 +146,7 @@ function RotatingBadge() {
         </text>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-brand-cyan to-brand-lime shadow-lg shadow-brand-cyan/30 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-full bg-slate-800 shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-700">
         </div>
       </div>
     </div>
@@ -158,11 +158,11 @@ function MarqueeBand() {
   const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'KSRCT']
   const doubled = [...items, ...items]
   return (
-    <div className="relative overflow-hidden border-y-2 border-brand-cyan/40 bg-gradient-to-r from-brand-cyan/20 via-brand-lime/20 to-brand-cyan/20">
+    <div className="relative overflow-hidden border-y-2 border-brand-cyan/20 bg-slate-950/50 backdrop-blur-sm">
       <div className="animate-marquee flex w-max">
         {doubled.map((item, i) => (
           <span key={i} className="flex items-center gap-6 px-3">
-            <span className={`whitespace-nowrap py-5 font-impact text-5xl tracking-[0.06em] sm:text-7xl lg:text-[5.5rem] ${i % 2 === 0 ? 'text-slate-900' : 'text-brand-cyan'}`}>
+            <span className={`whitespace-nowrap py-5 font-impact text-5xl tracking-[0.06em] sm:text-7xl lg:text-[5.5rem] ${i % 2 === 0 ? 'text-white' : 'text-brand-cyan'}`}>
               {item}
             </span>
             <span className="text-2xl text-brand-lime select-none sm:text-3xl">◆</span>
@@ -184,19 +184,19 @@ export default function Hero() {
   const textInView = useInView(textRef, { once: true })
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden bg-white">
+    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
       <ParticleCanvas />
 
       {/* Gradient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-[8%] h-[600px] w-[600px] rounded-full bg-brand-cyan/[0.07] blur-[120px] animate-morph" />
-        <div className="absolute -bottom-40 right-[5%] h-[500px] w-[500px] rounded-full bg-brand-lime/[0.06] blur-[120px] animate-morph" style={{ animationDelay: '6s' }} />
+        <div className="absolute -top-40 left-[8%] h-[600px] w-[600px] rounded-full bg-brand-cyan/[0.1] blur-[120px] animate-morph" />
+        <div className="absolute -bottom-40 right-[5%] h-[500px] w-[500px] rounded-full bg-brand-lime/[0.1] blur-[120px] animate-morph" style={{ animationDelay: '6s' }} />
       </div>
-      <div className="absolute inset-0 noise-overlay pointer-events-none" />
+      <div className="absolute inset-0 noise-overlay pointer-events-none opacity-20" />
 
       <motion.div className="relative z-10" style={{ opacity, scale, y }}>
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 sm:px-6">
-          <div ref={textRef} className="pt-28 pb-8">
+          <div ref={textRef} className="pt-20 pb-8">
             {/* Top row: handwritten label + rotating badge */}
             <div className="flex items-start justify-between">
               <motion.div
@@ -212,7 +212,7 @@ export default function Hero() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-lime opacity-75" />
                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand-lime" />
                   </span>
-                  <span className="font-mono text-[11px] font-semibold tracking-[0.2em] text-slate-500">
+                  <span className="font-mono text-[11px] font-semibold tracking-[0.2em] text-slate-400">
                     JUN 26–27, 2026 · K.S.RANGASAMY COLLEGE OF TECHNOLOGY, TIRUCHENGODE
                   </span>
                 </div>
@@ -262,7 +262,7 @@ export default function Hero() {
                   initial={{ y: '120%' }}
                   animate={textInView ? { y: '0%' } : {}}
                   transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-stroke sm:text-[10vw] lg:text-[8vw]"
+                  className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-white sm:text-[10vw] lg:text-[8vw]"
                 >
                   ABILITY CARNIVAL
                 </motion.span>
@@ -295,7 +295,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.4 }}
-                className="max-w-lg text-base leading-relaxed text-slate-500 sm:text-lg"
+                className="max-w-lg text-base leading-relaxed text-slate-400 sm:text-lg"
               >
                 <span className="font-marker text-brand-cyan">Be part of the movement </span>
                 Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
@@ -337,7 +337,7 @@ export default function Hero() {
                   { v: countdown.seconds, l: 'SEC' },
                 ].map((t, i) => (
                   <div key={t.l} className="flex items-baseline">
-                    <span className="font-impact text-6xl tracking-wide text-slate-900 tabular-nums sm:text-7xl lg:text-8xl">
+                    <span className="font-impact text-6xl tracking-wide text-white tabular-nums sm:text-7xl lg:text-8xl">
                       {String(t.v).padStart(2, '0')}
                     </span>
                     <span className="ml-1 mr-3 font-mono text-[9px] font-bold tracking-[0.15em] text-brand-cyan">
