@@ -290,15 +290,10 @@ export default function Hero() {
 
             {/* ── Description + CTAs ── */}
             <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:gap-16">
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 1.4 }}
-                className="max-w-lg text-base leading-relaxed text-slate-600 sm:text-lg"
-              >
-                <span className="font-marker text-brand-cyan">Be part of the movement </span>
-                Join <span className="font-marker text-brand-cyan">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
-              </motion.p>
+              <p className="max-w-lg text-base font-semibold leading-relaxed text-slate-800 sm:text-lg">
+                <span className="font-bold text-slate-900">Be part of the movement </span>
+                Join <span className="font-bold text-slate-900">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
+              </p>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
