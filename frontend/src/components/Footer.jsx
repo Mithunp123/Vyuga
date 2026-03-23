@@ -1,7 +1,7 @@
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { navLinks } from '../data/homeData.js'
-import { Globe, Mail, MapPin, Phone } from 'lucide-react'
+import { Globe, Mail, MapPin, Phone, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function SocialIcon({ label, href, children }) {
@@ -37,8 +37,82 @@ export default function Footer() {
   const watermarkOpacity = useTransform(scrollYProgress, [0, 0.8], [0.03, 0.25])
   const watermarkY = useTransform(scrollYProgress, [0, 0.8], [40, 0])
   const textOpacity = useTransform(scrollYProgress, [0, 0.4], [0.35, 1])
+  const [modalOpen, setModalOpen] = useState(false)
+  const [activePolicy, setActivePolicy] = useState(null)
+
+  const policies = {
+    'terms': {
+      title: 'Terms & Conditions',
+      content: (
+        <div className="space-y-4 text-sm text-slate-600">
+          <p>Welcome to VYUGA 2026. By accessing our website and registering for events, you agree to these terms.</p>
+          
+          <h4 className="font-bold text-slate-800">1. Registration & Participation</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Participants must provide accurate information during registration.</li>
+            <li>Event organizers reserve the right to disqualify any entry found to be fraudulent.</li>
+            <li>Participants are expected to maintain professional conduct throughout the event.</li>
+          </ul>
+
+          <h4 className="font-bold text-slate-800">2. Event Schedule</h4>
+          <p>The organizers reserve the right to modify the event schedule, speakers, or venue if necessary. Any major changes will be communicated via registered email.</p>
+
+          <h4 className="font-bold text-slate-800">3. Intellectual Property</h4>
+          <p>All content presented during the event is the property of the respective speakers and VYUGA. Unauthorized recording or distribution is prohibited.</p>
+
+          <h4 className="font-bold text-slate-800">4. Liability</h4>
+          <p>VYUGA and K.S.Rangasamy College of Technology are not liable for any personal injury or loss of property during the event.</p>
+        </div>
+      )
+    },
+    'privacy': {
+      title: 'Privacy Policy',
+      content: (
+        <div className="space-y-4 text-sm text-slate-600">
+          <p>Your privacy is important to us. This policy outlines how we handle your data.</p>
+          
+          <h4 className="font-bold text-slate-800">1. Data Collection</h4>
+          <p>We collect personal information (name, email, phone) only for registration and communication purposes. We do not sell your data to third parties.</p>
+
+          <h4 className="font-bold text-slate-800">2. Usage of Data</h4>
+          <p>Your data is used to:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Process your registration.</li>
+            <li>Send event updates and important announcements.</li>
+            <li>Generate participation certificates.</li>
+          </ul>
+
+          <h4 className="font-bold text-slate-800">3. Media Consent</h4>
+          <p>By attending, you consent to being photographed or filmed for promotional purposes. If you wish to opt out, please contact the organizers desk upon arrival.</p>
+        </div>
+      )
+    },
+    'refund': {
+      title: 'Cancellation & Refund',
+      content: (
+        <div className="space-y-4 text-sm text-slate-600">
+          <p>Please review our cancellation policy carefully.</p>
+          
+          <h4 className="font-bold text-slate-800">1. Cancellation by Participant</h4>
+          <p>Registrations once made are generally non-refundable. However, in exceptional cases (medical emergency), a request can be submitted for review up to 7 days before the event.</p>
+
+          <h4 className="font-bold text-slate-800">2. Event Cancellation</h4>
+          <p>If the event is cancelled by the organizers due to unforeseen circumstances, a full refund of the registration fee will be processed within 14 working days.</p>
+
+          <h4 className="font-bold text-slate-800">3. Transfer of Ticket</h4>
+          <p>Tickets are non-transferable unless approved by the organizing committee at least 48 hours prior to the event.</p>
+        </div>
+      )
+    }
+  }
+
+  const openPolicy = (key) => {
+    setActivePolicy(policies[key])
+    setModalOpen(true)
+  }
 
   return (
+    <>
     <footer ref={ref} className="relative bg-slate-950 text-white overflow-hidden">
       <div className="absolute inset-0 dot-grid opacity-10" />
       <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-96 w-[800px] rounded-full bg-brand-cyan/5 blur-[150px]" />
@@ -109,9 +183,6 @@ export default function Footer() {
                   </li>
                 ))}
                 <li>
-                  <ScrollWhiteText className="text-sm transition hover:text-brand-cyan">
-                    <a href="/#highlights">Highlights</a>
-                  </ScrollWhiteText>
                 </li>
               </ul>
             </div>
@@ -119,9 +190,21 @@ export default function Footer() {
             <div className="lg:mt-10">
               <p className="font-marker text-xs text-brand-lime">Policies</p>
               <ul className="mt-5 grid gap-3">
-                <li><ScrollWhiteText className="text-sm">Cancellation & Refund</ScrollWhiteText></li>
-                <li><ScrollWhiteText className="text-sm">Privacy Policy</ScrollWhiteText></li>
-                <li><ScrollWhiteText className="text-sm">Terms & Conditions</ScrollWhiteText></li>
+                <li>
+                  <button onClick={() => openPolicy('refund')} className="text-left">
+                    <ScrollWhiteText className="text-sm hover:text-brand-lime transition-colors">Cancellation & Refund</ScrollWhiteText>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => openPolicy('privacy')} className="text-left">
+                    <ScrollWhiteText className="text-sm hover:text-brand-lime transition-colors">Privacy Policy</ScrollWhiteText>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => openPolicy('terms')} className="text-left">
+                    <ScrollWhiteText className="text-sm hover:text-brand-lime transition-colors">Terms & Conditions</ScrollWhiteText>
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -146,6 +229,52 @@ export default function Footer() {
         </motion.div>
       </div>
     </footer>
+
+    {/* Policy Modal */}
+    <AnimatePresence>
+      {modalOpen && activePolicy && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setModalOpen(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="fixed left-1/2 top-1/2 z-[70] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 p-4"
+          >
+            <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <button 
+                onClick={() => setModalOpen(false)}
+                className="absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600 z-10"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              <div className="max-h-[80vh] overflow-y-auto p-8">
+                <div className="mb-6 border-b border-slate-100 pb-4">
+                  <h3 className="font-display text-2xl font-bold text-slate-900">{activePolicy.title}</h3>
+                </div>
+                {activePolicy.content}
+                <div className="mt-8 flex justify-end">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="rounded-xl bg-slate-100 px-6 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   )
 }
 

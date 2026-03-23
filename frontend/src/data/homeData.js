@@ -10,11 +10,8 @@ import brailleNextImg from '../assets/BrailleNext.png'
 
 export const navLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Program', to: '/program' },
   { label: 'About', to: '/about' },
-  { label: 'Speakers', to: '/speakers' },
   { label: 'Sponsors', to: '/sponsors' },
-  { label: 'Exhibitors', to: '/exhibitors' },
 ]
 
 export const partnerBadges = [
