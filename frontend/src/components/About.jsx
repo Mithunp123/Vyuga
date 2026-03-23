@@ -309,7 +309,7 @@ export default function About() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.6 }}
-                className="mt-12"
+                className="mt-12 max-w-[280px]"
               >
                 <img 
                   src={aboutImg} 
