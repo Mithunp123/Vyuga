@@ -160,3 +160,16 @@ CREATE TABLE IF NOT EXISTS blind_chess_registrations (
 
 CREATE INDEX IF NOT EXISTS idx_chess_email ON blind_chess_registrations (email);
 
+-- -----------------------------------------------------------------
+-- 7. Sponsor Messages
+--    API: POST /api/sponsors
+-- -----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS sponsor_messages (
+  id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  name         TEXT        NOT NULL,
+  phone        TEXT        NOT NULL,
+  email        TEXT        NOT NULL,
+  message      TEXT,
+  submitted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+

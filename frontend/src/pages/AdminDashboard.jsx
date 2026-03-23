@@ -14,6 +14,7 @@ const TABS = [
   { id: 'cricket',            label: 'Blind Cricket',                    endpoint: '/api/admin/cricket' },
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
   { id: 'accommodation',      label: 'Accommodation Requests',           endpoint: '/api/admin/accommodation' },
+  { id: 'sponsors',           label: 'Sponsor Messages',                 endpoint: '/api/admin/sponsors' },
 ]
 
 const STATUS_CFG = {
@@ -84,6 +85,14 @@ const COLUMNS = {
     { key: 'phone',                  label: 'Phone' },
     { key: 'arrival_date',           label: 'Arrival',        fmt: fmtDateOnly },
     { key: 'departure_date',         label: 'Departure',      fmt: fmtDateOnly },
+  ],
+  sponsors: [
+    { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
+    { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
+    { key: 'name',          label: 'Name' },
+    { key: 'phone',         label: 'Phone' },
+    { key: 'email',         label: 'Email' },
+    { key: 'message',       label: 'Message',   fmt: (v) => v ? (v.length > 50 ? v.substring(0, 50) + '...' : v) : '-' },
   ],
 }
 
@@ -286,8 +295,8 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
 
-  // Org tab doesn't have status management
-  const isOrgTab = tabId === 'talent-org'
+  // Org tab and Sponsors tab don't have status management
+  const isOrgTab = ['talent-org', 'sponsors'].includes(tabId)
 
   const mediaPath = row.prototype_image_path || row.video_file_path
   const isVideo = mediaPath && /\.(mp4|mov|avi|mkv|webm)$/i.test(mediaPath)
@@ -974,6 +983,8 @@ export default function AdminDashboard() {
                 const isLoading = loading[tab.id]
                 const sc = getStatusCounts(tab.id)
                 const isOrg = tab.id === 'talent-org'
+                const isSponsors = tab.id === 'sponsors'
+                const showStatus = !isOrg && !isSponsors
 
                 return (
                   <motion.button
@@ -994,7 +1005,7 @@ export default function AdminDashboard() {
                       {isLoading ? '...' : count}
                     </p>
 
-                    {!isOrg && count > 0 && (
+                    {showStatus && count > 0 && (
                       <div className="flex gap-3">
                         {Object.entries(STATUS_CFG).map(([key, s]) => (
                           <div key={key} className="flex items-center gap-1.5">
@@ -1014,8 +1025,14 @@ export default function AdminDashboard() {
                       </p>
                     )}
 
+                    {isSponsors && count > 0 && (
+                      <p className="text-xs text-slate-400">
+                        {count} message{count !== 1 ? 's' : ''}
+                      </p>
+                    )}
+
                     {count === 0 && !isLoading && (
-                      <p className="text-xs text-slate-400">No registrations yet</p>
+                      <p className="text-xs text-slate-400">No data yet</p>
                     )}
                   </motion.button>
                 )

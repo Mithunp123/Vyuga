@@ -1,7 +1,10 @@
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { X, Loader2, CheckCircle } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 // Sponsorship benefits data
 const sponsorshipTiers = [
@@ -61,6 +64,49 @@ const sponsorshipTiers = [
 export default function SponsorsPage() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
+  const [modalOpen, setModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: ''
+  })
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`${API_BASE}/api/sponsors`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      const data = await res.json()
+      if (data.success) {
+        setSuccess(true)
+        setFormData({ name: '', phone: '', email: '', message: '' })
+        setTimeout(() => {
+          setSuccess(false)
+          setModalOpen(false)
+        }, 2000)
+      } else {
+        setError(data.message || 'Failed to submit')
+      }
+    } catch(err) {
+      console.error(err)
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -162,16 +208,128 @@ export default function SponsorsPage() {
         </div>
         
         <div className="mt-8 text-center">
-             <a
-              href="mailto:connect@nexyugainnovations.com"
+             <button
+              onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-brand-cyan/20 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-cyan/30"
             >
               Become a Sponsor
-            </a>
+            </button>
         </div>
       </section>
 
       <Footer />
+
+      {/* ── Sponsor Form Modal ── */}
+      <AnimatePresence>
+        {modalOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => setModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 z-[70] w-full max-w-md -translate-x-1/2 -translate-y-1/2 p-4"
+            >
+              <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl">
+                {/* Close button */}
+                <button 
+                  onClick={() => setModalOpen(false)}
+                  className="absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+
+                <div className="p-8">
+                  <div className="mb-6 text-center">
+                    <h3 className="font-display text-2xl font-bold text-slate-900">Become a Sponsor</h3>
+                    <p className="mt-2 text-sm text-slate-600">
+                      Fill out the form below and our team will get back to you shortly.
+                    </p>
+                  </div>
+
+                  {success ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <div className="mb-4 rounded-full bg-green-100 p-3 text-green-600">
+                        <CheckCircle className="h-8 w-8" />
+                      </div>
+                      <h4 className="text-lg font-bold text-slate-900">Thank You!</h4>
+                      <p className="text-slate-600">We have received your interest.</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Name</label>
+                        <input
+                          required
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="Your Name"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Phone Number</label>
+                        <input
+                          required
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="+91 XXXXX XXXXX"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Email Address</label>
+                        <input
+                          required
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="you@company.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Message (Optional)</label>
+                        <textarea
+                          rows={3}
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="Tell us about your interest..."
+                        />
+                      </div>
+
+                      {error && (
+                        <p className="text-center text-xs font-medium text-red-500">{error}</p>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-transform active:scale-95 disabled:opacity-70"
+                      >
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Submit Interest'}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

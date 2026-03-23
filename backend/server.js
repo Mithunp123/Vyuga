@@ -1345,6 +1345,35 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
   }
 })
 
+// ── Sponsor Message ──────────────────────────────────────────────────────────
+// POST /api/sponsors
+app.post('/api/sponsors', registrationLimiter, async (req, res) => {
+  const { name, phone, email, message } = req.body
+
+  if (!name || !phone || !email) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' })
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('sponsor_messages')
+      .insert([{ name, phone, email, message }])
+      .select()
+      .single()
+
+    if (error) {
+      await logError({ source: 'user', endpoint: '/api/sponsors', method: 'POST', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    res.json({ success: true, message: 'Sponsor interest submitted successfully', data })
+  } catch (err) {
+    console.error('❌ Sponsor Message Error:', err)
+    await logError({ source: 'user', endpoint: '/api/sponsors', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: 'Internal Server Error' })
+  }
+})
+
 // ── Admin middleware ──────────────────────────────────────────────────────────
 function requireAdmin(req, res, next) {
   const token = req.headers['x-admin-token'] || req.query.token
@@ -1495,6 +1524,24 @@ app.get('/api/admin/accommodation', requireAdmin, async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     await logError({ source: 'admin', endpoint: '/api/admin/accommodation', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: all sponsor messages ──────────────────────────────────────────────
+app.get('/api/admin/sponsors', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('sponsor_messages')
+      .select('*')
+      .order('submitted_at', { ascending: false })
+    if (error) {
+      await logError({ source: 'admin', endpoint: '/api/admin/sponsors', method: 'GET', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: '/api/admin/sponsors', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
