@@ -25,6 +25,7 @@ import BlindChessForm from './pages/BlindChessForm.jsx'
 
 import AdminLogin from './pages/AdminLogin.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
+import ErrorLogs from './pages/ErrorLogs.jsx'
 import AccessibilityWidget from './components/AccessibilityWidget.jsx'
 
 export default function App() {
@@ -56,6 +57,7 @@ export default function App() {
       {/* ── Admin (private) ── */}
       <Route path="/vyuga-admin" element={<AdminLogin />} />
       <Route path="/vyuga-admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/errorlog" element={<ErrorLogs />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
