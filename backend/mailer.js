@@ -267,7 +267,7 @@ async function sendChessConfirmation(d) {
 // ── Status update email ───────────────────────────────────────────────────────
 async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
   const STATUS_STYLES = {
-    approved: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: '✅', label: 'Approved' },
+    selected: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: '✅', label: 'Selected' },
     rejected: { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', icon: '❌', label: 'Rejected' },
     pending:  { color: '#d97706', bg: '#fffbeb', border: '#fde68a', icon: '⏳', label: 'Pending Review' },
   }

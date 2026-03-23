@@ -1512,7 +1512,7 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
     const meta = TABLE_MAP[type]
     if (!meta) return res.status(400).json({ success: false, message: 'Unknown type' })
     if (!isValidUUID(id)) return res.status(400).json({ success: false, message: 'Invalid record ID format' })
-    if (!['approved', 'rejected', 'pending'].includes(status)) {
+    if (!['selected', 'rejected', 'pending'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status' })
     }
     const safeNote = adminNote ? sanitizeText(adminNote, 1000) : null

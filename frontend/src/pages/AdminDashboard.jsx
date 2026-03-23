@@ -16,7 +16,7 @@ const TABS = [
 ]
 
 const STATUS_CFG = {
-  approved: { label: 'Selected', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  selected: { label: 'Selected', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
   rejected: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   pending:  { label: 'Pending',  color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
 }
