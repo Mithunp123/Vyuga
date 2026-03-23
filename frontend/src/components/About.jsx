@@ -116,11 +116,11 @@ export default function About() {
                   onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
                     <img
                       src={nexgugaLogo}
                       alt="Nexyuga Innovation"
-                      className="h-16 sm:h-24 w-auto object-contain mx-auto"
+                      className="max-h-full max-w-full object-contain"
                     />
                   </div>
                 </motion.div>
@@ -145,11 +145,11 @@ export default function About() {
                   onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                  <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
                     <img
                       src={srpLogo}
                       alt="SRP Foundation"
-                      className="h-16 sm:h-24 w-auto object-contain mx-auto"
+                      className="max-h-full max-w-full object-contain"
                     />
                   </div>
                 </motion.div>
@@ -177,11 +177,11 @@ export default function About() {
                 className="group relative perspective-1000"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100">
+                <div className="relative bg-white rounded-2xl p-4 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-32 w-48 sm:h-40 sm:w-64">
                   <img
                     src={ksrctLogo}
                     alt="KSRCT"
-                    className="h-16 sm:h-24 w-auto object-contain mx-auto"
+                    className="max-h-full max-w-full object-contain"
                   />
                 </div>
               </motion.div>
