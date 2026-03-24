@@ -638,7 +638,7 @@ export default function About() {
                       </div>
                     </div>
                      <a 
-                      href="https://www.srf-foundation.org/" 
+                      href="https://www.shreerengapolymers.com/srp-foundation-plants-1600-trees-at-valluvar-college-of-science-and-management-karur/" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
