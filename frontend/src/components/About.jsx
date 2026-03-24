@@ -9,6 +9,10 @@ import nexgugaLogo from '../assets/present by/nexguga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import aboutImg from '../assets/about.png'
 import nexyugaGroup from '../assets/nexyuga_group.png'
+import srp1 from '../assets/aboutsrp/1.jpg'
+import srp2 from '../assets/aboutsrp/2.jpg'
+import srp3 from '../assets/aboutsrp/3.jpg'
+import { AnimatePresence } from 'framer-motion'
 
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
@@ -105,6 +109,16 @@ const eventsList = [
 ]
 
 export default function About() {
+  const [currentSrpImage, setCurrentSrpImage] = useState(0)
+  const srpImages = [srp1, srp2, srp3]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSrpImage((prev) => (prev + 1) % srpImages.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   const sectionRef = useRef(null)
   const inView = useInView(sectionRef, { once: true, amount: 0.15 })
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
@@ -212,7 +226,7 @@ export default function About() {
       </div>
 
       {/* ── Stats — enhanced boxes with hover effects ── */}
-      <div className="relative overflow-hidden border-y border-slate-100 py-16 sm:py-20">
+      <div className="relative overflow-hidden border-y border-slate-100 py-8 sm:py-12">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan-light/20 via-transparent to-brand-lime-light/20" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -247,7 +261,7 @@ export default function About() {
       </div>
 
       {/* ── About — cinematic split layout, NO cards ── */}
-      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
+      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <motion.div style={{ y: parallaxY }} className="absolute top-10 right-[10%] h-80 w-80 rounded-full bg-brand-cyan/5 blur-[100px]" />
           <motion.div style={{ y: parallaxY }} className="absolute bottom-10 left-[5%] h-60 w-60 rounded-full bg-brand-lime/5 blur-[80px]" />
@@ -621,27 +635,51 @@ export default function About() {
                  <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
                   Our initiatives cover:
                 </p>
-                <div className="space-y-0">
-                  {[
-                    'Accessible Education for All',
-                    'Community Healthcare Support',
-                    'Skill Development Workshops',
-                    'Sustainable Livelihood Programs'
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item}
-                      initial={{ opacity: 0, x: 30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                      className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-lime/30"
-                    >
-                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
-                      <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
-                        {item}
-                      </span>
-                    </motion.div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div className="space-y-0">
+                    {[
+                      'Accessible Education for All',
+                      'Community Healthcare Support',
+                      'Skill Development Workshops',
+                      'Sustainable Livelihood Programs'
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                        className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
+                      >
+                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
+                        <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                          {item}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                   {/* SRP Slideshow */}
+                   <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="w-full flex justify-center md:justify-end h-[250px] relative overflow-hidden rounded-xl"
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={currentSrpImage}
+                        src={srpImages[currentSrpImage]}
+                        alt="SRP Foundation Initiatives"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 w-full h-full object-cover rounded-xl shadow-md"
+                      />
+                    </AnimatePresence>
+                  </motion.div>
                 </div>
               </div>
             </div>
