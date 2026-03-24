@@ -7,6 +7,7 @@ import group from '../assets/images/group.png'
 import hand from '../assets/images/hand.png'
 import three from '../assets/images/three.png'
 import think from '../assets/images/think.png'
+import child from '../assets/images/child.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import srpLogo from '../assets/present by/SRP.webp'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
@@ -63,7 +64,7 @@ const stats = [
     suffix: '+',
     unit: 'Attendees',
     description: 'Uniting institutional leaders, support networks, and next-gen innovators to architect a future where accessibility is the default.',
-    image: group,
+    image: child,
     accent: 'text-brand-cyan'
   },
   {
