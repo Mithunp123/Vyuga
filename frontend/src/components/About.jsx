@@ -84,18 +84,23 @@ const eventsList = [
   },
   {
     title: "Innovation Fest by Differently Abled",
-    description: "An open challenge for disabled innovators and teams to present impactful ideas aligned with social goals.",
+    description: "Driven by lived experience, this SDG-aligned challenge invites adaptive innovators to engineer high-impact solutions for universal accessibility. Designed for independent creators or teams of three, the program empowers pioneers to solve real-world friction points through disruptive assistive technology. We celebrate community ingenuity with merit-based rewards for the breakthroughs redefining the inclusive frontier.",
     color: "text-brand-lime"
   },
   {
     title: "Special Talent Utsav",
-    description: "A performance platform where schools and organizations nominate participants and top finalists showcase their talent on stage.",
+    description: "A high-visibility platform for adaptive performers to demonstrate creative excellence. Institutional partners may nominate a singular talent or collective, with the Top 20 elite finalists advancing to the main stage. This curated showcase recognizes artistic innovation through merit-based rewards and a premier performance environment.",
     color: "text-brand-cyan"
   },
   {
     title: "Blind Cricket",
-    description: "A tournament for adults with disabilities where teams compete for prizes and a championship trophy.",
+    description: "An elite tournament engineered for adaptive athletes, this high-performance competition redefines the boundaries of sensory-based sport. Regional squads will compete in a precision-driven bracket, with the Championship Tier victors securing the Premier Trophy and merit-based prize rewards.",
     color: "text-brand-lime"
+  },
+  {
+    title: "Blind Chess",
+    description: "An elite tournament for adaptive chess players, this competition showcases strategic brilliance and mental fortitude. Regional participants will compete in a structured format, with the top performers advancing to the national championship and receiving merit-based recognition.",
+    color: "text-brand-cyan"
   }
 ]
 
@@ -389,7 +394,7 @@ export default function About() {
                 <h4 className={`font-display text-xl font-bold ${event.color} mb-3 uppercase tracking-wide`}>
                   {event.title}
                 </h4>
-                <p className="text-slate-600 leading-relaxed font-medium">
+                <p className="text-slate-600 leading-relaxed font-medium text-justify">
                   {event.description}
                 </p>
              </div>
