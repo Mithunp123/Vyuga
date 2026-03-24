@@ -10,7 +10,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const sponsorshipTiers = [
   {
     name: 'PLATINUM',
-    price: '₹10,00,000',
+    price: '₹ 10,00,000',
     color: 'from-yellow-400 to-yellow-600',
     textColor: 'text-yellow-600',
     bgColor: 'bg-yellow-50',
@@ -27,7 +27,7 @@ const sponsorshipTiers = [
   },
   {
     name: 'GOLD',
-    price: '₹5,00,000',
+    price: '₹ 5,00,000',
     color: 'from-amber-400 to-amber-600',
     textColor: 'text-amber-600',
     bgColor: 'bg-amber-50',
@@ -44,7 +44,7 @@ const sponsorshipTiers = [
   },
   {
     name: 'SILVER',
-    price: '₹3,00,000',
+    price: '₹ 3,00,000',
     color: 'from-gray-400 to-gray-600',
     textColor: 'text-gray-600',
     bgColor: 'bg-gray-50',

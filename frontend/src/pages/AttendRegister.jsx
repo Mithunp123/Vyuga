@@ -56,9 +56,7 @@ const INNOVATION_TRACKS = [
       {
         label: 'Focus Sector',
         value: [
-          'Cognitive & Learning Accessibility',
-          'Physical & Mobility Accessibility', 
-          'Visual & Hearing Accessibility',
+          'Assistive Technology',
         ],
       },
       {

@@ -12,9 +12,7 @@ const INNOVATION_TYPE_OPTIONS = [
 ]
 
 const THEME_OPTIONS = [
-  'Cognitive & Learning Accessibility',
-  'Physical & Mobility Accessibility',
-  'Visual & Hearing Accessibility',
+  'Assistive Technology',
 ]
 
 const DISABILITY_TYPES = [
@@ -309,7 +307,6 @@ export default function InnovationUnifiedForm() {
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 >
                   <option value="" disabled hidden>Assistive Technology</option>
-                  <option value="Assistive Technology" className="font-bold">Assistive Technology (General)</option>
                   {THEME_OPTIONS.map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}

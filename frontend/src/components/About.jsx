@@ -65,6 +65,7 @@ const features = [
   { text: 'An innovator turns daily challenges into solutions for thousands', accent: 'font-marker text-brand-lime' },
   { text: 'A player proves passion goes beyond physical limitations', accent: 'font-serif italic text-brand-cyan' },
   { text: 'Society learns to see ability, not disability', accent: 'font-marker text-brand-lime' },
+  { text: 'A strategist proves that vision lies in the mind, not the eyes', accent: 'font-serif italic text-brand-cyan' },
 ]
 
 const aims = [
@@ -223,12 +224,12 @@ export default function About() {
 
                 {/* Content */}
                 <div className="relative text-center px-4 py-6 sm:px-6 sm:py-8">
-                  <p className={`font-impact text-4xl sm:text-5xl lg:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:text-white group-hover:drop-shadow-lg`}>
+                  <p className={`font-impact text-4xl sm:text-5xl lg:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg`}>
                     <AnimatedCounter target={s.value} suffix={s.suffix} />
                   </p>
-                  <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-600 transition-colors duration-300">{s.label}</p>
+                  <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300">{s.label}</p>
                   {s.description && (
-                    <p className="mt-3 max-w-40 mx-auto text-justify text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-700 transition-colors duration-300">
+                    <p className="mt-3 max-w-40 mx-auto text-justify text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300">
                       {s.description}
                     </p>
                   )}

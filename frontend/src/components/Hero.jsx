@@ -193,7 +193,7 @@ export default function Hero() {
         <div className="absolute -bottom-40 right-[5%] h-[500px] w-[500px] rounded-full bg-brand-lime/[0.1] blur-[120px] animate-morph" style={{ animationDelay: '6s' }} />
       </div>
 
-      <motion.div className="relative z-10" style={{ opacity, scale, y }}>
+      <div className="relative z-10">
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 sm:px-6">
           <div ref={textRef} className="pt-20 pb-8">
             {/* Top row: handwritten label + rotating badge */}
@@ -316,13 +316,10 @@ export default function Hero() {
             </div>
 
             {/* ── Countdown ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.8 }}
+            <div
               className="mt-16 mb-24 flex flex-wrap items-end gap-x-8 gap-y-4"
             >
-              <span className="font-marker text-sm text-brand-cyan">Starts in</span>
+              <span className="font-marker text-sm text-slate-900 font-bold">Starts in</span>
               <div className="flex items-baseline gap-1">
                 {[
                   { v: countdown.days, l: 'DAYS' },
@@ -331,22 +328,22 @@ export default function Hero() {
                   { v: countdown.seconds, l: 'SEC' },
                 ].map((t, i) => (
                   <div key={t.l} className="flex items-baseline">
-                    <span className="font-impact text-6xl tracking-wide text-slate-800 tabular-nums sm:text-7xl lg:text-8xl">
+                    <span className="font-impact text-6xl tracking-wide text-black tabular-nums sm:text-7xl lg:text-8xl">
                       {String(t.v).padStart(2, '0')}
                     </span>
-                    <span className="ml-1 mr-3 font-mono text-[9px] font-bold tracking-[0.15em] text-brand-cyan">
+                    <span className="ml-1 mr-3 font-mono text-[10px] font-black tracking-[0.15em] text-slate-900">
                       {t.l}
                     </span>
                     {i < 3 && (
-                      <span className="mr-3 font-serif text-4xl italic text-brand-cyan/40 sm:text-5xl">:</span>
+                      <span className="mr-3 font-serif text-4xl italic text-slate-400 sm:text-5xl font-bold">:</span>
                     )}
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Marquee — outside scroll-fade wrapper */}
       <div className="relative z-10">

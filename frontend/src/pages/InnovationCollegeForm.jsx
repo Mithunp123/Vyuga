@@ -5,9 +5,7 @@ import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const THEMES = [
-  'Cognitive & Learning Accessibility',
-  'Physical & Mobility Accessibility',
-  'Visual & Hearing Accessibility',
+  'Assistive Technology',
 ]
 
 const EMPTY = {
