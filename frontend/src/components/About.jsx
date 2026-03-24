@@ -288,10 +288,10 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
             >
-              <span className="font-hero text-[8vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
+              <span className="font-hero text-[5vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-3xl lg:text-5xl">
                 A voice for{' '}
               </span>
-              <span className="font-serif text-[8vw] italic font-light leading-[0.9] text-brand-cyan sm:text-5xl lg:text-7xl">
+              <span className="font-serif text-[5vw] italic font-light leading-[0.9] text-brand-cyan sm:text-3xl lg:text-5xl">
                 abilities
               </span>
             </motion.div>
@@ -301,10 +301,10 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <span className="font-hero text-[8vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
+              <span className="font-hero text-[5vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-3xl lg:text-5xl">
                 often{' '}
               </span>
-              <span className="font-marker text-[8vw] leading-[0.9] gradient-text sm:text-5xl lg:text-7xl">
+              <span className="font-marker text-[5vw] leading-[0.9] gradient-text sm:text-3xl lg:text-5xl">
                 unseen
               </span>
             </motion.div>
@@ -438,10 +438,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.1 }}
               >
-                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                   Driving digital{' '}
                 </span>
-                <span className="font-serif text-[6vw] italic font-light leading-[0.9] text-brand-cyan sm:text-4xl lg:text-6xl">
+                <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-cyan sm:text-2xl lg:text-4xl">
                   transformation
                 </span>
               </motion.div>
@@ -451,10 +451,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
-                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                   with{' '}
                 </span>
-                <span className="font-marker text-[6vw] leading-[0.9] gradient-text sm:text-4xl lg:text-6xl">
+                <span className="font-marker text-[4vw] leading-[0.9] gradient-text sm:text-2xl lg:text-4xl">
                   inclusive innovation
                 </span>
               </motion.div>
@@ -568,10 +568,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.1 }}
               >
-                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                   Uplifting{' '}
                 </span>
-                <span className="font-serif text-[6vw] italic font-light leading-[0.9] text-brand-lime sm:text-4xl lg:text-6xl">
+                <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-lime sm:text-2xl lg:text-4xl">
                   communities
                 </span>
               </motion.div>
@@ -581,10 +581,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
-                <span className="font-hero text-[6vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-4xl lg:text-6xl">
+                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                   through{' '}
                 </span>
-                <span className="font-marker text-[6vw] leading-[0.9] text-brand-lime sm:text-4xl lg:text-6xl">
+                <span className="font-marker text-[4vw] leading-[0.9] text-brand-lime sm:text-2xl lg:text-4xl">
                   empowerment
                 </span>
               </motion.div>
