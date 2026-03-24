@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useInView, useScroll, useTransform } from 'framer-motion'
+import { useInView, useScroll, useTransform, motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 
-// Import logos
-import srpLogo from '../assets/present by/SRP.webp'
+import group from '../assets/images/group.png'
+import hand from '../assets/images/hand.png'
+import three from '../assets/images/three.png'
+import think from '../assets/images/think.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
+import srpLogo from '../assets/present by/SRP.webp'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import aboutImg from '../assets/about.png'
-import nexyugaGroup from '../assets/nexyuga_group.png'
 import srp1 from '../assets/aboutsrp/1.jpg'
 import srp2 from '../assets/aboutsrp/2.jpg'
 import srp3 from '../assets/aboutsrp/3.jpg'
-import { AnimatePresence } from 'framer-motion'
+import nexyugaGroup from '../assets/nexyuga_group.png'
+import eventImage from '../assets/images/event.png'
 
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
@@ -25,8 +28,13 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
     const step = target / (duration / 16)
     const timer = setInterval(() => {
       start += step
-      if (start >= target) { setCount(target); clearInterval(timer) }
-      else setCount(Math.floor(start))
+      if (start >= target) {
+        setCount(target)
+        clearInterval(timer)
+      }
+      else {
+        setCount(Math.floor(start))
+      }
     }, 16)
     return () => clearInterval(timer)
   }, [inView, target, duration])
@@ -35,33 +43,36 @@ function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
 }
 
 const stats = [
-  { 
-    value: 2, 
-    suffix: '', 
-    label: 'DAYS', 
+  {
+    value: '2',
+    unit: 'Days',
     description: 'Redefining the frontier by spotlighting human talent through universally accessible tech, inclusive storytelling, and real-world collaboration.',
-    accent: 'text-brand-cyan' 
+    image: three,
+    accent: 'text-brand-cyan'
   },
-  { 
-    value: 200, 
-    suffix: '+', 
-    label: 'ELITES & ADAPTIVE INNOVATORS', 
-    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design.',
-    accent: 'text-brand-lime' 
+  {
+    value: '200',
+    suffix: '+',
+    unit: 'Elites & Adaptive Innovators',
+    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where innovation knows no bounds.',
+    image: hand,
+    accent: 'text-brand-lime'
   },
-  { 
-    value: 1000, 
-    suffix: '+', 
-    label: 'ATTENDEES', 
-    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future through shared ideas.',
-    accent: 'text-brand-cyan' 
+  {
+    value: '1000',
+    suffix: '+',
+    unit: 'Attendees',
+    description: 'Uniting institutional leaders, support networks, and next-gen innovators to architect a future where accessibility is the default.',
+    image: group,
+    accent: 'text-brand-cyan'
   },
-  { 
-    value: 50, 
-    suffix: '+', 
-    label: 'NGOs & SPECIAL SCHOOLS', 
-    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility, stronger community support systems.',
-    accent: 'text-brand-lime' 
+  {
+    value: '50',
+    suffix: '+',
+    unit: 'NGOs & Special Schools',
+    description: 'Synergizing with advocacy partners and adaptive learning centers to drive universal access and create a truly inclusive society.',
+    image: group,
+    accent: 'text-brand-lime'
   },
 ]
 
@@ -241,7 +252,7 @@ export default function About() {
               
               return (
                 <motion.div
-                  key={s.label}
+                  key={s.unit}
                   initial={{ opacity: 0, y: 40 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
@@ -252,12 +263,17 @@ export default function About() {
                   <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-brand-lime/5 to-brand-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
                   {/* Content */}
-                  <div className="relative z-10 w-full">
+                  <div className="relative z-10 w-full flex flex-col items-center">
+                    <img 
+                      src={s.image} 
+                      alt={s.unit} 
+                      className="h-16 w-auto mb-4 object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                    />
                     <p className={`font-impact text-5xl sm:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg mb-2`}>
                       <AnimatedCounter target={s.value} suffix={s.suffix} />
                     </p>
                     <p className="font-mono text-[10px] tracking-[0.2em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300 mb-4 font-bold uppercase">
-                      {s.label}
+                      {s.unit}
                     </p>
                     {s.description && (
                       <p className="text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300 line-clamp-3">
@@ -421,14 +437,27 @@ export default function About() {
             else if (index === 4) gridClass = "md:col-span-2"
 
             return (
-              <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex flex-col ${gridClass}`}>
+              <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex ${index === 0 ? 'flex-row items-center gap-4' : 'flex-col'} ${gridClass}`}>
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-brand-lime rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide shrink-0`}>
-                  {event.title}
-                </h4>
-                <p className="text-slate-600 text-sm leading-relaxed font-medium text-justify overflow-y-auto custom-scrollbar flex-1 pr-2">
-                  {event.description}
-                </p>
+                
+                <div className={`${index === 0 ? 'flex-1' : ''}`}>
+                    <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide shrink-0`}>
+                      {event.title}
+                    </h4>
+                    <p className={`text-slate-600 text-sm leading-relaxed font-medium text-justify overflow-y-auto custom-scrollbar pr-2 ${index === 1 ? '' : 'flex-1'}`}>
+                      {event.description}
+                    </p>
+                </div>
+
+                {index === 0 && (
+                   <img src={think} alt="Innovation" className="h-32 w-auto object-contain hidden sm:block" />
+                )}
+
+                {index === 1 && (
+                  <div className="mt-4 flex-1 relative overflow-hidden rounded-xl">
+                    <img src={eventImage} alt="Event" className="absolute inset-0 w-full h-full object-contain" />
+                  </div>
+                )}
               </div>
             )
           })}
@@ -618,7 +647,7 @@ export default function About() {
                 className="lg:col-span-2"
               >
                 <p className="text-lg leading-relaxed text-slate-500 sm:text-xl text-justify">
-                  Operating as a high-velocity catalyst for social equity, SRP Foundation is re-engineering community empowerment through precision-driven impact models. By synergizing adaptive education, healthcare accessibility, and advanced skill ecosystems, the Foundation transforms systemic barriers into gateways of opportunity. SRP Foundation doesn’t simply provide aid; it architects a robust, inclusive infrastructure where human potential is the primary engine of progress.
+                  Operating as a high-velocity catalyst for social equity, SRP Foundation is re-engineering community empowerment through precision-driven impact models. By synergizing adaptive education, healthcare accessibility, and advanced skill ecosystems, the Foundation transforms systemic barriers into gateways of opportunity. SRP Foundation doesn't simply provide aid; it architects a robust, inclusive infrastructure where human potential is the primary engine of progress.
                 </p>
                  <motion.div
                   initial={{ opacity: 0, y: 20 }}
