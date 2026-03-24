@@ -162,7 +162,7 @@ export default function Navbar() {
                   {[
                     { to: '/', label: 'Home', end: true },
                     { to: '/about', label: 'About' },
-                    { to: '/speakers', label: 'Speakers' },
+                
                     { to: '/sponsors', label: 'Sponsors' },
                   ].map((item) => (
                     <NavLink
