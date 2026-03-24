@@ -10,9 +10,6 @@ const INNOVATION_MAIN_EVENT = {
     'One unified registration form for both tracks. Participants choose whether their submission is by specially abled (Innovators) or for specially abled and continue with relevant fields.',
   details: [
     {
-
-    },
-    {
       label: 'Focus Sector',
       value: [
         'Assistive Technology',
@@ -237,6 +234,7 @@ export default function AttendRegister() {
             key={event.registerLink || `event-${i}`} 
             index={i} 
             {...event}
+            className={(!showInnovationTracks && i === 0) ? 'sm:row-span-2' : ''}
             onExpand={event.isExpandable ? handleInnovationClick : undefined}
           />
         ))}
@@ -246,7 +244,7 @@ export default function AttendRegister() {
 }
 
 // Enhanced EventCard component that can handle expansion
-function ExpandableEventCard({ onExpand, isExpandable, ...props }) {
+function ExpandableEventCard({ onExpand, isExpandable, className, ...props }) {
   const handleClick = () => {
     if (isExpandable && onExpand) {
       onExpand()
@@ -260,10 +258,10 @@ function ExpandableEventCard({ onExpand, isExpandable, ...props }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.65, delay: props.index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-        className="event-card-cinematic group relative cursor-pointer"
+        className={`event-card-cinematic group relative cursor-pointer h-full ${className || ''}`}
         onClick={handleClick}
       >
-        <div className="event-card-inner relative flex flex-1 flex-col rounded-3xl bg-white overflow-hidden">
+        <div className="event-card-inner relative flex h-full flex-col rounded-3xl bg-white overflow-hidden">
           <div className="h-[3px] w-full bg-gradient-to-r from-brand-cyan to-brand-lime" />
           <div className="pointer-events-none absolute inset-0 cinematic-sweep rounded-3xl" />
           
@@ -289,27 +287,32 @@ function ExpandableEventCard({ onExpand, isExpandable, ...props }) {
             </div>
 
             <div className="mb-4 h-[2px] w-full bg-gradient-to-r from-brand-cyan to-brand-lime event-line-reveal" />
-            <p className="text-sm leading-relaxed text-slate-500 mb-4">{props.description}</p>
+            
+            <div className="flex flex-1 flex-col">
+              <p className="text-sm leading-relaxed text-slate-500 mb-4">{props.description}</p>
 
-            {props.details?.map((section, i) => (
-              <div key={i} className="mb-3 rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4 ring-1 ring-slate-100/80">
-                <p className="font-marker mb-2 text-[11px] tracking-wider text-brand-cyan">
-                  {section.label}
-                </p>
-                {Array.isArray(section.value) ? (
-                  <ul className="space-y-1.5">
-                    {section.value.map((item, j) => (
-                      <li key={j} className="flex items-start gap-2.5 text-sm text-slate-600">
-                        <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-brand-lime" />
-                        <span className="font-display">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="font-display text-sm font-medium text-slate-700">{section.value}</p>
-                )}
+              <div className="flex flex-1 flex-col justify-between gap-3">
+                {props.details?.map((section, i) => (
+                  <div key={i} className="rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4 ring-1 ring-slate-100/80">
+                    <p className="font-marker mb-2 text-[11px] tracking-wider text-brand-cyan">
+                      {section.label}
+                    </p>
+                    {Array.isArray(section.value) ? (
+                      <ul className="space-y-1.5">
+                        {section.value.map((item, j) => (
+                          <li key={j} className="flex items-start gap-2.5 text-sm text-slate-600">
+                            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-brand-lime" />
+                            <span className="font-display">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="font-display text-sm font-medium text-slate-700">{section.value}</p>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
 
             <div className="mt-auto pt-4">
               <button

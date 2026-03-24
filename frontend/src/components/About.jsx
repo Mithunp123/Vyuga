@@ -88,22 +88,22 @@ const eventsList = [
   },
   {
     title: "Innovation Fest by Differently Abled",
-    description: "Driven by lived experience, this SDG-aligned challenge invites adaptive innovators to engineer high-impact solutions for universal accessibility. Designed for independent creators or teams of three, the program empowers pioneers to solve real-world friction points through disruptive assistive technology. We celebrate community ingenuity with merit-based rewards for the breakthroughs redefining the inclusive frontier.",
+    description: "A contest where people with disabilities pitch their own inventions and business ideas to help make the world a fairer place for everyone.",
     color: "text-brand-lime"
   },
   {
     title: "Special Talent Utsav",
-    description: "A high-visibility platform for adaptive performers to demonstrate creative excellence. Institutional partners may nominate a singular talent or collective, with the Top 20 elite finalists advancing to the main stage. This curated showcase recognizes artistic innovation through merit-based rewards and a premier performance environment.",
+    description: "A top-tier talent show where the best performers from different schools and colleges show off their skills in art and performance.",
     color: "text-brand-cyan"
   },
   {
     title: "Blind Cricket",
-    description: "An elite tournament engineered for adaptive athletes, this high-performance competition redefines the boundaries of sensory-based sport. Regional squads will compete in a precision-driven bracket, with the Championship Tier victors securing the Premier Trophy and merit-based prize rewards.",
+    description: "A professional cricket tournament for athletes with visual impairments, played at a high level with big prizes for the winners",
     color: "text-brand-lime"
   },
   {
     title: "Blind Chess",
-    description: "An elite tournament for adaptive chess players, this competition showcases strategic brilliance and mental fortitude. Regional participants will compete in a structured format, with the top performers advancing to the national championship and receiving merit-based recognition.",
+    description: "A chess tournament for players with visual impairments, where they compete using specially designed boards and pieces to navigate the game through touch and memory.",
     color: "text-brand-cyan"
   }
 ]
@@ -503,8 +503,8 @@ export default function About() {
                         <img src={nexgugaLogo} alt="Nexyuga" className="h-6 w-auto" />
                       </div>
                       <div>
-                        <p className="font-hero text-lg font-bold text-slate-800">Tech for Good</p>
-                        <p className="text-xs font-mono text-slate-400 tracking-wider">CORE PHILOSOPHY</p>
+                        <p className="font-hero text-lg font-bold text-slate-800">Enable Independence</p>
+                        <p className="text-xs font-mono text-slate-400 tracking-wider"></p>
                       </div>
                     </div>
                     <a 
