@@ -62,7 +62,6 @@ export default function Gallery() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="max-w-xs text-sm leading-relaxed text-slate-500"
           >
-            Images from the event will be uploaded here after the Ability Carnival concludes.
           </motion.p>
         </div>
 
