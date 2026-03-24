@@ -132,6 +132,30 @@ const upload = multer({
   },
 })
 
+// ── Multer (Sponsor Logo) ─────────────────────────────────────────────────────
+const LOGO_DIR = path.join(UPLOAD_DIR, 'logo')
+if (!fs.existsSync(LOGO_DIR)) fs.mkdirSync(LOGO_DIR, { recursive: true })
+
+const sponsorStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, LOGO_DIR),
+  filename: (req, file, cb) => {
+    const safeName = (req.body.orgName || 'sponsor').replace(/[^a-z0-9]/gi, '_').toLowerCase()
+    const ext = path.extname(sanitizeFilename(file.originalname))
+    cb(null, `${safeName}_${Date.now()}${ext}`)
+  },
+})
+
+const sponsorUpload = multer({
+  storage: sponsorStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    if (!ALLOWED_IMAGE_EXT.test(file.originalname)) {
+      return cb(new Error('Only image files (PNG, JPG, WEBP) are allowed'))
+    }
+    cb(null, true)
+  },
+})
+
 // ── Video compression with ffmpeg ─────────────────────────────────────────────
 function compressVideoWithFFmpeg(inputPath) {
   return new Promise((resolve) => {
@@ -1347,27 +1371,41 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
 
 // ── Sponsor Message ──────────────────────────────────────────────────────────
 // POST /api/sponsors
-app.post('/api/sponsors', registrationLimiter, async (req, res) => {
-  const { name, phone, email, message } = req.body
+app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), async (req, res) => {
+  const { name, phone, email, message, orgName, sponsorType, amount, website } = req.body
+  const logoPath = req.file ? `logo/${req.file.filename}` : null
 
-  if (!name || !phone || !email) {
-    return res.status(400).json({ success: false, message: 'Missing required fields' })
+  if (!name || !phone || !email || !orgName || !sponsorType || !amount || !logoPath) {
+    if (req.file) fs.unlinkSync(req.file.path) // Cleanup if validation fails
+    return res.status(400).json({ success: false, message: 'Missing required fields or logo' })
   }
 
   try {
     const { data, error } = await supabase
       .from('sponsor_messages')
-      .insert([{ name, phone, email, message }])
+      .insert([{ 
+        name, 
+        phone, 
+        email, 
+        message,
+        org_name: orgName,
+        sponsor_type: sponsorType,
+        amount: parseFloat(amount),
+        website_url: website || null,
+        logo_path: logoPath
+      }])
       .select()
       .single()
 
     if (error) {
+      if (req.file) fs.unlinkSync(req.file.path) // Cleanup on DB error
       await logError({ source: 'user', endpoint: '/api/sponsors', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
 
     res.json({ success: true, message: 'Sponsor interest submitted successfully', data })
   } catch (err) {
+    if (req.file) fs.unlinkSync(req.file.path) // Cleanup on error
     console.error('❌ Sponsor Message Error:', err)
     await logError({ source: 'user', endpoint: '/api/sponsors', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Internal Server Error' })

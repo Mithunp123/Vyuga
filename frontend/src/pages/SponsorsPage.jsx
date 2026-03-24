@@ -72,33 +72,54 @@ export default function SponsorsPage() {
     name: '',
     phone: '',
     email: '',
-    message: ''
+    message: '',
+    orgName: '',
+    sponsorType: 'GOLD',
+    amount: '',
+    website: '',
+    logo: null
   })
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    if (e.target.name === 'logo') {
+      setFormData(prev => ({ ...prev, logo: e.target.files[0] }))
+    } else {
+      setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    
+    const data = new FormData()
+    data.append('name', formData.name)
+    data.append('phone', formData.phone)
+    data.append('email', formData.email)
+    data.append('message', formData.message)
+    data.append('orgName', formData.orgName)
+    data.append('sponsorType', formData.sponsorType)
+    data.append('amount', formData.amount)
+    if (formData.website) data.append('website', formData.website)
+    if (formData.logo) data.append('logo', formData.logo)
+
     try {
       const res = await fetch(`${API_BASE}/api/sponsors`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        // headers: { 'Content-Type': 'application/json' }, // Remove content-type for FormData
+        body: data
       })
-      const data = await res.json()
-      if (data.success) {
+      const result = await res.json()
+      if (result.success) {
         setSuccess(true)
-        setFormData({ name: '', phone: '', email: '', message: '' })
+        setFormData({ name: '', phone: '', email: '', message: '', orgName: '', sponsorType: 'GOLD', amount: '', website: '', logo: null })
         setTimeout(() => {
           setSuccess(false)
           setModalOpen(false)
         }, 2000)
       } else {
-        setError(data.message || 'Failed to submit')
+        setError(result.message || 'Failed to submit')
       }
     } catch(err) {
       console.error(err)
@@ -228,24 +249,29 @@ export default function SponsorsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm"
-              onClick={() => setModalOpen(false)}
+              // onClick={() => setModalOpen(false)} // Moved click handler to wrapper
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed left-1/2 top-1/2 z-[70] w-full max-w-md -translate-x-1/2 -translate-y-1/2 p-4"
+              className="fixed inset-0 z-[70] overflow-y-auto"
+              onClick={() => setModalOpen(false)}
             >
-              <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl">
-                {/* Close button */}
-                <button 
-                  onClick={() => setModalOpen(false)}
-                  className="absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600"
+              <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div 
+                  className="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 w-full max-w-lg"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="h-5 w-5" />
-                </button>
+                  {/* Close button */}
+                  <button 
+                    onClick={() => setModalOpen(false)}
+                    className="absolute right-4 top-4 z-10 p-2 text-slate-400 hover:text-slate-600 bg-white/80 backdrop-blur-sm rounded-full"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
 
-                <div className="p-8">
+                  <div className="p-6 sm:p-8">
                   <div className="mb-6 text-center">
                     <h3 className="font-display text-2xl font-bold text-slate-900">Become a Sponsor</h3>
                     <p className="mt-2 text-sm text-slate-600">
@@ -264,7 +290,74 @@ export default function SponsorsPage() {
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div>
-                        <label className="mb-1 block text-sm font-medium text-slate-700">Name</label>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Organization Name <span className="text-red-500">*</span></label>
+                        <input
+                          required
+                          type="text"
+                          name="orgName"
+                          value={formData.orgName}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="Your Organization"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-slate-700">Sponsor Type <span className="text-red-500">*</span></label>
+                          <select
+                            name="sponsorType"
+                            value={formData.sponsorType}
+                            onChange={handleChange}
+                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan bg-white"
+                          >
+                            <option value="PLATINUM">Platinum</option>
+                            <option value="GOLD">Gold</option>
+                            <option value="SILVER">Silver</option>
+                            <option value="OTHER">Other</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-slate-700">Amount (₹) <span className="text-red-500">*</span></label>
+                          <input
+                            required
+                            type="number"
+                            name="amount"
+                            value={formData.amount}
+                            onChange={handleChange}
+                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                            placeholder="500000"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Organization Logo <span className="text-red-500">*</span></label>
+                        <input
+                          required
+                          type="file"
+                          name="logo"
+                          accept="image/*"
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm outline-none file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
+                        />
+                        <p className="mt-1 text-xs text-slate-500">Upload high-quality PNG, JPG or WEBP.</p>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Website URL (Optional)</label>
+                        <input
+                          type="url"
+                          name="website"
+                          value={formData.website}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Contact Person Name <span className="text-red-500">*</span></label>
                         <input
                           required
                           type="text"
@@ -275,29 +368,31 @@ export default function SponsorsPage() {
                           placeholder="Your Name"
                         />
                       </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-slate-700">Phone Number</label>
-                        <input
-                          required
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
-                          placeholder="+91 XXXXX XXXXX"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-slate-700">Email Address</label>
-                        <input
-                          required
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
-                          placeholder="you@company.com"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-slate-700">Phone Number <span className="text-red-500">*</span></label>
+                          <input
+                            required
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                            placeholder="+91 XXXXX XXXXX"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-slate-700">Email Address <span className="text-red-500">*</span></label>
+                          <input
+                            required
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                            placeholder="you@company.com"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="mb-1 block text-sm font-medium text-slate-700">Message (Optional)</label>
@@ -326,6 +421,7 @@ export default function SponsorsPage() {
                   )}
                 </div>
               </div>
+            </div>
             </motion.div>
           </>
         )}

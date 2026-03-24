@@ -89,10 +89,14 @@ const COLUMNS = {
   sponsors: [
     { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
-    { key: 'name',          label: 'Name' },
+    { key: 'org_name',      label: 'Organization' },
+    { key: 'sponsor_type',  label: 'Type' },
+    { key: 'amount',        label: 'Amount',    fmt: (v) => v ? `₹${v}` : '-' },
+    { key: 'name',          label: 'Contact Person' },
     { key: 'phone',         label: 'Phone' },
     { key: 'email',         label: 'Email' },
-    { key: 'message',       label: 'Message',   fmt: (v) => v ? (v.length > 50 ? v.substring(0, 50) + '...' : v) : '-' },
+    { key: 'website_url',   label: 'Website',   fmt: (v) => v ? <a href={v} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a> : '-' },
+    { key: 'logo_path',     label: 'Logo',      fmt: (v) => v ? <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View</a> : '-' },
   ],
 }
 
