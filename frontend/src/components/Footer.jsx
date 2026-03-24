@@ -91,16 +91,8 @@ export default function Footer() {
       title: 'Cancellation & Refund',
       content: (
         <div className="space-y-4 text-sm text-slate-600">
-          <p>Please review our cancellation policy carefully.</p>
-          
-          <h4 className="font-bold text-slate-800">1. Cancellation by Participant</h4>
-          <p>Registrations once made are generally non-refundable. However, in exceptional cases (medical emergency), a request can be submitted for review up to 7 days before the event.</p>
-
-          <h4 className="font-bold text-slate-800">2. Event Cancellation</h4>
-          <p>If the event is cancelled by the organizers due to unforeseen circumstances, a full refund of the registration fee will be processed within 14 working days.</p>
-
-          <h4 className="font-bold text-slate-800">3. Transfer of Ticket</h4>
-          <p>Tickets are non-transferable unless approved by the organizing committee at least 48 hours prior to the event.</p>
+          <p>There is no fee required for any event registration.</p>
+          <p>If you wish to cancel your registration, please contact the team as soon as possible.</p>
         </div>
       )
     }

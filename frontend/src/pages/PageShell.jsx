@@ -2,13 +2,13 @@ import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function PageShell({ title, subtitle, children }) {
+export default function PageShell({ title, subtitle, children, compact = false }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
       {/* Page hero banner — light colorful gradient */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand-cyan-light via-white to-brand-lime-light pt-28 pb-16 sm:pb-20">
+      <div className={`relative overflow-hidden bg-gradient-to-br from-brand-cyan-light via-white to-brand-lime-light pt-28 ${compact ? 'pb-8 sm:pb-10' : 'pb-16 sm:pb-20'}`}>
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-brand-cyan/10 blur-[80px] animate-morph" />
           <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-brand-lime/8 blur-[80px] animate-morph" style={{ animationDelay: '3s' }} />
@@ -50,7 +50,7 @@ export default function PageShell({ title, subtitle, children }) {
         </div>
       </div>
 
-      <main className="mx-auto w-full max-w-7xl px-4 pb-20 pt-8 sm:px-6">
+      <main className="mx-auto w-full max-w-7xl px-4 pb-8 pt-4 sm:px-6 min-h-[calc(100vh-400px)]">
         <div>{children}</div>
       </main>
       <Footer />

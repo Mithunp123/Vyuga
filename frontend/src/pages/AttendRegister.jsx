@@ -10,12 +10,7 @@ const INNOVATION_MAIN_EVENT = {
     'One unified registration form for both tracks. Participants choose whether their submission is by specially abled (Innovators) or for specially abled and continue with relevant fields.',
   details: [
     {
-      label: 'Tracks',
-      value: [
-        'For Specially Abled: College teams (3 members)',
-        'By Specially Abled: Innovators with or without team members',
-        'Type selection happens inside one form',
-      ],
+
     },
     {
       label: 'Focus Sector',
@@ -32,7 +27,7 @@ const INNOVATION_MAIN_EVENT = {
         'Finals: Live pitch at Vyuga',
       ],
     },
-    { label: 'Awards', value: 'Top 3 positions with cash prizes' },
+    { label: 'Awards', value: 'Top three winners will receive cash prizes, mentorship opportunities, and certificates will be awarded to all finalists' },
   ],
   buttonText: 'View Tracks',
   isExpandable: true,
@@ -210,7 +205,7 @@ export default function AttendRegister() {
         <div className="mt-3 flex items-center gap-3">
           <div className="h-[3px] w-16 rounded-full bg-gradient-to-r from-brand-cyan to-brand-lime animate-line-grow" />
           <span className="font-marker text-sm text-brand-lime">
-            {showInnovationTracks ? '2 tracks' : '4 events'}
+            {showInnovationTracks ? '2 tracks' : ''}
           </span>
         </div>
         

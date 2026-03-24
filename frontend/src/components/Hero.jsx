@@ -136,17 +136,17 @@ function useCountdown(targetDate) {
 function RotatingBadge() {
   const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUN 26-27 '
   return (
-    <div className="relative h-32 w-32 sm:h-40 sm:w-40">
+    <div className="relative h-20 w-20 sm:h-24 sm:w-24">
       <svg viewBox="0 0 200 200" className="h-full w-full animate-rotate-text">
         <defs>
           <path id="circlePath" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0" />
         </defs>
-        <text className="fill-brand-cyan" style={{ fontSize: '14px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
+        <text className="fill-brand-cyan" style={{ fontSize: '20px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
           <textPath href="#circlePath">{text}</textPath>
         </text>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-12 w-12 rounded-full bg-white shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-200">
+        <div className="h-8 w-8 rounded-full bg-white shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-200">
         </div>
       </div>
     </div>
@@ -158,14 +158,14 @@ function MarqueeBand() {
   const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'KSRCT']
   const doubled = [...items, ...items]
   return (
-    <div className="relative overflow-hidden border-y-2 border-brand-cyan/20 bg-white/50 backdrop-blur-sm">
+    <div className="relative overflow-hidden border-y border-brand-cyan/20 bg-white/50 backdrop-blur-sm">
       <div className="animate-marquee flex w-max">
         {doubled.map((item, i) => (
-          <span key={i} className="flex items-center gap-6 px-3">
-            <span className={`whitespace-nowrap py-5 font-impact text-5xl tracking-[0.06em] sm:text-7xl lg:text-[5.5rem] ${i % 2 === 0 ? 'text-slate-900' : 'text-brand-cyan'}`}>
+          <span key={i} className="flex items-center gap-4 px-2">
+            <span className={`whitespace-nowrap py-2 font-impact text-2xl tracking-[0.06em] sm:text-4xl lg:text-5xl ${i % 2 === 0 ? 'text-slate-900' : 'text-brand-cyan'}`}>
               {item}
             </span>
-            <span className="text-2xl text-brand-lime select-none sm:text-3xl">◆</span>
+            <span className="text-lg text-brand-lime select-none sm:text-xl">◆</span>
           </span>
         ))}
       </div>
@@ -184,18 +184,18 @@ export default function Hero() {
   const textInView = useInView(textRef, { once: true })
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-screen overflow-hidden bg-white text-slate-900">
+    <section ref={sectionRef} id="home" className="relative min-h-screen h-screen overflow-hidden bg-white text-slate-900 flex flex-col justify-center">
       <ParticleCanvas />
 
       {/* Gradient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-[8%] h-[600px] w-[600px] rounded-full bg-brand-cyan/[0.1] blur-[120px] animate-morph" />
-        <div className="absolute -bottom-40 right-[5%] h-[500px] w-[500px] rounded-full bg-brand-lime/[0.1] blur-[120px] animate-morph" style={{ animationDelay: '6s' }} />
+        <div className="absolute -top-40 left-[8%] h-[400px] w-[400px] rounded-full bg-brand-cyan/[0.1] blur-[100px] animate-morph" />
+        <div className="absolute -bottom-40 right-[5%] h-[300px] w-[300px] rounded-full bg-brand-lime/[0.1] blur-[100px] animate-morph" style={{ animationDelay: '6s' }} />
       </div>
 
-      <div className="relative z-10">
-        <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 sm:px-6">
-          <div ref={textRef} className="pt-20 pb-8">
+      <div className="relative z-10 w-full">
+        <div className="mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6">
+          <div ref={textRef} className="pt-33 pb-8">
             {/* Top row: handwritten label + rotating badge */}
             <div className="flex items-start justify-between">
               <motion.div
@@ -203,16 +203,16 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <span className="font-marker text-lg text-brand-cyan sm:text-xl">
+                <span className="font-marker text-base text-brand-cyan sm:text-lg">
                   Ability Carnival
                 </span>
-                <div className="mt-2 flex items-center gap-3">
-                  <span className="relative flex h-2.5 w-2.5">
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-lime opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand-lime" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-lime" />
                   </span>
-                  <span className="font-mono text-[11px] font-semibold tracking-[0.2em] text-slate-400">
-                    JUN 26–27, 2026 · K.S.RANGASAMY COLLEGE OF TECHNOLOGY, TIRUCHENGODE
+                  <span className="font-mono text-[9px] font-semibold tracking-[0.2em] text-slate-400">
+                    JUN 26–27, 2026 · KSRCT
                   </span>
                 </div>
               </motion.div>
@@ -228,7 +228,7 @@ export default function Hero() {
             </div>
 
             {/* ── VYUGA TEXT + TYPOGRAPHY ── */}
-            <div className="mt-6 space-y-0">
+            <div className="mt-2 space-y-0">
               {/* VYUGA — logo letter images */}
               <div className="overflow-hidden" aria-label="VYUGA">
                 <div className="flex items-center justify-start gap-0">
@@ -240,7 +240,7 @@ export default function Hero() {
                       initial={{ opacity: 0, y: 80, filter: 'blur(12px)' }}
                       animate={textInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
                       transition={{ duration: 0.9, delay: 0.3 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                      className="-mx-[1vw] h-[22vw] w-auto object-contain mix-blend-multiply sm:h-[18vw] sm:-mx-[0.8vw] lg:h-[14vw] lg:-mx-[0.5vw]"
+                      className="-mx-[1vw] h-[15vw] w-auto object-contain mix-blend-multiply sm:h-[12vw] sm:-mx-[0.8vw] lg:h-[10vw] lg:-mx-[0.5vw]"
                       aria-hidden="true"
                     />
                   ))}
@@ -248,12 +248,12 @@ export default function Hero() {
               </div>
 
               {/* Mixed line: italic serif "the" + CONFERENCE outlined */}
-              <div className="flex flex-wrap items-baseline gap-3 sm:gap-6 overflow-hidden">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-4 overflow-hidden">
                 <motion.span
                   initial={{ opacity: 0, x: -30 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.8, delay: 0.6 }}
-                  className="font-serif text-[6vw] italic font-light text-brand-cyan sm:text-[4vw] lg:text-[3.5vw]"
+                  className="font-serif text-[4vw] italic font-light text-brand-cyan sm:text-[3vw] lg:text-[2.5vw]"
                 >
                   the
                 </motion.span>
@@ -261,19 +261,19 @@ export default function Hero() {
                   initial={{ y: '120%' }}
                   animate={textInView ? { y: '0%' } : {}}
                   transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[12vw] leading-[0.95] tracking-[0.1em] text-slate-900 sm:text-[10vw] lg:text-[8vw]"
+                  className="font-impact text-[8vw] leading-[0.95] tracking-[0.1em] text-slate-900 sm:text-[6vw] lg:text-[5vw]"
                 >
                   ABILITY CARNIVAL
                 </motion.span>
               </div>
 
               {/* Year as giant gradient + tagline */}
-              <div className="mt-1 flex flex-wrap items-end gap-4 sm:gap-8">
+              <div className="mt-0 flex flex-wrap items-end gap-3 sm:gap-6">
                 <motion.span
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={textInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.7, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[9vw] leading-[0.8] tracking-wider gradient-text sm:text-[7vw] lg:text-[5.5vw]"
+                  className="font-impact text-[6vw] leading-[0.8] tracking-wider gradient-text sm:text-[5vw] lg:text-[4vw]"
                 >
                   2026
                 </motion.span>
@@ -281,7 +281,7 @@ export default function Hero() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.7, delay: 1.2 }}
-                  className="mb-[1vw] max-w-md font-serif text-base italic text-slate-600 sm:text-lg lg:text-xl"
+                  className="mb-[0.5vw] max-w-sm font-serif text-sm italic text-slate-600 sm:text-base lg:text-lg"
                 >
                   Assistive Technology · Inclusive Design · Innovation
                 </motion.span>
@@ -289,27 +289,27 @@ export default function Hero() {
             </div>
 
             {/* ── Description + CTAs ── */}
-            <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:gap-16">
-              <p className="max-w-lg text-base font-semibold leading-relaxed text-slate-800 sm:text-lg">
-                <span className="font-bold text-slate-900">BE PART OF THE MOVEMENT,</span>
-                Join <span className="font-bold text-slate-900">1000+</span> innovators, architects, and advocates at India’s premier inclusive technology summit. Experience visionary keynotes, immersive workshops, and live hardware demos engineering the next frontier of universal access.
+            <div className="mt-6 grid gap-4 lg:grid-cols-2 lg:gap-8 items-center">
+              <p className="max-w-lg text-sm font-semibold leading-relaxed text-slate-800 sm:text-base">
+                <span className="font  text-slate-800">BE PART OF THE MOVEMENT,</span>
+                Join <span className="font text-slate-800">1000+</span> innovators, architects, and advocates at India’s premier inclusive technology summit. Experience visionary keynotes, immersive workshops, and live hardware demos engineering the next frontier of universal access.
               </p>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.6 }}
-                className="flex flex-col gap-4 sm:flex-row lg:justify-end"
+                className="flex flex-col gap-3 sm:flex-row lg:justify-end"
               >
                 <Link
                   id="register"
                   to="/attend/register"
-                  className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full px-10 py-5 text-sm font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:shadow-2xl hover:shadow-brand-cyan/35 hover:scale-[1.04] active:scale-[0.98]"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-8 py-3 text-xs font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:shadow-2xl hover:shadow-brand-cyan/35 hover:scale-[1.04] active:scale-[0.98]"
                 >
                   <span className="absolute inset-0 shimmer-btn" />
                   <span className="relative flex items-center gap-2">
                     Register Now
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </motion.div>
@@ -317,9 +317,9 @@ export default function Hero() {
 
             {/* ── Countdown ── */}
             <div
-              className="mt-16 mb-24 flex flex-wrap items-end gap-x-8 gap-y-4"
+              className="mt-8 mb-4 flex flex-wrap items-end gap-x-6 gap-y-2"
             >
-              <span className="font-marker text-sm text-slate-900 font-bold">Starts in</span>
+              <span className="font-marker text-xs text-slate-700 font-medium">Starts in</span>
               <div className="flex items-baseline gap-1">
                 {[
                   { v: countdown.days, l: 'DAYS' },
@@ -328,14 +328,14 @@ export default function Hero() {
                   { v: countdown.seconds, l: 'SEC' },
                 ].map((t, i) => (
                   <div key={t.l} className="flex items-baseline">
-                    <span className="font-impact text-6xl tracking-wide text-black tabular-nums sm:text-7xl lg:text-8xl">
+                    <span className="font-impact text-4xl tracking-wide text-black/80 tabular-nums sm:text-5xl lg:text-6xl font-light">
                       {String(t.v).padStart(2, '0')}
                     </span>
-                    <span className="ml-1 mr-3 font-mono text-[10px] font-black tracking-[0.15em] text-slate-900">
+                    <span className="ml-1 mr-2 font-mono text-[8px] font-medium tracking-[0.1em] text-slate-700">
                       {t.l}
                     </span>
                     {i < 3 && (
-                      <span className="mr-3 font-serif text-4xl italic text-slate-400 sm:text-5xl font-bold">:</span>
+                      <span className="mr-2 font-serif text-2xl italic text-slate-400 sm:text-3xl font-medium">:</span>
                     )}
                   </div>
                 ))}

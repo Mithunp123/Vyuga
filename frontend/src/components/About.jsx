@@ -39,28 +39,28 @@ const stats = [
     value: 2, 
     suffix: '', 
     label: 'DAYS', 
-    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech, inclusive storytelling, and real-world collaboration across every session.',
+    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech, inclusive storytelling, and real-world collaboration.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 200, 
     suffix: '+', 
     label: 'ELITES & ADAPTIVE INNOVATORS', 
-    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design and mentorship-led innovation.',
+    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where 80% represent the future of accessible design.',
     accent: 'text-brand-lime' 
   },
   { 
     value: 1000, 
     suffix: '+', 
     label: 'ATTENDEES', 
-    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future through shared ideas, strategic partnerships, and actionable outcomes.',
+    description: 'Uniting Institutional Leaders, Support Networks, and Next-Gen Innovators to architect a more inclusive future through shared ideas.',
     accent: 'text-brand-cyan' 
   },
   { 
     value: 50, 
     suffix: '+', 
     label: 'NGOs & SPECIAL SCHOOLS', 
-    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility, stronger community support systems, and sustainable impact beyond the event.',
+    description: 'Synergizing with Advocacy Partners and Adaptive Learning Centers to drive universal accessibility, stronger community support systems.',
     accent: 'text-brand-lime' 
   },
 ]
@@ -83,7 +83,7 @@ const aims = [
 const eventsList = [
   {
     title: "Innovation Fest for Differently Abled",
-    description: "Solving for universal accessibility, this open-architecture hackathon invites teams of up to three to engineer high-impact solutions for real-world disability challenges. Participants will tackle critical problem statements through rapid prototyping and assistive design, with top-performing innovators securing merit-based prize rewards.",
+    description: "A competition where students build working tools and gadgets to help people with disabilities overcome daily struggles.",
     color: "text-brand-cyan"
   },
   {
@@ -128,7 +128,7 @@ export default function About() {
   return (
     <section id="about" className="relative overflow-hidden bg-white" ref={sectionRef}>
       {/* ── Presented by section ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 via-white to-slate-50 py-8 sm:py-12">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 via-white to-slate-50 min-h-screen flex flex-col justify-center">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-transparent to-brand-lime/5" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
           <motion.div
@@ -225,43 +225,55 @@ export default function About() {
         </div>
       </div>
 
-      {/* ── Stats — enhanced boxes with hover effects ── */}
-      <div className="relative overflow-hidden border-y border-slate-100 py-8 sm:py-12">
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan-light/20 via-transparent to-brand-lime-light/20" />
+      {/* ── Stats — random shaped boxes ── */}
+      <div className="relative overflow-hidden border-y border-slate-100 min-h-screen flex flex-col justify-center bg-slate-50/50">
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan-light/10 via-transparent to-brand-lime-light/10" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((s, idx) => (
-              <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 40 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative overflow-hidden rounded-2xl bg-white/50 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer h-full"
-              >
-                {/* Flowing background animation on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/10 via-brand-lime/10 to-brand-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-
-                {/* Content */}
-                <div className="relative text-center px-4 py-6 sm:px-6 sm:py-8">
-                  <p className={`font-impact text-4xl sm:text-5xl lg:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg`}>
-                    <AnimatedCounter target={s.value} suffix={s.suffix} />
-                  </p>
-                  <p className="mt-2 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300">{s.label}</p>
-                  {s.description && (
-                    <p className="mt-3 max-w-40 mx-auto text-justify text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300">
-                      {s.description}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((s, idx) => {
+              // Random border radius for organic feel
+              const borderRadius = [
+                'rounded-[2rem_1rem_2rem_1rem]',
+                'rounded-[1rem_2rem_1rem_2rem]',
+                'rounded-[2rem_2rem_1rem_1rem]',
+                'rounded-[1rem_1rem_2rem_2rem]'
+              ][idx % 4]
+              
+              return (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className={`group relative overflow-hidden bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer h-full ${borderRadius} p-6 sm:p-8 flex flex-col items-center justify-center text-center`}
+                >
+                  {/* Flowing background animation on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-white opacity-50" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-brand-lime/5 to-brand-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Content */}
+                  <div className="relative z-10 w-full">
+                    <p className={`font-impact text-5xl sm:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg mb-2`}>
+                      <AnimatedCounter target={s.value} suffix={s.suffix} />
                     </p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                    <p className="font-mono text-[10px] tracking-[0.2em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300 mb-4 font-bold uppercase">
+                      {s.label}
+                    </p>
+                    {s.description && (
+                      <p className="text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300 line-clamp-3">
+                        {s.description}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </div>
 
       {/* ── About — cinematic split layout, NO cards ── */}
-      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 min-h-screen flex flex-col justify-center">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <motion.div style={{ y: parallaxY }} className="absolute top-10 right-[10%] h-80 w-80 rounded-full bg-brand-cyan/5 blur-[100px]" />
           <motion.div style={{ y: parallaxY }} className="absolute bottom-10 left-[5%] h-60 w-60 rounded-full bg-brand-lime/5 blur-[80px]" />
@@ -277,21 +289,21 @@ export default function About() {
             className="flex items-center gap-3"
           >
             <div className="gradient-line w-16" />
-            <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
+            <span className="font-mono text-sm sm:text-base font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
           </motion.div>
 
           {/* Giant headline with mixed fonts */}
-          <div className="mt-8 space-y-1">
+          <div className="mt-4 space-y-1">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
             >
-              <span className="font-hero text-[5vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-3xl lg:text-5xl">
+              <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                 A voice for{' '}
               </span>
-              <span className="font-serif text-[5vw] italic font-light leading-[0.9] text-brand-cyan sm:text-3xl lg:text-5xl">
+              <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-cyan sm:text-2xl lg:text-4xl">
                 abilities
               </span>
             </motion.div>
@@ -301,42 +313,42 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <span className="font-hero text-[5vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-3xl lg:text-5xl">
+              <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
                 often{' '}
               </span>
-              <span className="font-marker text-[5vw] leading-[0.9] gradient-text sm:text-3xl lg:text-5xl">
+              <span className="font-marker text-[4vw] leading-[0.9] gradient-text sm:text-2xl lg:text-4xl">
                 unseen
               </span>
             </motion.div>
           </div>
 
           {/* Two-column text + feature list — no boxes */}
-          <div className="mt-16 grid gap-16 lg:grid-cols-5">
+          <div className="mt-8 grid gap-8 lg:grid-cols-5">
             <div
               className="lg:col-span-2"
             >
-              <p className="text-lg leading-relaxed text-slate-800 font-medium sm:text-xl">
+              <p className="text-base leading-relaxed text-slate-800 font-medium sm:text-lg">
                 Vyuga is not just an event — it's a space where differently abled individuals are celebrated, heard, and empowered. 
                 In a world where they are often limited by opportunities rather than their potential.
               </p>
 
-              <p className="mt-6 text-base leading-relaxed text-slate-700 sm:text-lg">
+              <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base">
                 Vyuga features four major event experiences in a simple and inclusive format, designed to spotlight talent, innovation, and resilience.
               </p>
 
               <blockquote
-                className="mt-10 border-l-4 border-brand-cyan pl-6"
+                className="mt-6 border-l-4 border-brand-cyan pl-6"
               >
-                <p className="font-serif text-xl italic text-slate-900 font-bold sm:text-2xl">
+                <p className="font-serif text-lg italic text-slate-900 font-bold sm:text-xl">
                   "Disability is not a limitation — lack of opportunity is."
                 </p>
-                <cite className="mt-3 block font-mono text-[10px] not-italic tracking-[0.3em] text-slate-500 font-bold">
+                <cite className="mt-2 block font-mono text-[9px] not-italic tracking-[0.3em] text-slate-500 font-bold">
                   — VYUGA BELIEF
                 </cite>
               </blockquote>
 
               <div
-                className="mt-12 max-w-[280px]"
+                className="mt-8 max-w-[200px]"
               >
                 <img 
                   src={aboutImg} 
@@ -348,17 +360,17 @@ export default function About() {
 
             {/* Platform examples */}
             <div className="lg:col-span-3">
-              <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
+              <p className="mb-4 font-display text-xs font-bold text-slate-600 uppercase tracking-wider">
                 It is a platform where:
               </p>
-              <div className="space-y-0 mb-10">
+              <div className="space-y-0 mb-6">
                 {features.map((item, idx) => (
                   <div
                     key={item.text}
-                    className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-cyan/30"
+                    className="group flex items-start gap-4 border-b border-slate-100 py-2 transition-colors hover:border-brand-cyan/30"
                   >
                     <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                    <span className={`text-base sm:text-lg transition-all duration-500 font-bold ${item.accent} group-hover:translate-x-2`}>
+                    <span className={`text-sm sm:text-base transition-all duration-500 font-bold tracking-wide ${item.accent} group-hover:translate-x-2`}>
                       {item.text}
                     </span>
                   </div>
@@ -367,24 +379,24 @@ export default function About() {
 
               {/* Mission statement */}
               <div
-                className="rounded-2xl bg-gradient-to-br from-brand-cyan-light/20 to-brand-lime-light/20 p-6 border border-brand-cyan/10"
+                className="rounded-2xl bg-gradient-to-br from-brand-cyan-light/20 to-brand-lime-light/20 p-4 border border-brand-cyan/10"
               >
-                <p className="font-display text-sm font-bold text-slate-600 uppercase tracking-wider mb-4">
+                <p className="font-display text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
                   Through innovation, talent, and sports, Vyuga aims to:
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {aims.map((aim, idx) => (
-                    <div key={aim} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
-                      <span className="text-sm font-bold text-slate-800">{aim}</span>
+                    <div key={aim} className="flex items-center gap-1">
+                      <span className="h-1 w-1 rounded-full bg-brand-lime" />
+                      <span className="text-xs font-bold text-slate-800">{aim}</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 pt-4 border-t border-brand-cyan/20">
-                  <p className="font-serif text-lg italic text-slate-900 font-bold text-center">
+                <div className="mt-4 pt-2 border-t border-brand-cyan/20">
+                  <p className="font-serif text-sm italic text-slate-900 font-bold text-center">
                     This is more than a competition. This is more than a festival.
                   </p>
-                  <p className="font-marker text-xl text-brand-cyan font-bold text-center mt-2">
+                  <p className="font-marker text-base text-brand-cyan font-bold text-center mt-1">
                     Vyuga is a movement that turns hidden strength into pride.
                   </p>
                 </div>
@@ -395,30 +407,37 @@ export default function About() {
       </div>
 
       {/* ── EVENT DETAILS SECTION ── */}
-      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 border-t border-slate-100">
-        <div className="flex items-center gap-3 mb-10">
+      <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 border-t border-slate-100 h-screen max-h-[1080px] flex flex-col">
+        <div className="flex items-center gap-3 mb-4 shrink-0">
           <div className="gradient-line w-16" />
           <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">EVENT EXPERIENCES</span>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          {eventsList.map((event, index) => (
-             <div key={index} className="group relative bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+        <div className="grid gap-4 md:grid-cols-2 md:grid-rows-4 flex-1 min-h-0 pb-4">
+          {eventsList.map((event, index) => {
+            let gridClass = ""
+            if (index === 0) gridClass = "md:col-span-2"
+            else if (index === 1) gridClass = "md:row-span-2"
+            else if (index === 4) gridClass = "md:col-span-2"
+
+            return (
+              <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex flex-col ${gridClass}`}>
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-brand-lime rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <h4 className={`font-display text-xl font-bold ${event.color} mb-3 uppercase tracking-wide`}>
+                <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide shrink-0`}>
                   {event.title}
                 </h4>
-                <p className="text-slate-600 leading-relaxed font-medium text-justify">
+                <p className="text-slate-600 text-sm leading-relaxed font-medium text-justify overflow-y-auto custom-scrollbar flex-1 pr-2">
                   {event.description}
                 </p>
-             </div>
-          ))}
+              </div>
+            )
+          })}
         </div>
       </div>
 
       {/* ── ABOUT NEXYUGA ── */}
       {location.pathname === '/about' && (
-        <div id="about-nexyuga" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 border-t border-slate-100">
+        <div id="about-nexyuga" className="relative mx-auto max-w-7xl px-4 py-8 border-t border-slate-100 min-h-screen flex flex-col justify-center">
           <div className="relative">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -548,7 +567,7 @@ export default function About() {
 
       {/* ── ABOUT SRP ── */}
       {location.pathname === '/about' && (
-        <div id="about-srp" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 border-t border-slate-100 bg-slate-50/50">
+        <div id="about-srp" className="relative mx-auto max-w-7xl px-4 border-t border-slate-100 bg-slate-50/50 min-h-screen flex flex-col justify-center">
           <div className="relative">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
