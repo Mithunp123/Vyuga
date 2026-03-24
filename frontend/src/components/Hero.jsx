@@ -291,8 +291,8 @@ export default function Hero() {
             {/* ── Description + CTAs ── */}
             <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:gap-16">
               <p className="max-w-lg text-base font-semibold leading-relaxed text-slate-800 sm:text-lg">
-                <span className="font-bold text-slate-900">Be part of the movement </span>
-                Join <span className="font-bold text-slate-900">1000+</span> researchers, designers and advocates at India’s premier ability carnival. Experience visionary keynotes, interactive workshops, and live demos that are redefining the future of inclusive technology.
+                <span className="font-bold text-slate-900">BE PART OF THE MOVEMENT,</span>
+                Join <span className="font-bold text-slate-900">1000+</span> innovators, architects, and advocates at India’s premier inclusive technology summit. Experience visionary keynotes, immersive workshops, and live hardware demos engineering the next frontier of universal access.
               </p>
 
               <motion.div

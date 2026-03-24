@@ -8,6 +8,7 @@ import srpLogo from '../assets/present by/SRP.webp'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import aboutImg from '../assets/about.png'
+import nexyugaGroup from '../assets/nexyuga_group.png'
 
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
@@ -78,7 +79,7 @@ const aims = [
 const eventsList = [
   {
     title: "Innovation Fest for Differently Abled",
-    description: "Where students solve real disability-related problem statements in teams and build practical solutions.",
+    description: "Solving for universal accessibility, this open-architecture hackathon invites teams of up to three to engineer high-impact solutions for real-world disability challenges. Participants will tackle critical problem statements through rapid prototyping and assistive design, with top-performing innovators securing merit-based prize rewards.",
     color: "text-brand-cyan"
   },
   {
@@ -196,7 +197,7 @@ export default function About() {
                   <img
                     src={ksrctLogo}
                     alt="KSRCT"
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-[85%] max-w-[85%] object-contain"
                   />
                 </div>
               </motion.div>
@@ -485,27 +486,40 @@ export default function About() {
                  <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
                   We focus on:
                 </p>
-                <div className="space-y-0">
-                  {[
-                    'Scalable Enterprise Solutions',
-                    'Human-Centric Digital Design',
-                    'Inclusive Tech Ecosystems',
-                    'Empowering Local Communities'
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item}
-                      initial={{ opacity: 0, x: 30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                      className="group flex items-start gap-4 border-b border-slate-100 py-4 transition-colors hover:border-brand-cyan/30"
-                    >
-                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                      <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
-                        {item}
-                      </span>
-                    </motion.div>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div className="space-y-0">
+                    {[
+                      'Scalable Enterprise Solutions',
+                      'Human-Centric Digital Design',
+                      'Inclusive Tech Ecosystems',
+                      'Empowering Local Communities'
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={item}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                        className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-cyan/30"
+                      >
+                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
+                        <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                          {item}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  {/* Nexyuga Group Image - Side by side */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="w-full flex justify-center md:justify-end"
+                  >
+                    <img src={nexyugaGroup} alt="Nexyuga Team" className="max-w-full h-auto object-contain max-h-[250px]" />
+                  </motion.div>
                 </div>
               </div>
             </div>
