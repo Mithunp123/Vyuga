@@ -463,7 +463,7 @@ export default function About() {
                   {/* Talent Utsav Image (Bottom Center) */}
                   {index === 1 && event.image && (
                     <div className="mt-auto pt-4 flex justify-center">
-                       <img src={event.image} alt={event.title} className="max-h-40 w-auto object-contain" />
+                       <img src={event.image} alt={event.title} className="max-h-72 w-full object-contain" />
                     </div>
                   )}
                 </div>
