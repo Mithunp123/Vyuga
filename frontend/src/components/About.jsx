@@ -633,10 +633,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.1 }}
               >
-                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                   Uplifting{' '}
                 </span>
-                <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-lime sm:text-2xl lg:text-4xl">
+                <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
                   communities
                 </span>
               </motion.div>
@@ -646,10 +646,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
-                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                   through{' '}
                 </span>
-                <span className="font-marker text-[4vw] leading-[0.9] text-brand-lime sm:text-2xl lg:text-4xl">
+                <span className="font-marker text-[3vw] leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
                   empowerment
                 </span>
               </motion.div>
@@ -663,8 +663,12 @@ export default function About() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="lg:col-span-2"
               >
-                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl text-justify">
-                  Operating as a high-velocity catalyst for social equity, SRP Foundation is re-engineering community empowerment through precision-driven impact models. By synergizing adaptive education, healthcare accessibility, and advanced skill ecosystems, the Foundation transforms systemic barriers into gateways of opportunity. SRP Foundation doesn't simply provide aid; it architects a robust, inclusive infrastructure where human potential is the primary engine of progress.
+                <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
+                  SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
+                  <br /><br />
+                  The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
+                  <br /><br />
+                  Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
                 </p>
                  <motion.div
                   initial={{ opacity: 0, y: 20 }}

@@ -34,6 +34,8 @@ const TALENT_CATEGORIES = [
   'Music', 'Dance', 'Art & Painting', 'Recitation / Poetry', 'Drama', 'Other',
 ]
 
+const GRADE_CATEGORIES = ['1–5', '6–8', '9–12']
+
 const DISABILITY_TYPES = [
   'Visual Impairment',
   'Low Vision',
@@ -76,6 +78,7 @@ const EMPTY = {
   disabilityTypeOther: '',
   talentCategory: '',
   talentCategoryOther: '',
+  gradeCategory: '',
   talentDescription: '',
   guardianName: '',
   guardianPhone: '',
@@ -262,6 +265,7 @@ export default function TalentStudentNomination() {
     
     if (!form.talentCategory) { setError('Please select talent category.'); return }
     if (form.talentCategory === 'Other' && !form.talentCategoryOther.trim()) { setError('Please enter talent category.'); return }
+    if (!form.gradeCategory) { setError('Please select grade category.'); return }
     
     // Validate talent description word count
     const talentWords = form.talentDescription.trim() ? form.talentDescription.trim().split(/\s+/).filter(word => word.length > 0) : []
@@ -492,6 +496,27 @@ export default function TalentStudentNomination() {
                   <p className="text-xs text-slate-500">Nominate a group of students performing together</p>
                 </div>
               </label>
+            </div>
+          </div>
+          
+          <div className="mt-4 sm:col-span-2">
+            <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+              Grade Category <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {GRADE_CATEGORIES.map((grade) => (
+                <label key={grade} className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 transition-colors">
+                  <input
+                    type="radio"
+                    name="gradeCategory"
+                    value={grade}
+                    checked={form.gradeCategory === grade}
+                    onChange={set('gradeCategory')}
+                    className="shrink-0 text-[#0197B2] focus:ring-[#0197B2]"
+                  />
+                  <span className="text-slate-700">{grade}</span>
+                </label>
+              ))}
             </div>
           </div>
         </Section>

@@ -492,6 +492,14 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                     </span>
                   </div>
                 )}
+                {row.grade_category && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Grade</span>
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                      {row.grade_category}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

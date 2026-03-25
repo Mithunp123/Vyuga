@@ -600,7 +600,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
   try {
     const {
       orgName, studentName, studentAge, disabilityType, disabilityTypeOther,
-      talentCategory, talentCategoryOther, talentDescription, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl,
+      talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl,
     } = req.body
 
     // ── Validation ───────────────────────────────────────
@@ -610,6 +610,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       { field: 'studentAge', check: isValidInt(studentAge, 1, 120), msg: 'must be a number 1–120' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
+      { field: 'gradeCategory', check: gradeCategory && ['1–5', '6–8', '9–12'].includes(gradeCategory), msg: 'must be 1–5, 6–8, or 9–12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'guardianName', check: guardianName && sanitizeText(guardianName, 100).length > 0, msg: 'required' },
       { field: 'guardianPhone', check: isValidPhone(guardianPhone), msg: 'must be exactly 10 digits' },
@@ -681,6 +682,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         student_age: parseInt(studentAge, 10),
         disability_type: effectiveDisability,
         talent_category: effectiveTalentCategory,
+        grade_category: gradeCategory,
         talent_desc: talentDescription ? sanitizeText(talentDescription, 2000) : null,
         guardian_name: sanitizeText(guardianName, 100),
         guardian_phone: guardianPhone.trim(),
@@ -741,7 +743,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       
       // Student/team details
       studentName, studentAge, disabilityType, disabilityTypeOther,
-      talentCategory, talentCategoryOther, talentDescription,
+      talentCategory, talentCategoryOther, talentDescription, gradeCategory,
       guardianName, guardianPhone, guardianEmail,
       videoLink, performanceUrl
     } = req.body
@@ -778,6 +780,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       
       // Talent details (common)
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
+      { field: 'gradeCategory', check: gradeCategory && ['1–5', '6–8', '9–12'].includes(gradeCategory), msg: 'must be 1–5, 6–8, or 9–12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'videoFile', check: req.file || videoLink || performanceUrl, msg: 'video file, video link, or performance URL is required' }
     ])
@@ -921,6 +924,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         student_age: nominationType === 'individual' ? parseInt(studentAge) : null,
         disability_type: nominationType === 'individual' ? processedDisabilityType : 'Multiple (Team)',
         talent_category: processedTalentCategory,
+        grade_category: gradeCategory,
         talent_desc: talentDescription ? sanitizeText(talentDescription, 500) : null,
         guardian_name: nominationType === 'individual' ? sanitizeText(guardianName, 100) : null,
         guardian_phone: nominationType === 'individual' ? guardianPhone : null,

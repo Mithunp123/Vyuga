@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS talent_nominations (
   student_age     INTEGER     NOT NULL,
   disability_type TEXT        NOT NULL,
   talent_category TEXT        NOT NULL,
+  grade_category  TEXT,       -- '1–5', '6–8', '9–12'
   talent_desc     TEXT,
   guardian_name   TEXT        NOT NULL,
   guardian_phone  TEXT        NOT NULL,
@@ -25,3 +26,4 @@ CREATE INDEX IF NOT EXISTS idx_talent_nom_org
 
 -- Run this if the table already exists:
 ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS performance_url TEXT;
+ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS grade_category TEXT;
