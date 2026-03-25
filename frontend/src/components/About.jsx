@@ -157,10 +157,10 @@ export default function About() {
   return (
     <section id="about" className="relative overflow-hidden bg-white" ref={sectionRef}>
       {/* ── Presented by section ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 via-white to-slate-50 pb-20">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-50 via-white to-slate-50 pb-6">
         <MarqueeBand />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-transparent to-brand-lime/5" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-10">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -173,14 +173,14 @@ export default function About() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-6"
+              className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-4"
             >
               Presented by
             </motion.h3>
 
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-4">
               {/* Main presenters */}
-              <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+              <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-8">
                 <motion.div
                   initial={{ opacity: 0, x: -30, rotateY: -15 }}
                   whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -191,12 +191,8 @@ export default function About() {
                   onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
-                    <img
-                      src={nexgugaLogo}
-                      alt="Nexyuga Innovation"
-                      className="max-h-full max-w-full object-contain"
-                    />
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                    <img src={nexgugaLogo} alt="Nexyuga Innovation" className="max-h-full max-w-full object-contain" />
                   </div>
                 </motion.div>
 
@@ -210,12 +206,8 @@ export default function About() {
                   onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
-                    <img
-                      src={srpLogo}
-                      alt="SRP Foundation"
-                      className="max-h-full max-w-full object-contain"
-                    />
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                    <img src={srpLogo} alt="SRP Foundation" className="max-h-full max-w-full object-contain" />
                   </div>
                 </motion.div>
               </div>
@@ -242,21 +234,14 @@ export default function About() {
                 className="group relative perspective-1000"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-40 w-64 sm:h-56 sm:w-80">
-                  <img
-                    src={ksrctLogo}
-                    alt="KSRCT"
-                    className="max-h-[85%] max-w-[85%] object-contain"
-                  />
+                <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                  <img src={ksrctLogo} alt="KSRCT" className="max-h-[80%] max-w-[80%] object-contain" />
                 </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-
-
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
       {/* ── About — cinematic split layout, NO cards ── */}
       <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 min-h-screen flex flex-col justify-center">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
