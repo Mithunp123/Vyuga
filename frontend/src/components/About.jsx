@@ -265,8 +265,10 @@ export default function About() {
         </div>
 
         <div className="relative">
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            <div className="flex-1">
+          {/* Two-column rectangle layout */}
+          <div className="grid gap-10 lg:grid-cols-5 items-stretch">
+            {/* LEFT: headline + body text + blockquote */}
+            <div className="flex flex-col lg:col-span-2">
               {/* Section label */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -308,30 +310,19 @@ export default function About() {
                   </span>
                 </motion.div>
               </div>
-            </div>
 
-            </div>
-          </div>
-
-          {/* Two-column text + feature list — no boxes */}
-          <div className="mt-8 grid gap-8 lg:grid-cols-5">
-            <div
-              className="lg:col-span-2"
-            >
-              <p className="text-base leading-relaxed text-slate-800 font-medium sm:text-lg text-justify">
+              <p className="mt-6 text-base leading-relaxed text-slate-800 font-medium sm:text-lg text-justify">
                 Vyuga is more than just an innovation fest, it is a platform that celebrates inclusion in every form.
                 From innovative solutions to inclusive sports like blind cricket and blind chess, and platforms like Special Talent Utsav, Vyuga creates opportunities for differently-abled individuals to showcase their strength, talent, and potential.
               </p>
 
               <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base text-justify">
-                It is a space where innovation meets humanity where technology solves problems,sports build confidence, and talent finds recognition.
+                It is a space where innovation meets humanity where technology solves problems, sports build confidence, and talent finds recognition.
                 Vyuga is not just about ideas. It is about creating experiences that empower, include, and inspire.
               </p>
 
-              <blockquote
-                className="mt-6 border-l-4 border-brand-cyan pl-6"
-              >
-                <p className="font-serif text-base italic text-[#5BCB2B] font-bold sm:text-lg whitespace-nowrap">
+              <blockquote className="mt-6 border-l-4 border-brand-cyan pl-6">
+                <p className="font-serif text-base italic text-[#5BCB2B] font-bold sm:text-lg">
                   "Disability is not a limitation — lack of opportunity is."
                 </p>
                 <cite className="mt-2 block font-mono text-[9px] not-italic tracking-[0.3em] text-slate-500 font-bold">
@@ -340,27 +331,27 @@ export default function About() {
               </blockquote>
             </div>
 
-            {/* Platform examples */}
-            <div className="lg:col-span-3">
-              {/* About Feature Image */}
-              <motion.div 
+            {/* RIGHT: image (no box) + feature list */}
+            <div className="lg:col-span-3 flex flex-col">
+              {/* About image — fits fully, no crop, no box */}
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="w-full mb-8"
+                className="w-full mb-4 flex justify-center"
               >
-                <img 
-                  src={aboutImg} 
-                  alt="About Vyuga" 
-                  className="w-full h-48 sm:h-64 object-cover rounded-2xl shadow-sm"
+                <img
+                  src={aboutImg}
+                  alt="About Vyuga"
+                  className="w-full max-h-56 object-contain rounded-xl"
                 />
               </motion.div>
 
               <p className="mb-4 font-display text-xs font-bold text-slate-600 uppercase tracking-wider">
                 It is a platform where:
               </p>
-              <div className="space-y-0 mb-6">
+              <div className="space-y-0">
                 {features.map((item, idx) => (
                   <div
                     key={item.text}
@@ -373,9 +364,6 @@ export default function About() {
                   </div>
                 ))}
               </div>
-
-              {/* Mission statement */}
-              
             </div>
           </div>
 
@@ -427,7 +415,7 @@ export default function About() {
             })}
           </div>
         </div>
-      
+      </div>
 
       {/* ── EVENT DETAILS SECTION ── */}
       <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 border-t border-slate-100 h-screen max-h-[1080px] flex flex-col">
