@@ -26,21 +26,21 @@ export default function EventCard({ title, accent, description, details, registe
 
           {/* Number + label row */}
           <div className="flex items-start justify-between mb-3">
-            <span className="font-impact text-[2.5rem] leading-none tracking-wider text-slate-100 transition-colors duration-500 group-hover:text-brand-cyan/10 select-none">
+            <span className="font-impact text-[2.5rem] leading-none tracking-wider text-[#0197B2]/30 transition-colors duration-500 group-hover:text-[#0197B2]/50 select-none">
               {num}
             </span>
-            <span className="font-mono-display mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400 transition-colors duration-300 group-hover:text-brand-cyan">
+            <span className="font-mono-display mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-[#0197B2] transition-colors duration-300">
               Event {num}
             </span>
           </div>
 
           {/* Title — mixed fonts like hero: impact + serif italic accent */}
           <div className="mb-1">
-            <h3 className="font-hero text-lg font-extrabold leading-tight text-slate-900 sm:text-xl">
+            <h3 className="font-hero text-lg font-extrabold leading-tight text-[#5BCB2B] sm:text-xl">
               {title}
             </h3>
             {accent && (
-              <span className="font-serif text-base italic text-brand-cyan sm:text-lg">
+              <span className="font-serif text-base italic text-[#0197B2] sm:text-lg">
                 {accent}
               </span>
             )}

@@ -25,7 +25,7 @@ export default function PageShell({ title, subtitle, children, compact = false, 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="mt-4 font-display text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl"
+            className="mt-4 font-display text-4xl font-extrabold tracking-tight text-[#5BCB2B] sm:text-5xl"
           >
             {title}
           </motion.h1>
@@ -34,7 +34,7 @@ export default function PageShell({ title, subtitle, children, compact = false, 
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mt-4 max-w-3xl text-base leading-relaxed text-slate-500"
+              className="mt-4 max-w-3xl text-base leading-relaxed text-[#0197B2] font-medium"
             >
               {subtitle}
             </motion.p>

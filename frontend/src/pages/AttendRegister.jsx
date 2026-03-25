@@ -26,7 +26,7 @@ const INNOVATION_MAIN_EVENT = {
     },
     { label: 'Awards', value: 'Top three winners will receive cash prizes, mentorship opportunities, and certificates will be awarded to all finalists' },
   ],
-  buttonText: 'View Tracks',
+  buttonText: 'Register Now',
   isExpandable: true,
 }
 
@@ -145,7 +145,7 @@ const OTHER_EVENTS = [
       },
     ],
     registerLink: '/register/cricket',
-    buttonText: 'Entry Now',
+    buttonText: 'Enquiry Now',
   },
   {
     title: 'Blind Chess',
@@ -183,16 +183,17 @@ export default function AttendRegister() {
     <PageShell
       title="Register"
       subtitle="Choose an event below and complete your registration to be part of VYUGA – Inclusive Innovation Fest."
+      heroPadding="pt-28 pb-0 sm:pb-2"
     >
       {/* Section header — matching site's mixed-font cinematic style */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-12 sm:mb-14"
+        className="mb-12 sm:mb-14 -mt-4 sm:-mt-8 relative z-10"
       >
         <div className="flex items-baseline gap-3">
-          <span className="font-serif text-2xl italic font-light text-brand-cyan sm:text-3xl">
+          <span className="font-serif text-2xl italic font-light text-[#0197B2] sm:text-3xl">
             Pick your
           </span>
           <span className="font-impact text-4xl tracking-[0.08em] text-stroke sm:text-5xl">
@@ -234,7 +235,7 @@ export default function AttendRegister() {
             key={event.registerLink || `event-${i}`} 
             index={i} 
             {...event}
-            className={(!showInnovationTracks && i === 0) ? 'sm:row-span-2' : ''}
+            className=""
             onExpand={event.isExpandable ? handleInnovationClick : undefined}
           />
         ))}
@@ -267,20 +268,20 @@ function ExpandableEventCard({ onExpand, isExpandable, className, ...props }) {
           
           <div className="relative flex flex-1 flex-col p-6 sm:p-8">
             <div className="flex items-start justify-between mb-5">
-              <span className="font-impact text-[3.5rem] leading-none tracking-wider text-slate-100 transition-colors duration-500 group-hover:text-brand-cyan/10 select-none">
+              <span className="font-impact text-[3.5rem] leading-none tracking-wider text-[#0197B2]/30 transition-colors duration-500 group-hover:text-[#0197B2]/50 select-none">
                 {String(props.index + 1).padStart(2, '0')}
               </span>
-              <span className="font-mono-display mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400 transition-colors duration-300 group-hover:text-brand-cyan">
+              <span className="font-mono-display mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-[#0197B2] transition-colors duration-300">
                 Event {String(props.index + 1).padStart(2, '0')}
               </span>
             </div>
 
             <div className="mb-1">
-              <h3 className="font-hero text-xl font-extrabold leading-tight text-slate-900 sm:text-[1.35rem]">
+              <h3 className="font-hero text-xl font-extrabold leading-tight text-[#5BCB2B] sm:text-[1.35rem]">
                 {props.title}
               </h3>
               {props.accent && (
-                <span className="font-serif text-lg italic text-brand-cyan sm:text-xl">
+                <span className="font-serif text-lg italic text-[#0197B2] sm:text-xl">
                   {props.accent}
                 </span>
               )}
@@ -291,7 +292,7 @@ function ExpandableEventCard({ onExpand, isExpandable, className, ...props }) {
             <div className="flex flex-1 flex-col">
               <p className="text-sm leading-relaxed text-slate-500 mb-4">{props.description}</p>
 
-              <div className="flex flex-1 flex-col justify-between gap-3">
+              <div className="flex flex-col gap-3 mb-2">
                 {props.details?.map((section, i) => (
                   <div key={i} className="rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4 ring-1 ring-slate-100/80">
                     <p className="font-marker mb-2 text-[11px] tracking-wider text-brand-cyan">
