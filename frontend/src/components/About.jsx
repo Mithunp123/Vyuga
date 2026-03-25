@@ -78,11 +78,11 @@ const stats = [
 ]
 
 const features = [
-  { text: 'A child who was never given a stage finally performs with confidence', accent: 'font-serif italic text-brand-cyan' },
-  { text: 'An innovator turns daily challenges into solutions for thousands', accent: 'font-marker text-brand-lime' },
-  { text: 'A player proves passion goes beyond physical limitations', accent: 'font-serif italic text-brand-cyan' },
-  { text: 'Society learns to see ability, not disability', accent: 'font-marker text-brand-lime' },
-  { text: 'A strategist proves that vision lies in the mind, not the eyes', accent: 'font-serif italic text-brand-cyan' },
+  { text: 'A child who was never given a stage finally performs with confidence', accent: 'text-brand-cyan' },
+  { text: 'An innovator turns daily challenges into solutions for thousands', accent: 'text-brand-lime' },
+  { text: 'A player proves passion goes beyond physical limitations', accent: 'text-brand-cyan' },
+  { text: 'Society learns to see ability, not disability', accent: 'text-brand-lime' },
+  { text: 'A strategist proves that vision lies in the mind, not the eyes', accent: 'text-brand-cyan' },
 ]
 
 const aims = [
@@ -97,13 +97,13 @@ const eventsList = [
     title: "Innovation Fest",
     description: "An innovation fest focused on assistive technology, centered around themes for and by persons with disabilities. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
     color: "!text-[#5BCB2B]",
-    image: think
+    image: child
   },
   {
     title: "Special Talent Utsav",
     description: "A Special Talent Utsav where school students showcase their talents across three categories: Grades 1–5, 6–8, and 9–12. Each category will recognize top performers with cash prizes.All participants will receive exciting prizes and appreciation.",
     color: "!text-[#5BCB2B]",
-    image: child
+    image: eventImage
   },
   {
     title: "Blind Cricket",
@@ -341,13 +341,14 @@ export default function About() {
             <div
               className="lg:col-span-2"
             >
-              <p className="text-base leading-relaxed text-slate-800 font-medium sm:text-lg">
-                Vyuga is not just an event — it's a space where differently abled individuals are celebrated, heard, and empowered. 
-                In a world where they are often limited by opportunities rather than their potential.
+              <p className="text-base leading-relaxed text-slate-800 font-medium sm:text-lg text-justify">
+                Vyuga is more than just an innovation fest, it is a platform that celebrates inclusion in every form.
+                From innovative solutions to inclusive sports like blind cricket and blind chess, and platforms like Special Talent Utsav, Vyuga creates opportunities for differently-abled individuals to showcase their strength, talent, and potential.
               </p>
 
-              <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base">
-                Vyuga features four major event experiences in a simple and inclusive format, designed to spotlight talent, innovation, and resilience.
+              <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base text-justify">
+                It is a space where innovation meets humanity where technology solves problems, sports build confidence, and talent finds recognition.
+                Vyuga is not just about ideas. It is about creating experiences that empower, include, and inspire.
               </p>
 
               <blockquote
@@ -384,7 +385,7 @@ export default function About() {
                     className="group flex items-start gap-4 border-b border-slate-100 py-2 transition-colors hover:border-brand-cyan/30"
                   >
                     <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                    <span className={`text-sm sm:text-base transition-all duration-500 font-bold tracking-wide ${item.accent} group-hover:translate-x-2`}>
+                    <span className={`text-sm sm:text-base transition-all duration-500 tracking-wide ${idx % 2 === 0 ? 'font-serif italic' : 'font-mono'} ${item.accent} group-hover:translate-x-2`}>
                       {item.text}
                     </span>
                   </div>
@@ -498,10 +499,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.1 }}
               >
-                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                   Driving digital{' '}
                 </span>
-                <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-cyan sm:text-2xl lg:text-4xl">
+                <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-cyan sm:text-xl lg:text-3xl">
                   transformation
                 </span>
               </motion.div>
@@ -511,10 +512,10 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
-                <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                   with{' '}
                 </span>
-                <span className="font-marker text-[4vw] leading-[0.9] gradient-text sm:text-2xl lg:text-4xl">
+                <span className="font-marker text-[3vw] leading-[0.9] gradient-text sm:text-xl lg:text-3xl">
                   inclusive innovation
                 </span>
               </motion.div>
@@ -528,8 +529,12 @@ export default function About() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="lg:col-span-2"
               >
-                <p className="text-lg leading-relaxed text-slate-500 sm:text-xl text-justify">
-                  A high-impact architect of digital equity, Nexyuga Innovations is engineering the next frontier of inclusive transformation. By synergizing scalable technical ecosystems with human-centric intuition, the firm translates complex engineering into seamless universal experiences that empower global enterprises and local communities alike. Nexyuga doesn't just build software; it bridges the gap between pioneering technology and meaningful human impact.
+                <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
+                  Nexyuga Innovation is an impact-driven startup focused on creating inclusive solutions for differently-abled individuals. With a vision to make learning accessible to all, Nexyuga develops affordable assistive products that promote independence and confidence.
+                  <br /><br />
+                  One of its key innovations, Vithara, is an independent tactile and Braille learning book designed for visually impaired learners. It combines touch-based elements with Braille to enable interactive and self-paced learning.
+                  <br /><br />
+                  Through products like Vithara, Nexyuga aims to bridge the gap between education and accessibility, empowering individuals to learn, explore, and grow without limitations.
                 </p>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -568,10 +573,10 @@ export default function About() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   <div className="space-y-0">
                     {[
-                      'Scalable Enterprise Solutions',
-                      'Human-Centric Digital Design',
-                      'Inclusive Tech Ecosystems',
-                      'Empowering Local Communities'
+                      'Quality Education',
+                      'Independent Learning',
+                      'Assistive Technology',
+                      'Inclusive Innovation'
                     ].map((item, idx) => (
                       <motion.div
                         key={item}
