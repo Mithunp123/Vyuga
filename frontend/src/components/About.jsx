@@ -96,22 +96,24 @@ const eventsList = [
   {
     title: "Innovation Fest",
     description: "An innovation fest focused on assistive technology, centered around themes for and by persons with disabilities. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
-    color: "text-brand-cyan"
+    color: "!text-[#5BCB2B]",
+    image: think
   },
   {
     title: "Special Talent Utsav",
     description: "A Special Talent Utsav where school students showcase their talents across three categories: Grades 1–5, 6–8, and 9–12. Each category will recognize top performers with cash prizes.All participants will receive exciting prizes and appreciation.",
-    color: "text-brand-cyan"
+    color: "!text-[#5BCB2B]",
+    image: child
   },
   {
     title: "Blind Cricket",
     description: "An inclusive blind cricket tournament showcasing skill, teamwork, and determination beyond vision.Players compete using adapted rules, highlighting true sportsmanship and ability. Winner and runner-up teams will receive cash prizes and trophies, celebrating excellence and inspiring every participant.",
-    color: "text-brand-lime"
+    color: "!text-[#5BCB2B]"
   },
   {
     title: "Blind Chess",
     description: "An inclusive blind chess tournament that challenges strategy, memory, and focus beyond sight.Players compete using adaptive methods, showcasing intelligence, patience, and precision. Winner and runner-up will receive prizes, celebrating excellence and strategic brilliance.",
-    color: "text-brand-cyan"
+    color: "!text-[#5BCB2B]"
   }
 ]
 
@@ -425,35 +427,49 @@ export default function About() {
           <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">EVENT EXPERIENCES</span>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 md:grid-rows-4 flex-1 min-h-0 pb-4">
+        <div className="grid gap-4 md:grid-cols-2 flex-1 min-h-0 pb-4">
           {eventsList.map((event, index) => {
             let gridClass = ""
+            // Layout: 
+            // 0 (Innovation): col-span-2 (Full width top)
+            // 1 (Talent): row-span-2 (Vertical left)
+            // 2 (Cricket) & 3 (Chess): normal cells (Right stack)
             if (index === 0) gridClass = "md:col-span-2"
             else if (index === 1) gridClass = "md:row-span-2"
-            else if (index === 4) gridClass = "md:col-span-2"
-
+            
             return (
-              <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex ${index === 0 ? 'flex-row items-center gap-4' : 'flex-col'} ${gridClass}`}>
+              <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex flex-col ${gridClass}`}>
+                {/* Gradient Line */}
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-brand-lime rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
-                <div className={`${index === 0 ? 'flex-1' : ''}`}>
-                    <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide shrink-0`}>
-                      {event.title}
-                    </h4>
-                    <p className={`text-slate-600 text-sm leading-relaxed font-medium text-justify overflow-y-auto custom-scrollbar pr-2 ${index === 1 ? '' : 'flex-1'}`}>
-                      {event.description}
-                    </p>
-                </div>
-
-                {index === 0 && (
-                   <img src={think} alt="Innovation" className="h-32 w-auto object-contain hidden sm:block" />
-                )}
-
-                {index === 1 && (
-                  <div className="mt-4 flex-1 relative overflow-hidden rounded-xl">
-                    <img src={eventImage} alt="Event" className="absolute inset-0 w-full h-full object-contain" />
+                {/* Card Content */}
+                <div className="flex-1 flex flex-col">
+                  {/* Header & Body */}
+                  <div className={`flex ${index === 0 ? 'flex-row items-start justify-between gap-4' : 'flex-col h-full'}`}>
+                    <div className="flex-1">
+                      <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide`}>
+                        {event.title}
+                      </h4>
+                      <p className="text-slate-600 text-sm leading-relaxed font-medium text-justify">
+                        {event.description}
+                      </p>
+                    </div>
+                    
+                    {/* Innovation Fest Image (Top Right) */}
+                    {index === 0 && event.image && (
+                      <div className="hidden sm:block shrink-0">
+                         <img src={event.image} alt={event.title} className="h-24 w-auto object-contain" />
+                      </div>
+                    )}
                   </div>
-                )}
+                  
+                  {/* Talent Utsav Image (Bottom Center) */}
+                  {index === 1 && event.image && (
+                    <div className="mt-auto pt-4 flex justify-center">
+                       <img src={event.image} alt={event.title} className="max-h-40 w-auto object-contain" />
+                    </div>
+                  )}
+                </div>
               </div>
             )
           })}
