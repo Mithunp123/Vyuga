@@ -134,19 +134,19 @@ function useCountdown(targetDate) {
 
 /* ── Rotating circular text badge ── */
 function RotatingBadge() {
-  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUN 26-27 '
+  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUNE 26-27 '
   return (
-    <div className="relative h-20 w-20 sm:h-24 sm:w-24">
+    <div className="relative h-32 w-32 sm:h-40 sm:w-40">
       <svg viewBox="0 0 200 200" className="h-full w-full animate-rotate-text">
         <defs>
           <path id="circlePath" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0" />
         </defs>
-        <text className="fill-brand-cyan" style={{ fontSize: '20px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
+        <text className="fill-brand-cyan" style={{ fontSize: '24px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
           <textPath href="#circlePath">{text}</textPath>
         </text>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full bg-white shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-200">
+        <div className="h-12 w-12 rounded-full bg-white shadow-lg shadow-brand-cyan/20 flex items-center justify-center border border-slate-200">
         </div>
       </div>
     </div>
@@ -195,7 +195,7 @@ export default function Hero() {
 
       <div className="relative z-10 w-full">
         <div className="mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6">
-          <div ref={textRef} className="pt-33 pb-8">
+          <div ref={textRef} className="relative pt-15 pb-8">
             {/* Top row: handwritten label + rotating badge */}
             <div className="flex items-start justify-between">
               <motion.div
@@ -203,7 +203,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <span className="font-marker text-base text-brand-cyan sm:text-lg">
+                <span className="font-marker text-2xl text-brand-cyan sm:text-3xl">
                   Ability Carnival
                 </span>
                 <div className="mt-1 flex items-center gap-2">
@@ -211,8 +211,8 @@ export default function Hero() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-lime opacity-75" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-lime" />
                   </span>
-                  <span className="font-mono text-[9px] font-semibold tracking-[0.2em] text-slate-400">
-                    JUN 26–27, 2026 · KSRCT
+                  <span className="font-mono text-xs font-semibold tracking-[0.2em] text-slate-400">
+                    JUNE 26–27, 2026 · KSRCT
                   </span>
                 </div>
               </motion.div>
@@ -221,7 +221,7 @@ export default function Hero() {
                 initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="hidden sm:block"
+                className="absolute right-0 top-44 hidden sm:block"
               >
                 <RotatingBadge />
               </motion.div>
@@ -240,7 +240,7 @@ export default function Hero() {
                       initial={{ opacity: 0, y: 80, filter: 'blur(12px)' }}
                       animate={textInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
                       transition={{ duration: 0.9, delay: 0.3 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                      className="-mx-[1vw] h-[15vw] w-auto object-contain mix-blend-multiply sm:h-[12vw] sm:-mx-[0.8vw] lg:h-[10vw] lg:-mx-[0.5vw]"
+                      className="-mx-[1vw] h-[12vw] w-auto object-contain mix-blend-multiply sm:h-[10vw] sm:-mx-[0.8vw] lg:h-[8vw] lg:-mx-[0.5vw]"
                       aria-hidden="true"
                     />
                   ))}
@@ -253,7 +253,7 @@ export default function Hero() {
                   initial={{ opacity: 0, x: -30 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.8, delay: 0.6 }}
-                  className="font-serif text-[4vw] italic font-light text-brand-cyan sm:text-[3vw] lg:text-[2.5vw]"
+                  className="font-serif text-[3vw] italic font-light text-brand-cyan sm:text-[2.5vw] lg:text-[2vw]"
                 >
                   the
                 </motion.span>
@@ -261,7 +261,7 @@ export default function Hero() {
                   initial={{ y: '120%' }}
                   animate={textInView ? { y: '0%' } : {}}
                   transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[8vw] leading-[0.95] tracking-[0.1em] text-slate-900 sm:text-[6vw] lg:text-[5vw]"
+                  className="font-impact text-[6vw] leading-[0.95] tracking-[0.1em] text-slate-900 sm:text-[5vw] lg:text-[4vw]"
                 >
                   ABILITY CARNIVAL
                 </motion.span>
@@ -273,7 +273,7 @@ export default function Hero() {
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={textInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.7, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-impact text-[6vw] leading-[0.8] tracking-wider gradient-text sm:text-[5vw] lg:text-[4vw]"
+                  className="font-impact text-[5vw] leading-[0.8] tracking-wider gradient-text sm:text-[4vw] lg:text-[3.5vw]"
                 >
                   2026
                 </motion.span>

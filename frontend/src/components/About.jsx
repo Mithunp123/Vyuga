@@ -47,7 +47,7 @@ const stats = [
   {
     value: '2',
     unit: 'Days',
-    description: 'Redefining the frontier by spotlighting human talent through universally accessible tech, inclusive storytelling, and real-world collaboration.',
+    description: 'Where innovation, sports, and talent unite for impactful days',
     image: three,
     accent: 'text-brand-cyan'
   },
@@ -55,7 +55,7 @@ const stats = [
     value: '200',
     suffix: '+',
     unit: 'Elites & Adaptive Innovators',
-    description: 'Bridging the gap between cutting-edge tech and limitless talent, led by a community where innovation knows no bounds.',
+    description: 'The audience, where partners, families, and friends come together to support inclusion',
     image: hand,
     accent: 'text-brand-lime'
   },
@@ -63,7 +63,7 @@ const stats = [
     value: '1000',
     suffix: '+',
     unit: 'Attendees',
-    description: 'Uniting institutional leaders, support networks, and next-gen innovators to architect a future where accessibility is the default.',
+    description: 'A vibrant gathering of participants, where above 80% are specially abled individuals',
     image: child,
     accent: 'text-brand-cyan'
   },
@@ -71,7 +71,7 @@ const stats = [
     value: '50',
     suffix: '+',
     unit: 'NGOs & Special Schools',
-    description: 'Synergizing with advocacy partners and adaptive learning centers to drive universal access and create a truly inclusive society.',
+    description: 'A strong network of NGOs and organizations championing inclusion',
     image: group,
     accent: 'text-brand-lime'
   },
@@ -94,28 +94,23 @@ const aims = [
 
 const eventsList = [
   {
-    title: "Innovation Fest for Differently Abled",
-    description: "A competition where students build working tools and gadgets to help people with disabilities overcome daily struggles.",
+    title: "Innovation Fest",
+    description: "An innovation fest focused on assistive technology, centered around themes for and by persons with disabilities. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
     color: "text-brand-cyan"
   },
   {
-    title: "Innovation Fest by Differently Abled",
-    description: "A contest where people with disabilities pitch their own inventions and business ideas to help make the world a fairer place for everyone.",
-    color: "text-brand-lime"
-  },
-  {
     title: "Special Talent Utsav",
-    description: "A top-tier talent show where the best performers from different schools and colleges show off their skills in art and performance.",
+    description: "A Special Talent Utsav where school students showcase their talents across three categories: Grades 1–5, 6–8, and 9–12. Each category will recognize top performers with cash prizes.All participants will receive exciting prizes and appreciation.",
     color: "text-brand-cyan"
   },
   {
     title: "Blind Cricket",
-    description: "A professional cricket tournament for athletes with visual impairments, played at a high level with big prizes for the winners",
+    description: "An inclusive blind cricket tournament showcasing skill, teamwork, and determination beyond vision.Players compete using adapted rules, highlighting true sportsmanship and ability. Winner and runner-up teams will receive cash prizes and trophies, celebrating excellence and inspiring every participant.",
     color: "text-brand-lime"
   },
   {
     title: "Blind Chess",
-    description: "A chess tournament for players with visual impairments, where they compete using specially designed boards and pieces to navigate the game through touch and memory.",
+    description: "An inclusive blind chess tournament that challenges strategy, memory, and focus beyond sight.Players compete using adaptive methods, showcasing intelligence, patience, and precision. Winner and runner-up will receive prizes, celebrating excellence and strategic brilliance.",
     color: "text-brand-cyan"
   }
 ]
