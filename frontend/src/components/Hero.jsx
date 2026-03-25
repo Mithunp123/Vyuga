@@ -153,26 +153,6 @@ function RotatingBadge() {
   )
 }
 
-/* ── Marquee ── */
-function MarqueeBand() {
-  const items = ['INCLUSIVE DESIGN', 'ASSISTIVE TECHNOLOGY', 'ACCESSIBILITY', 'INNOVATION', 'VYUGA 2026', 'KSRCT']
-  const doubled = [...items, ...items]
-  return (
-    <div className="relative overflow-hidden border-y border-brand-cyan/20 bg-white/50 backdrop-blur-sm">
-      <div className="animate-marquee flex w-max">
-        {doubled.map((item, i) => (
-          <span key={i} className="flex items-center gap-4 px-2">
-            <span className={`whitespace-nowrap py-2 font-impact text-2xl tracking-[0.06em] sm:text-4xl lg:text-5xl ${i % 2 === 0 ? 'text-slate-900' : 'text-brand-cyan'}`}>
-              {item}
-            </span>
-            <span className="text-lg text-brand-lime select-none sm:text-xl">◆</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function Hero() {
   const countdown = useCountdown('2026-06-26T09:00:00')
   const sectionRef = useRef(null)
@@ -195,7 +175,7 @@ export default function Hero() {
 
       <div className="relative z-10 w-full">
         <div className="mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6">
-          <div ref={textRef} className="relative pt-32 pb-4 ">
+          <div ref={textRef} className="relative pt-15 pb-4 ">
             {/* Top row: handwritten label + rotating badge */}
             <div className="flex items-start justify-between">
               <motion.div
@@ -212,7 +192,7 @@ export default function Hero() {
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-lime" />
                   </span>
                   <span className="font-mono text-xs font-semibold tracking-[0.2em] text-slate-400">
-                    JUNE 26–27, 2026 · KSRCT
+                    JUNE 26–27, 2026 · K S RANGASAMY COLLEGE OF TECHNOLOGY
                   </span>
                 </div>
               </motion.div>
@@ -228,7 +208,7 @@ export default function Hero() {
             </div>
 
             {/* ── VYUGA TEXT + TYPOGRAPHY ── */}
-            <div className="mt-4 space-y-2">
+            <div className="mt-20 space-y-2">
               {/* VYUGA — logo letter images */}
               <div className="overflow-hidden" aria-label="VYUGA">
                 <div className="flex items-center justify-start gap-2">
@@ -352,8 +332,7 @@ export default function Hero() {
 
       {/* Marquee — outside scroll-fade wrapper */}
       <div className="relative z-10">
-        <MarqueeBand />
-{/*
+        {/*
         
         <motion.div
           initial={{ opacity: 0, y: 10 }}
