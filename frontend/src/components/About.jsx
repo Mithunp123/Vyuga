@@ -191,7 +191,7 @@ export default function About() {
                   onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
                     <img src={nexgugaLogo} alt="Nexyuga Innovation" className="max-h-full max-w-full object-contain" />
                   </div>
                 </motion.div>
@@ -206,7 +206,7 @@ export default function About() {
                   onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
                     <img src={srpLogo} alt="SRP Foundation" className="max-h-full max-w-full object-contain" />
                   </div>
                 </motion.div>
@@ -234,14 +234,19 @@ export default function About() {
                 className="group relative perspective-1000"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-28 w-48">
+                <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
                   <img src={ksrctLogo} alt="KSRCT" className="max-h-[80%] max-w-[80%] object-contain" />
                 </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+              </motion.div>
+
+            </div>
+
+          </motion.div>
+
+        </div>
+
+      </div>
+
       {/* ── About — cinematic split layout, NO cards ── */}
       <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 min-h-screen flex flex-col justify-center">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
