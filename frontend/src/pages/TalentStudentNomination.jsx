@@ -49,6 +49,10 @@ const DISABILITY_TYPES = [
   'Other',
 ]
 
+const RELATION_OPTIONS = [
+  'Parent', 'Sibling', 'Teacher', 'Relative', 'Guardian', 'Other'
+]
+
 const EMPTY = {
   // Organization details
   orgName: '',
@@ -82,6 +86,8 @@ const EMPTY = {
   gradeCategory: '',
   talentDescription: '',
   guardianName: '',
+  guardianRelation: '',
+  guardianRelationOther: '',
   guardianPhone: '',
   guardianEmail: '',
   videoLink: '',
@@ -115,6 +121,8 @@ export default function TalentStudentNomination() {
         disabilityType: [],
         disabilityTypeOther: '',
         guardianName: '',
+        guardianRelation: '',
+        guardianRelationOther: '',
         guardianPhone: '',
         guardianEmail: '',
       }))
@@ -226,53 +234,62 @@ export default function TalentStudentNomination() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    // Basic validation
-    if (!performanceUrl.trim()) { setError('Please provide the Google Drive link for the performance video.'); return }
-    if (!form.orgName.trim()) { setError('Please enter organization name.'); return }
-    if (!form.orgCity.trim()) { setError('Please enter organization city.'); return }
-    if (!form.orgState.trim()) { setError('Please enter organization state.'); return }
-    if (!form.contactName.trim()) { setError('Please enter contact person name.'); return }
-    if (!form.contactEmail.trim()) { setError('Please enter contact email.'); return }
-    if (!/^\d{10}$/.test(form.contactPhone)) { setError('Contact phone number must be exactly 10 digits.'); return }
-    if (!form.orgSize) { setError('Please select organization size.'); return }
-    if (!form.orgDisabilityFocus) { setError('Please select organization disability focus.'); return }
-    if (!form.orgDisabilityTypes || form.orgDisabilityTypes.length === 0) { setError('Please select at least one disability type for organization.'); return }
-    if (form.orgDisabilityFocus === 'single' && form.orgDisabilityTypes.length > 1) { setError('Single focus organizations can only select one disability type.'); return }
-    if (!form.nominationType) { setError('Please select nomination type (Individual or Team).'); return }
-    if (form.orgType === 'Other' && !form.orgTypeOther.trim()) { setError('Please enter organization type.'); return }
+    const showError = (msg) => {
+      setError(msg)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    if (!declared) { showError('Please confirm the declaration at the bottom of the form.'); return }
+    if (!performanceUrl.trim()) { showError('Please provide the Google Drive link for the performance video.'); return }
+    if (!form.orgName.trim()) { showError('Please enter organization name.'); return }
+    if (!form.orgCity.trim()) { showError('Please enter organization city.'); return }
+    if (!form.orgState.trim()) { showError('Please enter organization state.'); return }
+    if (!form.contactName.trim()) { showError('Please enter contact person name.'); return }
+    if (!form.contactEmail.trim()) { showError('Please enter contact email.'); return }
+    if (!/^\d{10}$/.test(form.contactPhone)) { showError('Contact phone number must be exactly 10 digits.'); return }
+    if (!form.orgSize) { showError('Please select organization size.'); return }
+    if (!form.orgDisabilityFocus) { showError('Please select organization disability focus.'); return }
+    if (!form.orgDisabilityTypes || form.orgDisabilityTypes.length === 0) { showError('Please select at least one disability type for organization.'); return }
+    if (form.orgDisabilityFocus === 'single' && form.orgDisabilityTypes.length > 1) { showError('Single focus organizations can only select one disability type.'); return }
+    if (!form.nominationType) { showError('Please select the nomination type (Individual or Team).'); return }
+    if (form.orgType === 'Other' && !form.orgTypeOther.trim()) { showError('Please enter organization type.'); return }
     
     // Individual vs Team validation
     if (form.nominationType === 'individual') {
-      if (!form.studentName.trim()) { setError('Please enter student name.'); return }
-      if (!form.studentAge || parseInt(form.studentAge) < 1) { setError('Please enter valid student age.'); return }
-      if (!form.disabilityType || form.disabilityType.length === 0) { setError('Please select at least one disability type.'); return }
-      if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); return }
-      if (!form.guardianName.trim()) { setError('Please enter accompanying person name.'); return }
-      if (!/^\d{10}$/.test(form.guardianPhone)) { setError('Accompanying person phone number must be exactly 10 digits.'); return }
+      if (!form.studentName.trim()) { showError('Please enter student name.'); return }
+      if (!form.studentAge || parseInt(form.studentAge) < 1) { showError('Please enter valid student age.'); return }
+      if (!form.disabilityType || form.disabilityType.length === 0) { showError('Please select at least one disability type.'); return }
+      if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { showError('Please enter disability type.'); return }
+      if (!form.guardianName.trim()) { showError('Please enter accompanying person name.'); return }
+      if (!form.guardianRelation) { showError('Please select relationship for accompanying person.'); return }
+      if (form.guardianRelation === 'Other' && !form.guardianRelationOther.trim()) { showError('Please specify relationship.'); return }
+      if (!/^\d{10}$/.test(form.guardianPhone)) { showError('Accompanying person phone number must be exactly 10 digits.'); return }
     } else if (form.nominationType === 'team') {
-      if (!form.teamSize || parseInt(form.teamSize) < 2) { setError('Please enter team size (minimum 2 members).'); return }
-      if (!form.teamMembers || form.teamMembers.length === 0) { setError('Please add team members.'); return }
+      if (!form.teamSize || parseInt(form.teamSize) < 2) { showError('Please enter team size (minimum 2 members).'); return }
+      if (!form.teamMembers || form.teamMembers.length === 0) { showError('Please add team members.'); return }
       
       // Validate each team member
       for (let i = 0; i < form.teamMembers.length; i++) {
         const member = form.teamMembers[i]
-        if (!member.name.trim()) { setError(`Please enter name for team member ${i + 1}.`); return }
-        if (!member.age || parseInt(member.age) < 1) { setError(`Please enter valid age for team member ${i + 1}.`); return }
-        if (!member.disabilityType || member.disabilityType.length === 0) { setError(`Please select disability type for team member ${i + 1}.`); return }
-        if (member.disabilityType.includes('Other') && !member.disabilityTypeOther.trim()) { setError(`Please enter disability type for team member ${i + 1}.`); return }
-        if (!member.guardianName.trim()) { setError(`Please enter accompanying person name for team member ${i + 1}.`); return }
-        if (!/^\d{10}$/.test(member.guardianPhone)) { setError(`Accompanying person phone for team member ${i + 1} must be exactly 10 digits.`); return }
+        if (!member.name.trim()) { showError(`Please enter name for team member ${i + 1}.`); return }
+        if (!member.age || parseInt(member.age) < 1) { showError(`Please enter valid age for team member ${i + 1}.`); return }
+        if (!member.disabilityType || member.disabilityType.length === 0) { showError(`Please select disability type for team member ${i + 1}.`); return }
+        if (member.disabilityType.includes('Other') && !member.disabilityTypeOther.trim()) { showError(`Please enter disability type for team member ${i + 1}.`); return }
+        if (!member.guardianName.trim()) { showError(`Please enter accompanying person name for team member ${i + 1}.`); return }
+        if (!member.guardianRelation) { showError(`Please select relationship for team member ${i + 1}'s accompanying person.`); return }
+        if (member.guardianRelation === 'Other' && !member.guardianRelationOther?.trim()) { showError(`Please specify relationship for team member ${i + 1}.`); return }
+        if (!/^\d{10}$/.test(member.guardianPhone)) { showError(`Accompanying person phone for team member ${i + 1} must be exactly 10 digits.`); return }
       }
     }
     
-    if (!form.talentCategory) { setError('Please select talent category.'); return }
-    if (form.talentCategory === 'Other' && !form.talentCategoryOther.trim()) { setError('Please enter talent category.'); return }
-    if (!form.gradeCategory) { setError('Please select grade category.'); return }
+    if (!form.talentCategory) { showError('Please select talent category.'); return }
+    if (form.talentCategory === 'Other' && !form.talentCategoryOther.trim()) { showError('Please enter talent category.'); return }
+    if (!form.gradeCategory) { showError('Please select grade category.'); return }
     
     // Validate talent description word count
     const talentWords = form.talentDescription.trim() ? form.talentDescription.trim().split(/\s+/).filter(word => word.length > 0) : []
-    if (!form.talentDescription.trim()) { setError('Please provide a brief description of the talent.'); return }
-    if (talentWords.length > 50) { setError('Talent description must not exceed 50 words.'); return }
+    if (!form.talentDescription.trim()) { showError('Please provide a brief description of the talent.'); return }
+    if (talentWords.length > 50) { showError('Talent description must not exceed 50 words.'); return }
     
     setLoading(true)
     setError('')
@@ -293,8 +310,22 @@ export default function TalentStudentNomination() {
       // Add basic form fields
       Object.entries(form).forEach(([k, v]) => {
         if (k === 'teamMembers') {
-          // Handle team members as JSON
-          fd.append(k, JSON.stringify(v))
+          // Handle team members as JSON and combine relationship
+          const processedMembers = v.map(m => {
+            const rel = m.guardianRelation === 'Other' ? m.guardianRelationOther : m.guardianRelation;
+            const { guardianRelation, guardianRelationOther, ...rest } = m;
+            return {
+              ...rest,
+              guardianName: rel ? `${m.guardianName} (${rel})` : m.guardianName
+            };
+          });
+          fd.append(k, JSON.stringify(processedMembers))
+        } else if (k === 'guardianName') {
+          // Combine relationship for individual
+          const rel = form.guardianRelation === 'Other' ? form.guardianRelationOther : form.guardianRelation;
+          fd.append(k, rel ? `${v} (${rel})` : v);
+        } else if (k === 'guardianRelation' || k === 'guardianRelationOther') {
+          // Skip these fields as they are combined into guardianName
         } else if (Array.isArray(v)) {
           // Handle arrays (like disabilityType)
           fd.append(k, JSON.stringify(v))
@@ -370,7 +401,7 @@ export default function TalentStudentNomination() {
             <Field label="Enter Organization Type" value={form.orgTypeOther} onChange={set('orgTypeOther')} required />
           )}
           <Field label="Contact Person Name" value={form.contactName} onChange={set('contactName')} required />
-          <Field label="Contact Designation" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" />
+          <Field label="Designation of Contact Person" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" />
           <Field label="Contact Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
           <Field label="Contact Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <div className="sm:col-span-2">
@@ -577,6 +608,25 @@ export default function TalentStudentNomination() {
               <Field label="Enter Disability Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
             )}
             <Field label="Who will accompany (Name)" value={form.guardianName} onChange={set('guardianName')} required />
+            <div>
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+                Relationship with Student <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                value={form.guardianRelation}
+                onChange={set('guardianRelation')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+              >
+                <option value="">Select relationship</option>
+                {RELATION_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+            {form.guardianRelation === 'Other' && (
+              <Field label="Please Specify Relationship" value={form.guardianRelationOther} onChange={set('guardianRelationOther')} required />
+            )}
             <Field label="Accompanying Person Phone" type="tel" value={form.guardianPhone} onChange={set('guardianPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
             <Field label="Accompanying Person Email" type="email" value={form.guardianEmail} onChange={set('guardianEmail')} />
           </Section>
@@ -637,10 +687,32 @@ export default function TalentStudentNomination() {
                 />
                 <div>
                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+                    Relationship with Member <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    required
+                    value={member.guardianRelation || ''}
+                    onChange={(e) => updateTeamMember(index, 'guardianRelation', e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+                  >
+                    <option value="">Select relationship</option>
+                    {RELATION_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                {member.guardianRelation === 'Other' && (
+                  <Field
+                    label="Please Specify Relationship"
+                    value={member.guardianRelationOther || ''}
+                    onChange={(e) => updateTeamMember(index, 'guardianRelationOther', e.target.value)}
+                    required
+                  />
+                )}
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
                     Accompanying Person Phone <span className="text-red-500">*</span>
-                    {index === 0 && (
-                      <span className="ml-2 text-xs font-normal text-slate-500 lowercase">(will auto-populate for all members)</span>
-                    )}
+
                   </label>
                   <input
                     type="tel"
@@ -868,9 +940,9 @@ export default function TalentStudentNomination() {
 
         <button
           type="submit"
-          disabled={loading || !declared || !performanceUrl.trim() || !form.nominationType}
+          disabled={loading}
           style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? 'Submitting…' : 'Submit Registration & Nomination'}
         </button>

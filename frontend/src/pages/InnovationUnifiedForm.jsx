@@ -192,17 +192,29 @@ export default function InnovationUnifiedForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const showError = (msg) => {
+      setError(msg)
+      setLoading(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    
+    if (!form.innovationType) {
+      showError('Please select if your submission is For Specially Abled or By Specially Abled.')
+      return
+    }
+
+    if (!declared) {
+      showError('Please check the confirmation declaration at the bottom of the form before submitting.')
+      return
+    }
+    
     setLoading(true)
     setError('')
-    
-    // Map 'innovators' back to 'individual' for backend compatibility if needed, or update backend.
-    // Assuming backend expects 'individual' or 'team'.
-    // If backend is strict, we might need to map it in buildPayload.
-    
-    const validationError = validateCommon()
-    if (validationError) {
-      setError(validationError)
-      setLoading(false)
+
+    const err = validate()
+    if (err) {
+      showError(err)
       return
     }
 
@@ -594,9 +606,9 @@ export default function InnovationUnifiedForm() {
 
         <button
           type="submit"
-          disabled={loading || !declared || !form.innovationType}
+          disabled={loading}
           style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? 'Submitting...' : 'Submit Registration'}
         </button>
