@@ -241,7 +241,7 @@ export default function InnovationPWDForm() {
         {/* Prototype Image Upload */}
         <div>
           <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
-            Prototype Image Upload <span className="text-slate-400 font-normal text-sm">(Optional)</span>
+            Upload your  <span className="text-slate-400 font-normal text-sm">(Optional)</span>
           </h2>
           <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-[#0197B2]/50 hover:bg-slate-100">
             <span className="text-2xl">🖼️</span>

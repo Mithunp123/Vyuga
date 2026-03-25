@@ -265,46 +265,52 @@ export default function About() {
         </div>
 
         <div className="relative">
-          {/* Section label */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3"
-          >
-            <div className="gradient-line w-16" />
-            <span className="font-mono text-sm sm:text-base font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
-          </motion.div>
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <div className="flex-1">
+              {/* Section label */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="flex items-center gap-3"
+              >
+                <div className="gradient-line w-16" />
+                <span className="font-mono text-sm sm:text-base font-semibold tracking-[0.3em] text-brand-cyan">ABOUT VYUGA</span>
+              </motion.div>
 
-          {/* Giant headline with mixed fonts */}
-          <div className="mt-4 space-y-1">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-            >
-              <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
-                A voice for{' '}
-              </span>
-              <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-cyan sm:text-2xl lg:text-4xl">
-                abilities
-              </span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-            >
-              <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
-                often{' '}
-              </span>
-              <span className="font-marker text-[4vw] leading-[0.9] gradient-text sm:text-2xl lg:text-4xl">
-                unseen
-              </span>
-            </motion.div>
+              {/* Giant headline with mixed fonts */}
+              <div className="mt-4 space-y-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: 0.1 }}
+                >
+                  <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                    A voice for{' '}
+                  </span>
+                  <span className="font-serif text-[4vw] italic font-light leading-[0.9] text-brand-cyan sm:text-2xl lg:text-4xl">
+                    abilities
+                  </span>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: 0.2 }}
+                >
+                  <span className="font-hero text-[4vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-2xl lg:text-4xl">
+                    often{' '}
+                  </span>
+                  <span className="font-marker text-[4vw] leading-[0.9] gradient-text sm:text-2xl lg:text-4xl">
+                    unseen
+                  </span>
+                </motion.div>
+              </div>
+            </div>
+
+            </div>
           </div>
 
           {/* Two-column text + feature list — no boxes */}
@@ -332,19 +338,25 @@ export default function About() {
                   — VYUGA BELIEF
                 </cite>
               </blockquote>
+            </div>
 
-              <div
-                className="mt-8 w-full max-w-[500px]"
+            {/* Platform examples */}
+            <div className="lg:col-span-3">
+              {/* About Feature Image */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="w-full mb-8"
               >
                 <img 
                   src={aboutImg} 
                   alt="About Vyuga" 
-                  className="w-full h-auto object-contain"
+                  className="w-full h-48 sm:h-64 object-cover rounded-2xl shadow-sm"
                 />
-              </div>
-            </div>
-            {/* Platform examples */}
-            <div className="lg:col-span-3">
+              </motion.div>
+
               <p className="mb-4 font-display text-xs font-bold text-slate-600 uppercase tracking-wider">
                 It is a platform where:
               </p>
@@ -363,29 +375,7 @@ export default function About() {
               </div>
 
               {/* Mission statement */}
-              <div
-                className="rounded-2xl bg-gradient-to-br from-brand-cyan-light/20 to-brand-lime-light/20 p-4 border border-brand-cyan/10"
-              >
-                <p className="font-display text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                  Through innovation, talent, and sports, Vyuga aims to:
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {aims.map((aim, idx) => (
-                    <div key={aim} className="flex items-center gap-1">
-                      <span className="h-1 w-1 rounded-full bg-brand-lime" />
-                      <span className="text-xs font-bold text-slate-800">{aim}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 pt-2 border-t border-brand-cyan/20">
-                  <p className="font-serif text-sm italic text-slate-900 font-bold text-center">
-                    This is more than a competition. This is more than a festival.
-                  </p>
-                  <p className="font-marker text-base text-brand-cyan font-bold text-center mt-1">
-                    Vyuga is a movement that turns hidden strength into pride.
-                  </p>
-                </div>
-              </div>
+              
             </div>
           </div>
 
@@ -437,7 +427,7 @@ export default function About() {
             })}
           </div>
         </div>
-      </div>
+      
 
       {/* ── EVENT DETAILS SECTION ── */}
       <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 border-t border-slate-100 h-screen max-h-[1080px] flex flex-col">
@@ -518,10 +508,10 @@ export default function About() {
                 transition={{ duration: 0.7, delay: 0.1 }}
               >
                 <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
-                  Driving digital{' '}
+                  Fostering Independent {' '}
                 </span>
                 <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-cyan sm:text-xl lg:text-3xl">
-                  transformation
+                  Education
                 </span>
               </motion.div>
               <motion.div
@@ -533,7 +523,7 @@ export default function About() {
                 <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                   with{' '}
                 </span>
-                <span className="font-marker text-[3vw] leading-[0.9] gradient-text sm:text-xl lg:text-3xl">
+                <span className="font-hero text-[3vw] leading-[0.9] text-[#5BCB2B] sm:text-xl lg:text-3xl">
                   inclusive innovation
                 </span>
               </motion.div>
@@ -577,7 +567,7 @@ export default function About() {
                       rel="noopener noreferrer"
                       className="group inline-flex items-center gap-2 rounded-full bg-slate-50 px-5 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-brand-cyan hover:text-white"
                     >
-                      Visit Website
+                      Visit Website 
                       <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </a>
                   </div>
@@ -620,7 +610,7 @@ export default function About() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="w-full flex justify-center md:justify-end"
                   >
-                    <img src={nexyugaGroup} alt="Nexyuga Team" className="max-w-full h-auto object-contain max-h-[250px]" />
+                    <img src={nexyugaGroup} alt="Nexyuga Team" className="max-w-full h-auto object-contain max-h-[550px]" />
                   </motion.div>
                 </div>
               </div>

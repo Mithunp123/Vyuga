@@ -3,7 +3,7 @@ import About from '../components/About.jsx'
 
 export default function AboutPage() {
   return (
-    <PageShell title="About" subtitle="What Vyuga is and why it matters.">
+    <PageShell title="About" subtitle="What Vyuga is and why it matters." heroPadding="pt-20 pb-2">
       <About />
     </PageShell>
   )
