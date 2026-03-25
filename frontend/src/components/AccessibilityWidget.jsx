@@ -298,9 +298,7 @@ export default function AccessibilityWidget() {
         >
           {/* Header */}
           <div className="bg-gray-50/80 backdrop-blur-md border-b border-gray-100 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
-            <span className="font-heading font-bold text-gray-800 text-lg flex items-center gap-2">
-              <span className="text-primary text-xl">⚙️</span> Accessibility
-            </span>
+            <span className="font-heading font-bold text-gray-800 text-lg">Accessibility</span>
             <div className="flex items-center gap-2">
               <button 
                 className="text-xs font-semibold text-secondary hover:text-secondary-dark px-3 py-1.5 rounded-full hover:bg-secondary/10 transition-colors" 
@@ -350,9 +348,9 @@ export default function AccessibilityWidget() {
               <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Colour & Vision</div>
               <div className="grid grid-cols-2 gap-2">
                 <ToggleItem label="High Contrast" icon="◑" active={settings.highContrast} onToggle={() => toggle('highContrast')} />
-                <ToggleItem label="Dark Mode" icon="🌙" active={settings.darkMode} onToggle={() => toggle('darkMode')} />
-                <ToggleItem label="Grayscale" icon="⬛" active={settings.grayscale} onToggle={() => toggle('grayscale')} />
-                <ToggleItem label="Hide Images" icon="🚫" active={settings.hideImages} onToggle={() => toggle('hideImages')} />
+                <ToggleItem label="Dark Mode" icon="◗" active={settings.darkMode} onToggle={() => toggle('darkMode')} />
+                <ToggleItem label="Grayscale" icon="▨" active={settings.grayscale} onToggle={() => toggle('grayscale')} />
+                <ToggleItem label="Hide Images" icon="⊘" active={settings.hideImages} onToggle={() => toggle('hideImages')} />
               </div>
             </div>
 
@@ -360,8 +358,8 @@ export default function AccessibilityWidget() {
             <div>
               <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Links</div>
               <div className="grid grid-cols-2 gap-2">
-                <ToggleItem label="Highlight Links" icon="🔗" active={settings.highlightLinks} onToggle={() => toggle('highlightLinks')} />
-                <ToggleItem label="Larger Links" icon="🔍" active={settings.largeLinks} onToggle={() => toggle('largeLinks')} />
+                <ToggleItem label="Highlight Links" icon="↗" active={settings.highlightLinks} onToggle={() => toggle('highlightLinks')} />
+                <ToggleItem label="Larger Links" icon="⊕" active={settings.largeLinks} onToggle={() => toggle('largeLinks')} />
               </div>
             </div>
 
@@ -371,7 +369,7 @@ export default function AccessibilityWidget() {
               <div className="grid grid-cols-2 gap-2">
                 <ToggleItem label="Dyslexia Font" icon="Aa" active={settings.dyslexiaFont} onToggle={() => toggle('dyslexiaFont')} />
                 <ToggleItem label="Letter Spacing" icon="⇤⇥" active={settings.letterSpacing} onToggle={() => toggle('letterSpacing')} />
-                <ToggleItem label="Line Height" icon="↕️" active={settings.lineHeight} onToggle={() => toggle('lineHeight')} />
+                <ToggleItem label="Line Height" icon="↕" active={settings.lineHeight} onToggle={() => toggle('lineHeight')} />
               </div>
             </div>
 
@@ -415,8 +413,8 @@ export default function AccessibilityWidget() {
             <div>
               <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Navigation & Motion</div>
               <div className="grid grid-cols-2 gap-2">
-                <ToggleItem label="Reduce Motion" icon="🛑" active={settings.reduceMotion} onToggle={() => toggle('reduceMotion')} />
-                <ToggleItem label="Reading Guide" icon="📏" active={settings.readingGuide} onToggle={() => toggle('readingGuide')} />
+                <ToggleItem label="Reduce Motion" icon="⏸" active={settings.reduceMotion} onToggle={() => toggle('reduceMotion')} />
+                <ToggleItem label="Reading Guide" icon="≡" active={settings.readingGuide} onToggle={() => toggle('readingGuide')} />
               </div>
             </div>
 
@@ -425,7 +423,7 @@ export default function AccessibilityWidget() {
               <div className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Text to Speech</div>
               <ToggleItem
                 label={settings.tts ? 'Click any text to hear it spoken aloud' : 'Click to Speak'}
-                icon="🔊"
+                icon="▶"
                 active={settings.tts}
                 onToggle={() => toggle('tts')}
                 fullWidth
@@ -433,7 +431,7 @@ export default function AccessibilityWidget() {
               {settings.tts && (
                 <div className="mt-3 p-3 bg-secondary/10 rounded-xl border border-secondary/20">
                   <p className="text-xs text-secondary-dark font-medium mb-2 flex items-center gap-1">
-                    <span className="text-base animate-pulse">🔊</span> Click any sentence on the page
+                    <span className="text-base font-bold">▶</span> Click any sentence on the page
                   </p>
                   {voices.length > 0 && (
                     <div>

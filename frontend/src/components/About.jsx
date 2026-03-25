@@ -97,7 +97,7 @@ const eventsList = [
     title: "Innovation Fest",
     description: "An innovation fest focused on assistive technology, centered around themes for and by persons with disabilities. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
     color: "!text-[#5BCB2B]",
-    image: child
+    image: think
   },
   {
     title: "Special Talent Utsav",
@@ -455,7 +455,7 @@ export default function About() {
                     {/* Innovation Fest Image (Top Right) */}
                     {index === 0 && event.image && (
                       <div className="hidden sm:block shrink-0">
-                         <img src={event.image} alt={event.title} className="h-24 w-auto object-contain" />
+                         <img src={event.image} alt={event.title} className="h-36 w-auto object-contain" />
                       </div>
                     )}
                   </div>
