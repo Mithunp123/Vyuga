@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import compressVideo from '../compressVideo'
@@ -98,6 +99,7 @@ export default function TalentStudentNomination() {
   const [videoFile, setVideoFile] = useState(null)
   const [performanceUrl, setPerformanceUrl] = useState('')
   const [compressProgress, setCompressProgress] = useState(null)
+  const [showDriveInfo, setShowDriveInfo] = useState(false)
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
@@ -225,7 +227,7 @@ export default function TalentStudentNomination() {
     e.preventDefault()
     
     // Basic validation
-    if (!videoFile) { setError('Please upload the performance video.'); return }
+    if (!performanceUrl.trim()) { setError('Please provide the Google Drive link for the performance video.'); return }
     if (!form.orgName.trim()) { setError('Please enter organization name.'); return }
     if (!form.orgCity.trim()) { setError('Please enter organization city.'); return }
     if (!form.orgState.trim()) { setError('Please enter organization state.'); return }
@@ -275,6 +277,7 @@ export default function TalentStudentNomination() {
     setLoading(true)
     setError('')
     try {
+      /*
       // Compress video in browser before uploading
       setCompressProgress(0)
       const compressed = await compressVideo(videoFile, {
@@ -283,6 +286,7 @@ export default function TalentStudentNomination() {
         onProgress: setCompressProgress,
       })
       setCompressProgress(null)
+      */
 
       const fd = new FormData()
       
@@ -299,7 +303,7 @@ export default function TalentStudentNomination() {
         }
       })
       
-      fd.append('performanceVideo', compressed)
+      // fd.append('performanceVideo', compressed)
       if (performanceUrl.trim()) fd.append('performanceUrl', performanceUrl.trim())
       
       await postFormData('/api/talent-combined', fd)
@@ -465,7 +469,7 @@ export default function TalentStudentNomination() {
         <Section title="Nomination Type">
           <div className="sm:col-span-2">
             <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              What would you like to nominate? <span className="text-red-500">*</span>
+              Select the nomination type <span className="text-red-500">*</span>
             </label>
             <div className="space-y-3">
               <label className="flex items-start gap-3 cursor-pointer group">
@@ -479,7 +483,7 @@ export default function TalentStudentNomination() {
                 />
                 <div>
                   <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Individual Student</span>
-                  <p className="text-xs text-slate-500">Nominate one talented student</p>
+                  <p className="text-xs text-slate-500">Choose a student to nominate</p>
                 </div>
               </label>
               <label className="flex items-start gap-3 cursor-pointer group">
@@ -739,6 +743,7 @@ export default function TalentStudentNomination() {
 
         {/* Video Upload */}
         <div>
+          {/*
           <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
             Performance Video Upload <span className="text-red-500 text-sm font-normal">* Required</span>
           </h2>
@@ -786,19 +791,64 @@ export default function TalentStudentNomination() {
               </div>
             </div>
           )}
+          */}
           
-          <div className="mt-4">
-            <label className="mb-2 block text-sm font-medium text-slate-600">
-              Performance URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
-            </label>
+          <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
+              <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
+                Performance Drive Link <span className="text-red-500 text-sm font-normal">* Required</span>
+              </label>
+              <button 
+                type="button" 
+                onClick={() => setShowDriveInfo(!showDriveInfo)} 
+                className="text-[#0197B2] hover:text-[#01788e] bg-white border border-[#0197B2]/20 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+              >
+                <Info className="h-4 w-4" />
+                <span className="text-xs font-bold tracking-wide uppercase">How to get link</span>
+              </button>
+            </div>
+            
+            <AnimatePresence>
+              {showDriveInfo && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mb-4 rounded-xl bg-[#e0f6fa] p-5 border border-[#0197B2]/30 text-sm text-slate-700 shadow-sm relative mt-2">
+                    <div className="absolute -top-2 right-12 w-4 h-4 bg-[#e0f6fa] rotate-45 border-l border-t border-[#0197B2]/30" />
+                    <h4 className="font-bold text-[#0197B2] mb-3 flex items-center gap-2 pb-2 border-b border-[#0197B2]/10 uppercase tracking-widest text-xs">
+                      <Info className="h-4 w-4" />
+                      Steps to get a public Google Drive link
+                    </h4>
+                    <ol className="list-decimal pl-5 space-y-2.5 text-[13px] text-slate-600 font-medium tracking-wide">
+                      <li>Upload your performance video to a Google Drive folder.</li>
+                      <li>Right-click the folder/file and select <strong className="text-slate-800">Share</strong>.</li>
+                      <li className="leading-snug">Under "General access", click "Restricted" and change it to <strong className="text-[#0197B2]">Anyone with the link</strong>.</li>
+                      <li>Click <strong className="text-slate-800">Copy link</strong> and paste it below.</li>
+                    </ol>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <input
               type="url"
-              placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+              required
+              placeholder="https://drive.google.com/..."
               value={performanceUrl}
               onChange={(e) => setPerformanceUrl(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-1 focus:ring-[#0197B2] focus:outline-none"
+              className="w-full mt-2 rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-4 focus:ring-[#0197B2]/10 focus:outline-none transition-all shadow-sm"
             />
-            <p className="mt-1 text-xs text-slate-500">Link to online performance video (YouTube, Vimeo, etc.)</p>
+            
+            <div className="mt-4 flex items-start gap-3 rounded-xl bg-red-50 p-4 border border-red-200 shadow-sm">
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+              <p className="text-[13px] font-medium text-red-700 leading-relaxed">
+                <strong className="font-bold uppercase tracking-wider text-xs mr-1 opacity-90 text-red-800 block mb-0.5">Warning:</strong> 
+                Make sure the drive link is public (Anyone with the link). If your drive link is private and inaccessible, your registration will be cancelled.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -818,7 +868,7 @@ export default function TalentStudentNomination() {
 
         <button
           type="submit"
-          disabled={loading || !declared || !videoFile || !form.nominationType}
+          disabled={loading || !declared || !performanceUrl.trim() || !form.nominationType}
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
         >
