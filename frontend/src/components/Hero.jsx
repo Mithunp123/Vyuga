@@ -134,15 +134,15 @@ function useCountdown(targetDate) {
 
 /* ── Rotating circular text badge ── */
 function RotatingBadge() {
-  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUNE 26-27 '
+  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUNE '
   return (
     <div className="relative h-32 w-32 sm:h-40 sm:w-40">
       <svg viewBox="0 0 200 200" className="h-full w-full animate-rotate-text">
         <defs>
           <path id="circlePath" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0" />
         </defs>
-        <text className="fill-brand-cyan" style={{ fontSize: '24px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
-          <textPath href="#circlePath">{text}</textPath>
+        <text className="fill-brand-cyan" style={{ fontSize: '19px', fontFamily: 'Space Grotesk', letterSpacing: '4px', fontWeight: 600 }}>
+          <textPath href="#circlePath" textLength="471" lengthAdjust="spacingAndGlyphs">{text}</textPath>
         </text>
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -195,7 +195,7 @@ export default function Hero() {
 
       <div className="relative z-10 w-full">
         <div className="mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6">
-          <div ref={textRef} className="relative pt-15 pb-8">
+          <div ref={textRef} className="relative pt-32 pb-4 ">
             {/* Top row: handwritten label + rotating badge */}
             <div className="flex items-start justify-between">
               <motion.div
@@ -228,10 +228,10 @@ export default function Hero() {
             </div>
 
             {/* ── VYUGA TEXT + TYPOGRAPHY ── */}
-            <div className="mt-2 space-y-0">
+            <div className="mt-4 space-y-2">
               {/* VYUGA — logo letter images */}
               <div className="overflow-hidden" aria-label="VYUGA">
-                <div className="flex items-center justify-start gap-0">
+                <div className="flex items-center justify-start gap-2">
                   {[logoV, logoY, logoU, logoG, logoA].map((src, i) => (
                     <motion.img
                       key={i}
@@ -240,7 +240,7 @@ export default function Hero() {
                       initial={{ opacity: 0, y: 80, filter: 'blur(12px)' }}
                       animate={textInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
                       transition={{ duration: 0.9, delay: 0.3 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                      className="-mx-[1vw] h-[12vw] w-auto object-contain mix-blend-multiply sm:h-[10vw] sm:-mx-[0.8vw] lg:h-[8vw] lg:-mx-[0.5vw]"
+                      className="-mx-[1vw] h-[12vw] w-auto object-contain mix-blend-multiply sm:h-[10vw] sm:-mx-[0.8vw] lg:h-[11vw] lg:-mx-[0.5vw]"
                       aria-hidden="true"
                     />
                   ))}
@@ -248,7 +248,7 @@ export default function Hero() {
               </div>
 
               {/* Mixed line: italic serif "the" + CONFERENCE outlined */}
-              <div className="flex flex-wrap items-baseline gap-2 sm:gap-4 overflow-hidden">
+              <div className="flex flex-wrap items-baseline justify-start gap-2 sm:gap-4 overflow-hidden">
                 <motion.span
                   initial={{ opacity: 0, x: -30 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
@@ -268,7 +268,7 @@ export default function Hero() {
               </div>
 
               {/* Year as giant gradient + tagline */}
-              <div className="mt-0 flex flex-wrap items-end gap-3 sm:gap-6">
+              <div className="mt-2 flex flex-wrap items-end justify-start gap-3 sm:gap-6">
                 <motion.span
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={textInView ? { opacity: 1, scale: 1 } : {}}
@@ -281,7 +281,7 @@ export default function Hero() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={textInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.7, delay: 1.2 }}
-                  className="mb-[0.5vw] max-w-sm font-serif text-sm italic text-slate-600 sm:text-base lg:text-lg"
+                  className="mb-[0.5vw] whitespace-nowrap font-serif text-sm italic text-slate-600 sm:text-base lg:text-lg"
                 >
                   Assistive Technology · Inclusive Design · Innovation
                 </motion.span>
@@ -289,27 +289,32 @@ export default function Hero() {
             </div>
 
             {/* ── Description + CTAs ── */}
-            <div className="mt-6 grid gap-4 lg:grid-cols-2 lg:gap-8 items-center">
-              <p className="max-w-lg text-sm font-semibold leading-relaxed text-slate-800 sm:text-base">
-                <span className="font  text-slate-800">BE PART OF THE MOVEMENT,</span>
-                Join <span className="font text-slate-800">1000+</span> innovators, architects, and advocates at India’s premier inclusive technology summit. Experience visionary keynotes, immersive workshops, and live hardware demos engineering the next frontier of universal access.
-              </p>
+            <div className="mt-6 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
+              <motion.p 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 1.4 }}
+                className="max-w-3xl text-left text-sm font-medium leading-relaxed text-slate-700 sm:text-base"
+              >
+                Space where innovation meets humanity where technology solves problems, <br className="hidden sm:block" />
+                sports build confidence, and talent finds recognition.
+              </motion.p>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.6 }}
-                className="flex flex-col gap-3 sm:flex-row lg:justify-end"
+                className="flex flex-col gap-3 sm:flex-row"
               >
                 <Link
                   id="register"
                   to="/attend/register"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-8 py-3 text-xs font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:shadow-2xl hover:shadow-brand-cyan/35 hover:scale-[1.04] active:scale-[0.98]"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-10 py-4 text-sm font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:shadow-2xl hover:shadow-brand-cyan/35 hover:scale-[1.04] active:scale-[0.98]"
                 >
                   <span className="absolute inset-0 shimmer-btn" />
                   <span className="relative flex items-center gap-2">
                     Register Now
-                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </motion.div>
@@ -317,7 +322,7 @@ export default function Hero() {
 
             {/* ── Countdown ── */}
             <div
-              className="mt-8 mb-4 flex flex-wrap items-end gap-x-6 gap-y-2"
+              className="mt-6 mb-0 flex flex-wrap items-end justify-start gap-x-6 gap-y-2"
             >
               <span className="font-marker text-xs text-slate-700 font-medium">Starts in</span>
               <div className="flex items-baseline gap-1">

@@ -347,7 +347,7 @@ export default function About() {
               </p>
 
               <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base text-justify">
-                It is a space where innovation meets humanity where technology solves problems, sports build confidence, and talent finds recognition.
+                It is a space where innovation meets humanity where technology solves problems,sports build confidence, and talent finds recognition.
                 Vyuga is not just about ideas. It is about creating experiences that empower, include, and inspire.
               </p>
 
