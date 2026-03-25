@@ -313,8 +313,8 @@ export default function About() {
                 Vyuga is not just about ideas. It is about creating experiences that empower, include, and inspire.
               </p>
 
-              <blockquote className="mt-6 border-l-4 border-brand-cyan pl-6">
-                <p className="font-serif text-base italic text-[#5BCB2B] font-bold sm:text-lg">
+              <blockquote className="mt-6 border-l-4 border-[#5BCB2B] pl-6">
+                <p className="font-serif text-base italic text-[#5BCB2B] font-bold sm:text-lg sm:whitespace-nowrap">
                   "Disability is not a limitation — lack of opportunity is."
                 </p>
                 <cite className="mt-2 block font-mono text-[9px] not-italic tracking-[0.3em] text-slate-500 font-bold">
@@ -331,12 +331,12 @@ export default function About() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="w-full mb-4 flex justify-center"
+                className="w-full mb-2 flex justify-center"
               >
                 <img
                   src={aboutImg}
                   alt="About Vyuga"
-                  className="w-full max-h-56 object-contain rounded-xl"
+                  className="w-full max-h-48 object-contain rounded-xl"
                 />
               </motion.div>
 
@@ -360,7 +360,7 @@ export default function About() {
           </div>
 
           {/* ── Stats Cards (Moved) ── */}
-          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 w-full">
             {stats.map((s, idx) => {
               // Random border radius for organic feel
               const borderRadius = [
@@ -377,30 +377,34 @@ export default function About() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  className={`group relative overflow-hidden bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer h-full ${borderRadius} p-6 sm:p-8 flex flex-col items-center justify-center text-center`}
+                  className={`group relative overflow-hidden bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-[1.02] cursor-pointer h-full min-h-[300px] sm:min-h-[340px] px-4 py-8 sm:px-6 sm:py-10 ${borderRadius} flex flex-col items-center justify-center text-center`}
                 >
                   {/* Flowing background animation on hover */}
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-white opacity-50" />
                   <div className="absolute inset-0 bg-gradient-to-r from-brand-cyan/5 via-brand-lime/5 to-brand-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
                   {/* Content */}
-                  <div className="relative z-10 w-full flex flex-col items-center">
-                    <img 
-                      src={s.image} 
-                      alt={s.unit} 
-                      className="h-16 w-auto mb-4 object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                    <p className={`font-impact text-5xl sm:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg mb-2`}>
-                      <AnimatedCounter target={s.value} suffix={s.suffix} />
-                    </p>
-                    <p className="font-mono text-[10px] tracking-[0.2em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300 mb-4 font-bold uppercase">
-                      {s.unit}
-                    </p>
-                    {s.description && (
-                      <p className="text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300 line-clamp-3">
-                        {s.description}
+                  <div className="relative z-10 w-full h-full flex flex-col items-center justify-between gap-2">
+                    <div className="flex-1 flex flex-col items-center justify-end">
+                      <img 
+                        src={s.image} 
+                        alt={s.unit} 
+                        className="h-12 w-auto mb-6 object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                      />
+                      <p className={`font-impact text-5xl sm:text-6xl tracking-wider transition-colors duration-300 ${s.accent} group-hover:!text-[#5BCB2B] group-hover:drop-shadow-lg mb-2`}>
+                        <AnimatedCounter target={s.value} suffix={s.suffix} />
                       </p>
-                    )}
+                      <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-slate-400 group-hover:text-slate-800 transition-colors duration-300 font-bold uppercase">
+                        {s.unit}
+                      </p>
+                    </div>
+                    <div className="flex-1 flex items-start mt-4">
+                      {s.description && (
+                        <p className="text-xs sm:text-sm leading-relaxed text-slate-600 group-hover:text-slate-900 transition-colors duration-300 line-clamp-4">
+                          {s.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )

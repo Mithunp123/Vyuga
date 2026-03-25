@@ -201,9 +201,19 @@ export default function Hero() {
                 initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                 transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute right-0 top-44 hidden sm:block"
+                className="absolute right-0 top-32 hidden sm:flex flex-col items-center gap-10"
               >
                 <RotatingBadge />
+                <Link
+                  to="/attend/register"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-brand-lime to-brand-cyan px-8 py-3.5 text-sm font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:scale-[1.04] hover:shadow-2xl hover:shadow-brand-cyan/35 active:scale-[0.98]"
+                >
+                  <span className="absolute inset-0 shimmer-btn" />
+                  <span className="relative flex items-center gap-2">
+                    Register Now
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
               </motion.div>
             </div>
 
@@ -284,12 +294,12 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 1.6 }}
-                className="flex flex-col gap-3 sm:flex-row"
+                className="flex flex-col gap-3 sm:hidden"
               >
                 <Link
                   id="register"
                   to="/attend/register"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-10 py-4 text-sm font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:shadow-2xl hover:shadow-brand-cyan/35 hover:scale-[1.04] active:scale-[0.98]"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-brand-lime to-brand-cyan px-10 py-4 text-sm font-bold text-white shadow-xl shadow-brand-cyan/25 transition-all hover:scale-[1.04] hover:shadow-2xl hover:shadow-brand-cyan/35 active:scale-[0.98]"
                 >
                   <span className="absolute inset-0 shimmer-btn" />
                   <span className="relative flex items-center gap-2">
