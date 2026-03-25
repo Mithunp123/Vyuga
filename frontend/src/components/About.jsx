@@ -441,8 +441,8 @@ export default function About() {
                 
                 {/* Card Content */}
                 <div className="flex-1 flex flex-col h-full">
-                  <div className={`flex items-start justify-between gap-4 sm:gap-6 h-full ${index === 1 ? 'flex-col' : 'flex-row'}`}>
-                    <div className={`flex-1 w-full ${index === 1 ? '' : 'pr-3 sm:pr-4'}`}>
+                  <div className={`flex items-center justify-between gap-4 sm:gap-10 h-full ${index === 1 ? 'flex-col items-start' : 'flex-row'}`}>
+                    <div className={`flex-1 w-full`}>
                       <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide`}>
                         {event.title}
                       </h4>
@@ -453,7 +453,7 @@ export default function About() {
                     
                     {/* Horizontal side images (Innovation, Cricket, Chess) ALWAYS on the right */}
                     {(index === 0 || index === 2 || index === 3) && event.image && (
-                      <div className="w-1/3 flex justify-end shrink-0">
+                      <div className="w-auto flex shrink-0">
                          <img src={event.image} alt={event.title} className="max-h-24 sm:max-h-40 w-auto object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-105" />
                       </div>
                     )}
