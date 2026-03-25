@@ -8,6 +8,8 @@ import hand from '../assets/images/hand.png'
 import three from '../assets/images/three.png'
 import think from '../assets/images/think.png'
 import child from '../assets/images/child.png'
+import cricketImg from '../assets/images/cirket.png'
+import chessImg from '../assets/images/chess.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import srpLogo from '../assets/present by/SRP.webp'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
@@ -110,12 +112,14 @@ const eventsList = [
   {
     title: "Blind Cricket",
     description: "An inclusive blind cricket tournament showcasing skill, teamwork, and determination beyond vision.Players compete using adapted rules, highlighting true sportsmanship and ability. Winner and runner-up teams will receive cash prizes and trophies, celebrating excellence and inspiring every participant.",
-    color: "!text-[#5BCB2B]"
+    color: "!text-[#5BCB2B]",
+    image: cricketImg
   },
   {
     title: "Blind Chess",
     description: "An inclusive blind chess tournament that challenges strategy, memory, and focus beyond sight.Players compete using adaptive methods, showcasing intelligence, patience, and precision. Winner and runner-up will receive prizes, celebrating excellence and strategic brilliance.",
-    color: "!text-[#5BCB2B]"
+    color: "!text-[#5BCB2B]",
+    image: chessImg
   }
 ]
 
@@ -414,7 +418,7 @@ export default function About() {
       </div>
 
       {/* ── EVENT DETAILS SECTION ── */}
-      <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 border-t border-slate-100 h-screen max-h-[1080px] flex flex-col">
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 border-t border-slate-100 min-h-[100dvh] flex flex-col">
         <div className="flex items-center gap-3 mb-4 shrink-0">
           <div className="gradient-line w-16" />
           <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-cyan">EVENT EXPERIENCES</span>
@@ -436,10 +440,9 @@ export default function About() {
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-brand-lime rounded-l-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {/* Card Content */}
-                <div className="flex-1 flex flex-col">
-                  {/* Header & Body */}
-                  <div className={`flex ${index === 0 ? 'flex-row items-start justify-between gap-4' : 'flex-col h-full'}`}>
-                    <div className="flex-1">
+                <div className="flex-1 flex flex-col h-full">
+                  <div className={`flex items-start justify-between gap-4 sm:gap-6 h-full ${index === 1 ? 'flex-col' : 'flex-row'}`}>
+                    <div className={`flex-1 w-full ${index === 1 ? '' : 'pr-3 sm:pr-4'}`}>
                       <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide`}>
                         {event.title}
                       </h4>
@@ -448,20 +451,20 @@ export default function About() {
                       </p>
                     </div>
                     
-                    {/* Innovation Fest Image (Top Right) */}
-                    {index === 0 && event.image && (
-                      <div className="hidden sm:block shrink-0">
-                         <img src={event.image} alt={event.title} className="h-36 w-auto object-contain" />
+                    {/* Horizontal side images (Innovation, Cricket, Chess) ALWAYS on the right */}
+                    {(index === 0 || index === 2 || index === 3) && event.image && (
+                      <div className="w-1/3 flex justify-end shrink-0">
+                         <img src={event.image} alt={event.title} className="max-h-24 sm:max-h-40 w-auto object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-105" />
+                      </div>
+                    )}
+
+                    {/* Vertical bottom image (Talent Utsav) */}
+                    {index === 1 && event.image && (
+                      <div className="mt-auto pt-6 flex justify-center w-full">
+                         <img src={event.image} alt={event.title} className="max-h-72 w-full object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]" />
                       </div>
                     )}
                   </div>
-                  
-                  {/* Talent Utsav Image (Bottom Center) */}
-                  {index === 1 && event.image && (
-                    <div className="mt-auto pt-4 flex justify-center">
-                       <img src={event.image} alt={event.title} className="max-h-72 w-full object-contain" />
-                    </div>
-                  )}
                 </div>
               </div>
             )

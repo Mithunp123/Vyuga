@@ -164,7 +164,7 @@ export default function Hero() {
   const textInView = useInView(textRef, { once: true })
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-screen h-screen overflow-hidden bg-white text-slate-900 flex flex-col justify-center">
+    <section ref={sectionRef} id="home" className="relative min-h-[100dvh] w-full overflow-hidden bg-white text-slate-900 flex flex-col justify-center">
       <ParticleCanvas />
 
       {/* Gradient orbs */}

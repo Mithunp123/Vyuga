@@ -200,7 +200,7 @@ export default function AttendAccommodation() {
       */}
       
       <div className="mt-8 rounded-xl border-2 border-brand-cyan/20 bg-brand-cyan/5 p-8 text-center">
-        <h3 className="text-xl font-bold text-slate-800 mb-2">Registration Closed</h3>
+        <h3 className="text-xl font-bold text-slate-800 mb-2">Registration will open soon</h3>
         <p className="text-slate-600">
           Our team will contact you regarding accommodation after the registration of all events is closed.
         </p>

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function PageShell({ title, subtitle, children, compact = false, heroPadding }) {
+export default function PageShell({ title, subtitle, children, compact = false, heroPadding, fullWidth = false }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
@@ -48,8 +48,8 @@ export default function PageShell({ title, subtitle, children, compact = false, 
         </div>
       </div>
 
-      <main className="mx-auto w-full max-w-7xl px-4 pb-8 pt-4 sm:px-6 min-h-[calc(100vh-400px)]">
-        <div>{children}</div>
+      <main className={`mx-auto w-full ${fullWidth ? '' : 'max-w-7xl px-4 sm:px-6'} pb-8 pt-4 min-h-[calc(100vh-400px)]`}>
+        <div className={fullWidth ? 'w-full' : ''}>{children}</div>
       </main>
       <Footer />
     </div>
