@@ -11,6 +11,8 @@ import child from '../assets/images/child.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import srpLogo from '../assets/present by/SRP.webp'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
+import triNexguga from '../assets/present by/tri_nexguga.png'
+import logoSrpIcon from '../assets/present by/logo_SRP.jpg'
 import aboutImg from '../assets/about.png'
 import srp1 from '../assets/aboutsrp/1.jpg'
 import srp2 from '../assets/aboutsrp/2.jpg'
@@ -129,7 +131,7 @@ function MarqueeBand() {
             <span className="whitespace-nowrap py-2 font-sans font-bold text-xl tracking-widest sm:text-2xl lg:text-3xl text-[#5BCB2B]">
               {item}
             </span>
-            <span className="text-sm text-blue-600 select-none sm:text-base">●</span>
+            <span className="text-sm text-[#0197B2] select-none sm:text-base">●</span>
           </span>
         ))}
       </div>
@@ -522,34 +524,6 @@ export default function About() {
                   <br /><br />
                   Through products like Vithara, Nexyuga aims to bridge the gap between education and accessibility, empowering individuals to learn, explore, and grow without limitations.
                 </p>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  className="mt-8"
-                >
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-brand-cyan/10 flex items-center justify-center">
-                        <img src={nexgugaLogo} alt="Nexyuga" className="h-6 w-auto" />
-                      </div>
-                      <div>
-                        <p className="font-hero text-lg font-bold text-slate-800">Enable Independence</p>
-                        <p className="text-xs font-mono text-slate-400 tracking-wider"></p>
-                      </div>
-                    </div>
-                    <a 
-                      href="https://nexyuga.in/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 rounded-full bg-slate-50 px-5 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-brand-cyan hover:text-white"
-                    >
-                      Visit Website 
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                    </a>
-                  </div>
-                </motion.div>
               </motion.div>
 
               <div className="lg:col-span-3">
@@ -557,27 +531,46 @@ export default function About() {
                   We focus on:
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="space-y-0">
-                    {[
-                      'Quality Education',
-                      'Independent Learning',
-                      'Assistive Technology',
-                      'Inclusive Innovation'
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item}
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                        className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-cyan/30"
+                  <div className="flex flex-col h-full justify-center">
+                    <div className="space-y-0">
+                      {[
+                        'Quality Education',
+                        'Independent Learning',
+                        'Assistive Technology',
+                        'Inclusive Innovation'
+                      ].map((item, idx) => (
+                        <motion.div
+                          key={item}
+                          initial={{ opacity: 0, x: 30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                          className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-cyan/30"
+                        >
+                          <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
+                          <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                            {item}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.7 }}
+                      className="mt-8 flex"
+                    >
+                      <a 
+                        href="https://nexyuga.in/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-cyan hover:text-white hover:ring-brand-cyan"
                       >
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                        <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
-                          {item}
-                        </span>
-                      </motion.div>
-                    ))}
+                        <img src={triNexguga} alt="Nexyuga Icon" className="h-6 w-auto object-contain transition-transform group-hover:scale-110" />
+                        Visit Website
+                      </a>
+                    </motion.div>
                   </div>
                   
                   {/* Nexyuga Group Image - Side by side */}
@@ -588,7 +581,7 @@ export default function About() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="w-full flex justify-center md:justify-end"
                   >
-                    <img src={nexyugaGroup} alt="Nexyuga Team" className="max-w-full h-auto object-contain max-h-[550px]" />
+                    <img src={nexyugaGroup} alt="Nexyuga Team" className="max-w-full h-auto object-contain max-h-[550px] scale-110 md:scale-125 lg:scale-[1.4] origin-center md:origin-right -translate-y-6 lg:-translate-y-12" />
                   </motion.div>
                 </div>
               </div>
@@ -612,115 +605,15 @@ export default function About() {
               <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-lime">ABOUT SRP FOUNDATION</span>
             </motion.div>
 
-            <div className="mt-8 space-y-1">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-              >
-                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
-                  Uplifting{' '}
-                </span>
-                <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
-                  communities
-                </span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.2 }}
-              >
-                <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
-                  through{' '}
-                </span>
-                <span className="font-marker text-[3vw] leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
-                  empowerment
-                </span>
-              </motion.div>
-            </div>
-
-            <div className="mt-12 grid gap-16 lg:grid-cols-5">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="lg:col-span-2"
-              >
-                <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
-                  SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
-                  <br /><br />
-                  The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
-                  <br /><br />
-                  Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
-                </p>
+            <div className="mt-12 grid gap-16 lg:grid-cols-5 items-start">
+              {/* LEFT Side: Image (col-span-2) */}
+              <div className="lg:col-span-2 flex flex-col h-full justify-center lg:pt-[130px]">
                  <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  className="mt-8"
-                >
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/50 pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-brand-lime/10 flex items-center justify-center">
-                        <img src={srpLogo} alt="SRP" className="h-6 w-auto" />
-                      </div>
-                      <div>
-                        <p className="font-hero text-lg font-bold text-slate-800">Social Impact</p>
-                        <p className="text-xs font-mono text-slate-400 tracking-wider">CORE MISSION</p>
-                      </div>
-                    </div>
-                     <a 
-                      href="https://www.shreerengapolymers.com/srp-foundation-plants-1600-trees-at-valluvar-college-of-science-and-management-karur/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
-                    >
-                      Visit Website
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                    </a>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              <div className="lg:col-span-3">
-                 <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
-                  Our initiatives cover:
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="space-y-0">
-                    {[
-                      'Accessible Education for All',
-                      'Community Healthcare Support',
-                      'Skill Development Workshops',
-                      'Sustainable Livelihood Programs'
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={item}
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                        className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
-                      >
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
-                        <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
-                          {item}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                   {/* SRP Slideshow */}
-                   <motion.div
-                    initial={{ opacity: 0, x: 30 }}
+                    initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="w-full flex justify-center md:justify-end h-[250px] relative overflow-hidden rounded-xl"
+                    className="w-full flex justify-center md:justify-start h-[300px] lg:h-[380px] relative overflow-hidden rounded-xl"
                   >
                     <AnimatePresence mode="wait">
                       <motion.img
@@ -735,8 +628,102 @@ export default function About() {
                       />
                     </AnimatePresence>
                   </motion.div>
+              </div>
+
+              {/* RIGHT Side: Header + Text + Initiatives (col-span-3) */}
+              <div className="lg:col-span-3 flex flex-col">
+                <div className="space-y-1 mb-10 text-right">
+                  <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, delay: 0.1 }}
+                  >
+                    <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
+                      Uplifting{' '}
+                    </span>
+                    <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
+                      communities
+                    </span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, delay: 0.2 }}
+                  >
+                    <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
+                      through{' '}
+                    </span>
+                    <span className="font-marker text-[3vw] leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
+                      empowerment
+                    </span>
+                  </motion.div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                  >
+                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
+                      SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
+                      <br /><br />
+                      The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
+                      <br /><br />
+                      Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
+                    </p>
+                  </motion.div>
+
+                  <div className="flex flex-col h-full">
+                    <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
+                      Our initiatives cover:
+                    </p>
+                    <div className="space-y-0">
+                      {[
+                        'Accessible Education for All',
+                        'Community Healthcare Support',
+                        'Skill Development Workshops',
+                        'Sustainable Livelihood Programs'
+                      ].map((item, idx) => (
+                        <motion.div
+                          key={item}
+                          initial={{ opacity: 0, x: 30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                          className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
+                        >
+                          <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
+                          <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                            {item}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.7 }}
+                      className="mt-8 flex"
+                    >
+                      <a 
+                        href="https://www.shreerengapolymers.com/srp-foundation-plants-1600-trees-at-valluvar-college-of-science-and-management-karur/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
+                      >
+                        <img src={logoSrpIcon} alt="SRP Icon" className="h-6 w-auto object-contain rounded-full transition-transform group-hover:scale-110" />
+                        Visit Website
+                      </a>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
