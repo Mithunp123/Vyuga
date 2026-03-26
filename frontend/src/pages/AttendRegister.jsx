@@ -6,7 +6,7 @@ import EventCard from '../components/EventCard.jsx'
 
 const INNOVATION_MAIN_EVENT = {
   title: 'Inclusive Innovation Fest',
-  accent: 'By Specially Abled / For Specially Abled',
+  accent: 'For Specially Abled / By Specially Abled',
   description:
     'Participants choose whether their submission is by specially abled or for specially abled and continue with relevant fields.',
   details: [
