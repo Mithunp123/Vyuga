@@ -1416,6 +1416,21 @@ app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), asy
   }
 })
 
+// ── Global Form Settings (Public) ─────────────────────────────────────────────
+app.get('/api/form-settings', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('form_settings')
+      .select('id, name, is_open')
+      
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('❌ Fetch form settings error:', err)
+    res.status(500).json({ success: false, message: 'Failed to fetch form settings' })
+  }
+})
+
 // ── Admin middleware ──────────────────────────────────────────────────────────
 function requireAdmin(req, res, next) {
   const token = req.headers['x-admin-token'] || req.query.token
@@ -1668,6 +1683,35 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     await logError({ source: 'admin', endpoint: `/api/admin/status/${req.params.type}/${req.params.id}`, method: 'PATCH', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: update form settings ───────────────────────────────────────────────
+app.patch('/api/admin/form-settings/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { is_open } = req.body
+    
+    if (typeof is_open !== 'boolean') {
+      return res.status(400).json({ success: false, message: 'is_open must be a boolean' })
+    }
+
+    const { data, error } = await supabase
+      .from('form_settings')
+      .update({ is_open, updated_at: new Date() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+       await logError({ source: 'admin', endpoint: `/api/admin/form-settings/${id}`, method: 'PATCH', errorType: 'db_error', message: error.message, req })
+       return res.status(500).json({ success: false, message: error.message })
+    }
+
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: `/api/admin/form-settings/${req.params.id}`, method: 'PATCH', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })

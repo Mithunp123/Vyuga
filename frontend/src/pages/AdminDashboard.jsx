@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import logoImg from '../assets/logo.png'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import AdminSettingsView from '../components/AdminSettingsView.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -15,6 +16,7 @@ const TABS = [
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
   { id: 'accommodation',      label: 'Accommodation Requests',           endpoint: '/api/admin/accommodation' },
   { id: 'sponsors',           label: 'Sponsor Messages',                 endpoint: '/api/admin/sponsors' },
+  { id: 'settings',           label: 'Form Controls',                 endpoint: null },
 ]
 
 const STATUS_CFG = {
@@ -1094,6 +1096,10 @@ export default function AdminDashboard() {
           </div>
 
           <div className="mx-auto max-w-screen-2xl px-6 sm:px-8 pb-20 pt-8">
+            {activeTab === 'settings' ? (
+              <AdminSettingsView token={token} />
+            ) : (
+             <>
             {/* Status summary pills (hidden for org tab) */}
             {rows.length > 0 && activeTab !== 'talent-org' && (
               <div className="flex flex-wrap gap-2.5 mb-6">
@@ -1314,6 +1320,8 @@ export default function AdminDashboard() {
                 )
               })()}
             </AnimatePresence>
+           </>
+           )}
 
           </div>
         </>

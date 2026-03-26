@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
@@ -35,6 +35,19 @@ export default function TalentOrgRegistration() {
   // 'new' | 'done'
   const [view, setView] = useState('new')
   const [form, setForm] = useState(EMPTY)
+  const [isClosed, setIsClosed] = useState(false)
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          const setting = json.data.find(s => s.id === 'talent-org')
+          if (setting && setting.is_open === false) setIsClosed(true)
+        }
+      })
+      .catch(console.error)
+  }, [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
@@ -122,6 +135,19 @@ export default function TalentOrgRegistration() {
   }
 
   /* ── Success screen ── */
+  if (isClosed) {
+    return (
+      <PageShell title="Registration Closed" subtitle="Registration for this event is currently closed.">
+        <div className="mx-auto max-w-xl text-center py-20 px-6">
+          <p className="text-xl font-bold text-slate-700">Thank you for your interest. Unfortunately, new registrations are no longer being accepted at this time.</p>
+          <button onClick={() => window.history.back()} className="mt-8 rounded-full bg-[#0197B2] px-8 py-3 font-bold text-white transition hover:bg-[#01788e] shadow-md">
+            Go Back
+          </button>
+        </div>
+      </PageShell>
+    )
+  }
+
   if (view === 'done') {
     return (
       <PageShell title="Organization Registered" subtitle="Proceed to nominate students.">

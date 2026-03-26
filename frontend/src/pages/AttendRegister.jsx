@@ -171,6 +171,24 @@ const OTHER_EVENTS = [
 export default function AttendRegister() {
   const navigate = useNavigate()
   const [selectedEvent, setSelectedEvent] = useState(null)
+  
+  const [formSettings, setFormSettings] = useState([])
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) setFormSettings(json.data)
+      })
+      .catch(console.error)
+  }, [])
+
+  const isFormClosed = (link) => {
+    if (!link) return false
+    const id = link.split('/').pop()
+    const setting = formSettings.find(s => s.id === id)
+    return setting && setting.is_open === false
+  }
 
   // Disables background scroll when modal is open
   useEffect(() => {
@@ -219,14 +237,24 @@ export default function AttendRegister() {
         transition={{ duration: 0.5, delay: 0.15 }}
         className="grid gap-4 sm:grid-cols-2"
       >
-        {allEvents.map((event, i) => (
+        {allEvents.map((event, i) => {
+          const closed = isFormClosed(event.registerLink)
+          const mergedEvent = {
+            ...event,
+            disabled: closed || event.disabled,
+            buttonText: closed ? 'Registration Closed' : event.buttonText
+          }
+          return (
           <EventCard 
             key={event.registerLink || `event-${i}`} 
             index={i} 
-            {...event}
-            onClick={() => setSelectedEvent(event)}
+            {...mergedEvent}
+            onClick={() => {
+              if (mergedEvent.disabled) return
+              setSelectedEvent(mergedEvent)
+            }}
           />
-        ))}
+        )})}
       </motion.div>
 
       <AnimatePresence>
@@ -292,18 +320,23 @@ export default function AttendRegister() {
               <div className="bg-slate-50/80 p-5 sm:px-8 border-t border-slate-100 flex flex-col gap-3 sm:flex-row sm:justify-end shrink-0">
                 {selectedEvent.isExpandable ? (
                   <>
-                    {INNOVATION_TRACKS.map((track, i) => (
+                    {INNOVATION_TRACKS.map((track, i) => {
+                      const closed = isFormClosed(track.registerLink)
+                      return (
                       <button 
                         key={i} 
+                        disabled={closed}
                         onClick={() => {
-                          setSelectedEvent(null)
-                          navigate(track.registerLink)
+                          if (!closed) {
+                             setSelectedEvent(null)
+                             navigate(track.registerLink)
+                          }
                         }} 
-                        className="inline-flex justify-center items-center gap-2 rounded-full bg-[#0197B2] px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#01788e] shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                        className={`inline-flex justify-center items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-400 cursor-not-allowed shadow-none hover:translate-y-0 text-slate-200 opacity-80' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
                       >
-                        Register ({track.accent})
+                        {closed ? 'Registration Closed' : `Register (${track.accent})`}
                       </button>
-                    ))}
+                    )})}
                   </>
                 ) : (
                   <button 
