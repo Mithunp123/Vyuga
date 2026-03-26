@@ -61,28 +61,33 @@ export default function AdminSettingsView({ token }) {
   )
 
   return (
-    <div className="max-w-4xl pt-6 pb-20">
+    <div className="max-w-6xl pt-6 pb-10 w-full">
       <h2 className="text-2xl font-bold text-slate-800 mb-6">Form Registration Controls</h2>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {settings.map(s => (
-          <div key={s.id} className="bg-white border-2 border-slate-100 rounded-2xl p-6 flex flex-col sm:flex-row shadow-sm justify-between items-start sm:items-center hover:shadow-md transition duration-300">
-            <div>
-              <h3 className="text-lg font-bold text-slate-800 tracking-wide">{s.name}</h3>
-              <p className="text-sm text-slate-500 mt-1 uppercase tracking-wider font-semibold">
-                Status: <span style={{ color: s.is_open ? '#16a34a' : '#dc2626' }}>{s.is_open ? 'OPEN' : 'LOCKED (CLOSED)'}</span>
+          <div key={s.id} className="bg-white border-2 border-slate-100 rounded-2xl p-5 flex flex-row shadow-sm justify-between items-center gap-4 hover:shadow-md transition duration-300">
+            <div className="flex-1">
+              <h3 className="text-base font-bold text-slate-800 leading-snug">{s.name}</h3>
+              <p className="text-xs mt-1.5 uppercase tracking-wider font-bold">
+                <span className="px-2 py-1 rounded-md" style={{ 
+                  backgroundColor: s.is_open ? '#f0fdf4' : '#fef2f2',
+                  color: s.is_open ? '#16a34a' : '#dc2626' 
+                }}>
+                  {s.is_open ? 'OPEN' : 'CLOSED'}
+                </span>
               </p>
             </div>
             <button
               onClick={() => toggleSetting(s.id, s.is_open)}
               aria-label={`Toggle ${s.name} registration status`}
-              className={`mt-4 sm:mt-0 relative inline-flex h-8 w-14 items-center rounded-full transition-colors cursor-pointer ${s.is_open ? 'bg-[#5BCB2B]' : 'bg-slate-300 hover:bg-slate-400'}`}
+              className={`shrink-0 relative inline-flex h-8 w-14 items-center rounded-full transition-colors cursor-pointer ${s.is_open ? 'bg-[#5BCB2B]' : 'bg-slate-300 hover:bg-slate-400'}`}
             >
-              <span className={`inline-block h-6 w-6 transform bg-white rounded-full transition-transform shadow-md ${s.is_open ? 'translate-x-7' : 'translate-x-1'}`} />
+              <span className={`inline-block h-6 w-6 transform bg-white rounded-full transition-transform shadow-sm ${s.is_open ? 'translate-x-7' : 'translate-x-1'}`} />
             </button>
           </div>
         ))}
         {settings.length === 0 && (
-           <div className="p-8 text-center text-slate-500 bg-white border-2 border-slate-100 rounded-3xl">No configuration variables tracked in database. Execute schema setup.</div>
+           <div className="col-span-full p-8 text-center text-slate-500 bg-white border-2 border-slate-100 rounded-3xl">No configuration variables tracked in database. Execute schema setup.</div>
         )}
       </div>
     </div>
