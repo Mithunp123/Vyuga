@@ -916,7 +916,7 @@ export default function TalentStudentNomination() {
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
               <p className="text-[13px] font-medium text-red-700 leading-relaxed">
                 <strong className="font-bold uppercase tracking-wider text-xs mr-1 opacity-90 text-red-800 block mb-0.5">Warning:</strong> 
-                Make sure the drive link is public (Anyone with the link). If your drive link is private and inaccessible, your registration will be cancelled.
+                Make sure the drive link is public (Anyone with the link). If your drive link is private and inaccessible, your Application will be cancelled.
               </p>
             </div>
           </div>
