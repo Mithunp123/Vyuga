@@ -71,7 +71,7 @@ const INNOVATION_TRACKS = [
   },
   {
     title: 'Innovation Fest',
-    accent: 'Innovator (Specially Abled)',
+    accent: 'By Specially Abled',
     description:
       'Specially abled individuals showcase their innovative solutions and entrepreneurial ideas to create an inclusive world.',
     details: [

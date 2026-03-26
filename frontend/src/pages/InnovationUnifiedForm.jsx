@@ -9,7 +9,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 const INNOVATION_TYPE_OPTIONS = [
   { value: '', label: 'Select one' },
   { value: 'for_specially_abled', label: 'For Specially Abled' },
-  { value: 'by_specially_abled', label: 'Innovator (Specially Abled)' },
+  { value: 'by_specially_abled', label: 'By Specially Abled' },
 ]
 
 const THEME_OPTIONS = [

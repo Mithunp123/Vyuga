@@ -604,14 +604,14 @@ export default function About() {
         <div id="about-srp" className="relative mx-auto max-w-7xl px-4 border-t border-slate-100 bg-slate-50/50 min-h-screen flex flex-col justify-center">
           <div className="relative">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="flex items-center gap-3"
+              className="flex items-center justify-end gap-3"
             >
+              <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-lime text-right">ABOUT SRP FOUNDATION</span>
               <div className="gradient-line w-16" />
-              <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-lime">ABOUT SRP FOUNDATION</span>
             </motion.div>
 
             <div className="mt-12 grid gap-16 lg:grid-cols-5 items-start">
@@ -639,7 +639,7 @@ export default function About() {
                   </motion.div>
               </div>
 
-              {/* RIGHT Side: Header + Text + Initiatives (col-span-3) */}
+              {/* RIGHT Side: Header + Initiatives + Text (col-span-3) */}
               <div className="lg:col-span-3 flex flex-col">
                 <div className="space-y-1 mb-10 text-right">
                   <motion.div
@@ -664,29 +664,16 @@ export default function About() {
                     <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
                       through{' '}
                     </span>
-                    <span className="font-marker text-[3vw] leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
+                    <span className="font-marker text-[3vw] leading-[0.9] text-[#5BCB2B] sm:text-xl lg:text-3xl">
                       empowerment
                     </span>
                   </motion.div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                  >
-                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
-                      SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
-                      <br /><br />
-                      The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
-                      <br /><br />
-                      Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
-                    </p>
-                  </motion.div>
-
-                  <div className="flex flex-col h-full">
+                  
+                  {/* INITIATIVES (Middle) */}
+                  <div className="flex flex-col h-full text-right">
                     <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
                       Our initiatives cover:
                     </p>
@@ -703,10 +690,10 @@ export default function About() {
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
                           transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                          className="group flex items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
+                          className="group flex flex-row-reverse items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
                         >
                           <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
-                          <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:translate-x-2">
+                          <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:-translate-x-2">
                             {item}
                           </span>
                         </motion.div>
@@ -717,19 +704,36 @@ export default function About() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, delay: 0.7 }}
-                      className="mt-8 flex"
+                      className="mt-8 flex justify-end"
                     >
                       <a 
                         href="https://www.shreerengapolymers.com/srp-foundation-plants-1600-trees-at-valluvar-college-of-science-and-management-karur/" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
+                        className="group inline-flex flex-row-reverse items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
                       >
                         <img src={logoSrpIcon} alt="SRP Icon" className="h-6 w-auto object-contain rounded-full transition-transform group-hover:scale-110" />
                         Visit Website
                       </a>
                     </motion.div>
                   </div>
+
+                  {/* PARAGRAPH (Right) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                  >
+                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-right">
+                      SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
+                      <br /><br />
+                      The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
+                      <br /><br />
+                      Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
+                    </p>
+                  </motion.div>
+
                 </div>
               </div>
 
