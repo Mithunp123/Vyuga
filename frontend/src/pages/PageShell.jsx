@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 
-export default function PageShell({ title, subtitle, children, compact = false, heroPadding, fullWidth = false, subtitleClass = "text-[#0197B2]" }) {
+export default function PageShell({ title, subtitle, children, compact = false, heroPadding, fullWidth = false, subtitleClass = "text-[#0197B2]", titleClass = "text-[#5BCB2B]" }) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
@@ -25,7 +25,7 @@ export default function PageShell({ title, subtitle, children, compact = false, 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="mt-4 font-display text-4xl font-extrabold tracking-tight text-[#5BCB2B] sm:text-5xl"
+            className={`mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl ${titleClass}`}
           >
             {title}
           </motion.h1>
