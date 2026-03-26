@@ -156,6 +156,33 @@ const sponsorUpload = multer({
   },
 })
 
+// ── Multer (Gallery Images) ───────────────────────────────────────────────────
+const GALLERY_DIR = path.join(UPLOAD_DIR, 'gallery')
+if (!fs.existsSync(GALLERY_DIR)) fs.mkdirSync(GALLERY_DIR, { recursive: true })
+
+const galleryStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, GALLERY_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(sanitizeFilename(file.originalname))
+    cb(null, `gallery_${Date.now()}${ext}`)
+  },
+})
+
+const galleryUpload = multer({
+  storage: galleryStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (req, file, cb) => {
+    if (!ALLOWED_IMAGE_EXT.test(file.originalname)) {
+      return cb(new Error('Only image files (PNG, JPG, WEBP) are allowed'))
+    }
+    const safeMime = /^image\/(png|jpe?g|webp)$/i
+    if (!safeMime.test(file.mimetype)) {
+      return cb(new Error('Invalid image MIME type'))
+    }
+    cb(null, true)
+  },
+})
+
 // ── Video compression with ffmpeg ─────────────────────────────────────────────
 function compressVideoWithFFmpeg(inputPath) {
   return new Promise((resolve) => {
@@ -1416,6 +1443,21 @@ app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), asy
   }
 })
 
+// ── Gallery (Public) ──────────────────────────────────────────────────────────
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('gallery_images')
+      .select('id, title, image_url, created_at')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (err) {
+    console.error('❌ Gallery fetch error:', err)
+    res.status(500).json({ success: false, message: 'Failed to fetch gallery' })
+  }
+})
+
 // ── Global Form Settings (Public) ─────────────────────────────────────────────
 app.get('/api/form-settings', async (req, res) => {
   try {
@@ -1456,6 +1498,53 @@ app.post('/api/admin/login', loginLimiter, (req, res) => {
   } catch (err) {
     logError({ source: 'admin', endpoint: '/api/admin/login', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: Gallery Upload ─────────────────────────────────────────────────────
+app.post('/api/admin/gallery', requireAdmin, galleryUpload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: 'Image file is required' })
+    const title = (req.body.title || '').trim().slice(0, 200)
+    const imageUrl = `/uploads/gallery/${req.file.filename}`
+    const { data, error } = await supabase
+      .from('gallery_images')
+      .insert([{ title, image_url: imageUrl }])
+      .select()
+      .single()
+    if (error) {
+      fs.unlinkSync(req.file.path)
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    if (req.file) fs.unlinkSync(req.file.path)
+    console.error('❌ Gallery upload error:', err)
+    res.status(500).json({ success: false, message: 'Upload failed' })
+  }
+})
+
+app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!id) return res.status(400).json({ success: false, message: 'ID required' })
+    const { data: row, error: fetchErr } = await supabase
+      .from('gallery_images')
+      .select('image_url')
+      .eq('id', id)
+      .single()
+    if (fetchErr) return res.status(404).json({ success: false, message: 'Image not found' })
+    const { error } = await supabase.from('gallery_images').delete().eq('id', id)
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    // Also delete physical file
+    if (row && row.image_url) {
+      const filePath = path.join(__dirname, row.image_url.replace(/^\//, ''))
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+    }
+    res.json({ success: true, message: 'Image deleted' })
+  } catch (err) {
+    console.error('❌ Gallery delete error:', err)
+    res.status(500).json({ success: false, message: 'Delete failed' })
   }
 })
 
