@@ -1454,6 +1454,7 @@ app.get('/api/gallery', async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     console.error('❌ Gallery fetch error:', err)
+    await logError({ source: 'user', endpoint: '/api/gallery', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Failed to fetch gallery' })
   }
 })
@@ -1469,6 +1470,7 @@ app.get('/api/form-settings', async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     console.error('❌ Fetch form settings error:', err)
+    await logError({ source: 'user', endpoint: '/api/form-settings', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Failed to fetch form settings' })
   }
 })
@@ -1514,12 +1516,14 @@ app.post('/api/admin/gallery', requireAdmin, galleryUpload.single('image'), asyn
       .single()
     if (error) {
       fs.unlinkSync(req.file.path)
+      await logError({ source: 'admin', endpoint: '/api/admin/gallery', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
     res.json({ success: true, data })
   } catch (err) {
     if (req.file) fs.unlinkSync(req.file.path)
     console.error('❌ Gallery upload error:', err)
+    await logError({ source: 'admin', endpoint: '/api/admin/gallery', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Upload failed' })
   }
 })
@@ -1533,9 +1537,15 @@ app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
       .select('image_url')
       .eq('id', id)
       .single()
-    if (fetchErr) return res.status(404).json({ success: false, message: 'Image not found' })
+    if (fetchErr) {
+      await logError({ source: 'admin', endpoint: `/api/admin/gallery/${id}`, method: 'DELETE', errorType: 'db_error', message: fetchErr.message, req })
+      return res.status(404).json({ success: false, message: 'Image not found' })
+    }
     const { error } = await supabase.from('gallery_images').delete().eq('id', id)
-    if (error) return res.status(500).json({ success: false, message: error.message })
+    if (error) {
+      await logError({ source: 'admin', endpoint: `/api/admin/gallery/${id}`, method: 'DELETE', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
     // Also delete physical file
     if (row && row.image_url) {
       const filePath = path.join(__dirname, row.image_url.replace(/^\//, ''))
@@ -1544,6 +1554,7 @@ app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
     res.json({ success: true, message: 'Image deleted' })
   } catch (err) {
     console.error('❌ Gallery delete error:', err)
+    await logError({ source: 'admin', endpoint: `/api/admin/gallery/${req.params?.id}`, method: 'DELETE', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Delete failed' })
   }
 })
