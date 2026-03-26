@@ -15,10 +15,11 @@ export default function EventCard({ title, accent, description, onClick, buttonT
       <div className="event-card-inner relative flex flex-1 flex-col rounded-3xl bg-white overflow-hidden">
 
         {/* Top gradient accent bar */}
-        <div className="h-[3px] w-full bg-gradient-to-r from-brand-cyan to-brand-lime" />
+        <div className={`h-[3px] w-full bg-gradient-to-r ${disabled ? 'from-slate-300 to-slate-400' : 'from-brand-cyan to-brand-lime'}`} />
 
         {/* Cinematic sweep overlay — same as speaker cards */}
         <div className="pointer-events-none absolute inset-0 cinematic-sweep rounded-3xl" />
+
 
         <div className="relative flex flex-1 flex-col p-5 sm:p-6">
 
@@ -34,7 +35,7 @@ export default function EventCard({ title, accent, description, onClick, buttonT
 
           {/* Title — mixed fonts like hero: impact + serif italic accent */}
           <div className="mb-2">
-            <h3 className="font-hero text-base sm:text-lg font-extrabold leading-tight text-[#5BCB2B] lg:text-[1.1rem]">
+            <h3 className={`font-hero text-base sm:text-lg font-extrabold leading-tight lg:text-[1.1rem] ${disabled ? 'text-slate-400' : 'text-[#5BCB2B]'}`}>
               {title}
             </h3>
             {accent && (

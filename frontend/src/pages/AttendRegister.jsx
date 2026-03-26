@@ -190,6 +190,14 @@ export default function AttendRegister() {
     return setting && setting.is_open === false
   }
 
+  // Innovation main card: closed when BOTH sub-forms are closed
+  const isBothInnovationClosed = (() => {
+    if (formSettings.length === 0) return false
+    const college = formSettings.find(s => s.id === 'innovation-college')
+    const pwd = formSettings.find(s => s.id === 'innovation-pwd')
+    return college && pwd && college.is_open === false && pwd.is_open === false
+  })()
+
   // Disables background scroll when modal is open
   useEffect(() => {
     if (selectedEvent) {
@@ -238,7 +246,8 @@ export default function AttendRegister() {
         className="grid gap-4 sm:grid-cols-2"
       >
         {allEvents.map((event, i) => {
-          const closed = isFormClosed(event.registerLink)
+        const isInnovationMain = !event.registerLink && event.isExpandable
+          const closed = isInnovationMain ? isBothInnovationClosed : isFormClosed(event.registerLink)
           const mergedEvent = {
             ...event,
             disabled: closed || event.disabled,
