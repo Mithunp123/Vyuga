@@ -328,37 +328,39 @@ export default function About() {
             </div>
 
             {/* RIGHT: image (no box) + feature list */}
-            <div className="lg:col-span-3 flex flex-col">
+            <div className="lg:col-span-3 flex flex-col justify-between h-full">
               {/* About image — fits fully, no crop, no box */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="w-full mb-2 flex justify-center"
+                className="w-full mb-4 flex justify-center"
               >
                 <img
                   src={aboutImg}
                   alt="About Vyuga"
-                  className="w-full max-h-48 object-contain rounded-xl"
+                  className="w-full max-h-[340px] lg:max-h-[300px] object-contain rounded-xl"
                 />
               </motion.div>
 
-              <p className="mb-4 font-display text-xs font-bold text-slate-600 uppercase tracking-wider">
-                It is a platform where:
-              </p>
-              <div className="space-y-0">
-                {features.map((item, idx) => (
-                  <div
-                    key={item.text}
-                    className="group flex items-start gap-4 border-b border-slate-100 py-2 transition-colors hover:border-brand-cyan/30"
-                  >
-                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
-                    <span className={`text-sm sm:text-base transition-all duration-500 tracking-wide ${idx % 2 === 0 ? 'font-serif italic' : 'font-mono'} ${item.accent} group-hover:translate-x-2`}>
-                      {item.text}
-                    </span>
-                  </div>
-                ))}
+              <div className="mt-auto pt-6">
+                <p className="mb-4 font-display text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  It is a platform where:
+                </p>
+                <div className="space-y-0">
+                  {features.map((item, idx) => (
+                    <div
+                      key={item.text}
+                      className="group flex items-start gap-4 border-b border-slate-100 py-2 transition-colors hover:border-brand-cyan/30"
+                    >
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-cyan" />
+                      <span className={`text-sm sm:text-base transition-all duration-500 tracking-wide ${idx % 2 === 0 ? 'font-serif italic' : 'font-mono'} ${item.accent} group-hover:translate-x-2`}>
+                        {item.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -569,7 +571,7 @@ export default function About() {
                       className="mt-8 flex"
                     >
                       <a 
-                        href="https://nexyuga.in/" 
+                        href="https://nexyugainnovations.com/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="group inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-cyan hover:text-white hover:ring-brand-cyan"

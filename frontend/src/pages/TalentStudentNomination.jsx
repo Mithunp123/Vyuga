@@ -240,7 +240,7 @@ export default function TalentStudentNomination() {
     }
 
     if (!declared) { showError('Please confirm the declaration at the bottom of the form.'); return }
-    if (!performanceUrl.trim()) { showError('Please provide the Google Drive link for the performance video.'); return }
+    if (!videoFile && !performanceUrl.trim()) { showError('Please provide a performance video by either uploading a file OR providing a Google Drive link.'); return }
     if (!form.orgName.trim()) { showError('Please enter organization name.'); return }
     if (!form.orgCity.trim()) { showError('Please enter organization city.'); return }
     if (!form.orgState.trim()) { showError('Please enter organization state.'); return }
@@ -334,8 +334,12 @@ export default function TalentStudentNomination() {
         }
       })
       
-      // fd.append('performanceVideo', compressed)
-      if (performanceUrl.trim()) fd.append('performanceUrl', performanceUrl.trim())
+      if (videoFile) {
+        fd.append('performanceVideo', videoFile)
+      }
+      if (performanceUrl.trim()) {
+        fd.append('performanceUrl', performanceUrl.trim())
+      }
       
       await postFormData('/api/talent-combined', fd)
       setSubmitted(true)
@@ -400,12 +404,12 @@ export default function TalentStudentNomination() {
           {form.orgType === 'Other' && (
             <Field label="Enter Organization Type" value={form.orgTypeOther} onChange={set('orgTypeOther')} required />
           )}
-          <Field label="Contact Person Name" value={form.contactName} onChange={set('contactName')} required />
-          <Field label="Designation of Contact Person" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" />
-          <Field label="Contact Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
-          <Field label="Contact Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
+          <Field label="Name" value={form.contactName} onChange={set('contactName')} required />
+          <Field label="Designation" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" required/>
+          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
+          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <div className="sm:col-span-2">
-            <Field label="Organization Address" value={form.orgAddress} onChange={set('orgAddress')} />
+            <Field label="Organization Address" value={form.orgAddress} onChange={set('orgAddress')} required/>
           </div>
           <CityAutocomplete
             value={form.orgCity}
@@ -514,7 +518,7 @@ export default function TalentStudentNomination() {
                 />
                 <div>
                   <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Individual Student</span>
-                  <p className="text-xs text-slate-500">Choose a student to nominate</p>
+                  <p className="text-xs text-slate-500">Nominate Individual Performer</p>
                 </div>
               </label>
               <label className="flex items-start gap-3 cursor-pointer group">
@@ -813,11 +817,14 @@ export default function TalentStudentNomination() {
           </Section>
         )}
 
+        {/* Video Upload Options */}
+
+
         {/* Video Upload */}
         <div>
-          {/*
+        
           <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
-            Performance Video Upload <span className="text-red-500 text-sm font-normal">* Required</span>
+            Performance Video Upload <span className="text-slate-500 text-sm font-normal ml-2">(Option 1)</span>
           </h2>
           <p className="mb-3 text-xs text-slate-500">Upload a performance video (max 3 minutes). Accepted formats: MP4, MOV, AVI, WEBM.</p>
           <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-[#0197B2]/50 hover:bg-slate-100">
@@ -863,12 +870,12 @@ export default function TalentStudentNomination() {
               </div>
             </div>
           )}
-          */}
+      
           
           <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
             <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
               <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                Performance Drive Link <span className="text-red-500 text-sm font-normal">* Required</span>
+                Performance Drive Link <span className="text-slate-500 text-sm font-normal">(Option 2)</span>
               </label>
               <button 
                 type="button" 

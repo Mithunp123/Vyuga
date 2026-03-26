@@ -195,7 +195,7 @@ export default function InnovationPWDForm() {
         </Section>
 
         {/* Members */}
-        <Section title={isTeam ? 'Member 1 (Team Leader)' : 'Participant Details'}>
+        <Section title={isTeam ? 'Member 1 (Team Leader)' : 'Innovator Details'}>
           <Field label="Full Name" value={form.member1Name} onChange={set('member1Name')} required />
           <Field label="Email" type="email" value={form.member1Email} onChange={set('member1Email')} required />
           <Field label="Phone" type="tel" value={form.member1Phone} onChange={set('member1Phone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />

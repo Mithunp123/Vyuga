@@ -192,6 +192,7 @@ export default function AttendRegister() {
       subtitle="Choose an event below and complete your registration to be part of VYUGA – Inclusive Innovation Fest."
       heroPadding="pt-10 sm:pt-8 pb-0 sm:pb-0"
       compact={true}
+      subtitleClass="text-slate-900"
     >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -200,7 +201,7 @@ export default function AttendRegister() {
         className="mb-6 sm:mb-8 -mt-2 sm:-mt-4 relative z-10"
       >
         <div className="flex items-baseline gap-3">
-          <span className="font-serif text-xl italic font-light text-[#0197B2] sm:text-2xl">
+          <span className="font-serif text-xl italic font-light text-slate-900 sm:text-2xl">
             Pick your
           </span>
           <span className="font-impact text-3xl tracking-[0.08em] text-stroke sm:text-4xl">
@@ -269,7 +270,7 @@ export default function AttendRegister() {
                 <div className="flex flex-col gap-4">
                   {selectedEvent.details?.map((section, i) => (
                     <div key={i} className="rounded-2xl bg-slate-50 p-4 sm:p-5 ring-1 ring-slate-200/60">
-                      <p className="font-marker mb-3 text-sm text-[#0197B2] tracking-wide">{section.label}</p>
+                      <p className="font-marker mb-3 text-sm text-slate-900 tracking-wide">{section.label}</p>
                       {Array.isArray(section.value) ? (
                         <ul className="space-y-2.5">
                           {section.value.map((item, j) => (

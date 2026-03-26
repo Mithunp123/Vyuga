@@ -423,7 +423,7 @@ export default function InnovationUnifiedForm() {
 
         {(isForSpeciallyAbled || isBySpeciallyAbled) && (
           <>
-            <Section title={isBySpeciallyAbled ? (isTeamForBy ? 'Member 1 (Team Leader)' : 'Participant Details') : 'Member 1 (Team Leader)'}>
+            <Section title={isBySpeciallyAbled ? (isTeamForBy ? 'Member 1 (Team Leader)' : 'Innovator Details') : 'Member 1 (Team Leader)'}>
               <Field label="Full Name" value={form.member1Name} onChange={set('member1Name')} required />
               <Field label="Email" type="email" value={form.member1Email} onChange={set('member1Email')} required />
               <Field
@@ -534,7 +534,7 @@ export default function InnovationUnifiedForm() {
               <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
                 <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
                   <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                    Project Drive Link <span className="text-slate-400 font-normal text-sm font-sans">(Optional)</span>
+                    Prototype Link(Concept or Design flow) <span className="text-slate-400 font-normal text-sm font-sans">(Optional)</span>
                   </label>
                   <button 
                     type="button" 
