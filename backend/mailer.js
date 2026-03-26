@@ -115,7 +115,7 @@ async function sendInnovationCollegeConfirmation(d) {
     ].join(''))}
     ${section('Team Members', members)}
   `)
-  await sendMail(d.member1Email, '✅ Registration Confirmed – VYUGA Innovation Fest (For Specially Abled)', html)
+  await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (For Specially Abled)', html)
 }
 
 // ── 2. Innovation Fest – PWD (By Specially Abled) ────────────────────────────
@@ -139,7 +139,7 @@ async function sendInnovationPwdConfirmation(d) {
     ].join(''))}
     ${extraMembers ? section('Additional Team Members', extraMembers) : ''}
   `)
-  await sendMail(d.member1Email, '✅ Registration Confirmed – VYUGA Innovation Fest (By Specially Abled)', html)
+  await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (By Specially Abled)', html)
 }
 
 // ── 3. Talent Utsav – Organization ───────────────────────────────────────────
@@ -162,10 +162,10 @@ async function sendTalentOrgConfirmation(d) {
       row('Phone', d.contactPhone),
     ].join(''))}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
-      🎯 Next step: Visit the <strong>Student Nomination</strong> form to nominate your talented students.
+      Next step: Visit the <strong>Student Nomination</strong> form to nominate your talented students.
     </p>
   `)
-  await sendMail(d.contactEmail, '✅ Organization Registered – VYUGA Special Talent Utsav', html)
+  await sendMail(d.contactEmail, 'Organization Registered – VYUGA Special Talent Utsav', html)
 }
 
 // ── 4. Talent Utsav – Student Nomination ─────────────────────────────────────
@@ -192,7 +192,7 @@ async function sendTalentStudentConfirmation(d) {
   `)
   // Send to guardian
   if (d.guardianEmail) {
-    await sendMail(d.guardianEmail, '✅ Nomination Submitted – VYUGA Special Talent Utsav', html)
+    await sendMail(d.guardianEmail, 'Nomination Submitted – VYUGA Special Talent Utsav', html)
   }
   // Also notify the organization contact
   if (d.orgContactEmail) {
@@ -213,7 +213,7 @@ async function sendTalentStudentConfirmation(d) {
         row('Guardian Email', d.guardianEmail),
       ].join(''))}
     `)
-    await sendMail(d.orgContactEmail, `📋 New Nomination: ${d.studentName} – VYUGA Special Talent Utsav`, orgHtml)
+    await sendMail(d.orgContactEmail, `New Nomination: ${d.studentName} – VYUGA Special Talent Utsav`, orgHtml)
   }
 }
 
@@ -234,10 +234,10 @@ async function sendCricketConfirmation(d) {
       row('Phone', d.contactPhone),
     ].join(''))}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
-      🏏 Our team will reach out to you with tournament details soon.
+      Our team will reach out to you with tournament details soon.
     </p>
   `)
-  await sendMail(d.contactEmail, '✅ Interest Submitted – VYUGA Blind Cricket Tournament', html)
+  await sendMail(d.contactEmail, 'Interest Submitted – VYUGA Blind Cricket Tournament', html)
 }
 
 // ── 6. Blind Chess ───────────────────────────────────────────────────────────
@@ -258,23 +258,23 @@ async function sendChessConfirmation(d) {
       row('Additional Info', d.additionalInfo),
     ].join(''))}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
-      ♟️ Our team will reach out to you with competition details soon.
+      Our team will reach out to you with competition details soon.
     </p>
   `)
-  await sendMail(d.email, '✅ Registration Confirmed – VYUGA Blind Chess Competition', html)
+  await sendMail(d.email, 'Registration Confirmed – VYUGA Blind Chess Competition', html)
 }
 
 // ── Status update email ───────────────────────────────────────────────────────
 async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
   const STATUS_STYLES = {
-    selected: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: '✅', label: 'Selected' },
-    rejected: { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', icon: '❌', label: 'Rejected' },
-    pending:  { color: '#d97706', bg: '#fffbeb', border: '#fde68a', icon: '⏳', label: 'Pending Review' },
+    selected: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', label: 'Selected' },
+    rejected: { color: '#475569', bg: '#f8fafc', border: '#e2e8f0', label: 'Not Shortlisted' },
+    pending:  { color: '#d97706', bg: '#fffbeb', border: '#fde68a', label: 'Pending Review' },
   }
   const s = STATUS_STYLES[status] || STATUS_STYLES.pending
   const html = shell(`Registration ${s.label} – VYUGA`, `
     <div style="border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid ${s.border};background:${s.bg};">
-      <p style="margin:0;font-size:22px;font-weight:800;color:${s.color};">${s.icon} ${s.label}</p>
+      <p style="margin:0;font-size:22px;font-weight:800;color:${s.color};">${s.label}</p>
       <p style="margin:6px 0 0;font-size:14px;color:#475569;">Your registration for <strong>${event}</strong> has been updated.</p>
     </div>
     ${section('Registration Details', [
@@ -288,7 +288,7 @@ async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
     </p>
   `)
   console.log(`[mailer] Sending status update email to ${to} (${status})`)
-  await sendMail(to, `${s.icon} Registration ${s.label} – VYUGA 2026`, html)
+  await sendMail(to, `Registration ${s.label} – VYUGA 2026`, html)
 }
 
 module.exports = {

@@ -1606,8 +1606,8 @@ const TABLE_MAP = {
   },
   'talent-student': {
     table: 'talent_nominations',
-    emailField: 'guardian_email',
-    nameField: 'guardian_name',
+    emailField: 'contact_email',
+    nameField: 'contact_name',
     event: 'Special Talent Utsav – Student Nomination',
   },
   cricket: {

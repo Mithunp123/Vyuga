@@ -8,7 +8,7 @@ const INNOVATION_MAIN_EVENT = {
   title: 'Inclusive Innovation Fest',
   accent: 'By Specially Abled / For Specially Abled',
   description:
-    'Participants choose whether their submission is by specially abled (Innovator) or for specially abled and continue with relevant fields.',
+    'Participants choose whether their submission is by specially abled or for specially abled and continue with relevant fields.',
   details: [
     {
       label: 'Focus Sector',

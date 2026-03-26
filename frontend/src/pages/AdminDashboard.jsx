@@ -410,10 +410,10 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
             Organization & Nomination Details
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Organization Details */}
             <div>
-              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Organization</p>
+              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Organization Details</p>
               <div className="space-y-2">
                 {row.org_name && (
                   <div className="flex items-start gap-3">
@@ -452,9 +452,9 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
               </div>
             </div>
 
-            {/* Contact & Nomination Details */}
+            {/* SPOC Details */}
             <div>
-              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Contact & Nomination</p>
+              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">SPOC Details</p>
               <div className="space-y-2">
                 {row.contact_name && (
                   <div className="flex items-start gap-3">
@@ -480,6 +480,13 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                     <span className="text-sm text-slate-700">{row.contact_phone}</span>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Nomination Details */}
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Nomination Info</p>
+              <div className="space-y-2">
                 {row.nomination_type && (
                   <div className="flex items-start gap-3">
                     <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Type</span>

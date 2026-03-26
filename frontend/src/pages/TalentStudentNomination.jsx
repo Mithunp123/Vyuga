@@ -131,28 +131,24 @@ export default function TalentStudentNomination() {
 
   // Update individual team member
   const updateTeamMember = (index, field, value) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      teamMembers: prevForm.teamMembers.map((member, i) => 
-        i === index ? { ...member, [field]: value } : member
-      )
-    }))
+    setForm((prev) => {
+      let newMembers = [...prev.teamMembers]
+      newMembers[index] = { ...newMembers[index], [field]: value }
+      
+      // Auto-sync Guardian details from Team Leader to all members explicitly
+      if (index === 0 && field.startsWith('guardian')) {
+        newMembers = newMembers.map((m, i) => {
+          if (i === 0) return m;
+          return { ...m, [field]: value }
+        })
+      }
+      return { ...prev, teamMembers: newMembers }
+    })
   }
 
-  // Special handler for guardian phone that auto-populates from first member
-  const handleGuardianPhoneChange = (index, value) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      teamMembers: prevForm.teamMembers.map((member, i) => {
-        if (i === index) {
-          return { ...member, guardianPhone: value }
-        } else if (index === 0 && member.guardianPhone === '') {
-          // Auto-populate from first member only if current member's phone is empty
-          return { ...member, guardianPhone: value }
-        }
-        return member
-      })
-    }))
+  // Handle auto-populating guardian phone for team members
+  const handleGuardianPhoneChange = (memberIndex, value) => {
+    updateTeamMember(memberIndex, 'guardianPhone', value)
   }
 
   // Handle team member disability change
@@ -404,10 +400,6 @@ export default function TalentStudentNomination() {
           {form.orgType === 'Other' && (
             <Field label="Enter Organization Type" value={form.orgTypeOther} onChange={set('orgTypeOther')} required />
           )}
-          <Field label="Name" value={form.contactName} onChange={set('contactName')} required />
-          <Field label="Designation" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" required/>
-          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
-          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <div className="sm:col-span-2">
             <Field label="Organization Address" value={form.orgAddress} onChange={set('orgAddress')} required/>
           </div>
@@ -498,6 +490,14 @@ export default function TalentStudentNomination() {
               </div>
             </div>
           )}
+        </Section>
+
+        {/* SPOC Details Section */}
+        <Section title="SPOC Details">
+          <Field label="Name" value={form.contactName} onChange={set('contactName')} required />
+          <Field label="Designation" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" required/>
+          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
+          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
         </Section>
 
         {/* Nomination Type */}
@@ -688,6 +688,7 @@ export default function TalentStudentNomination() {
                   value={member.guardianName}
                   onChange={(e) => updateTeamMember(index, 'guardianName', e.target.value)}
                   required
+                  readOnly={index > 0}
                 />
                 <div>
                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
@@ -697,7 +698,8 @@ export default function TalentStudentNomination() {
                     required
                     value={member.guardianRelation || ''}
                     onChange={(e) => updateTeamMember(index, 'guardianRelation', e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+                    disabled={index > 0}
+                    className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 ${index > 0 ? 'bg-slate-50 opacity-70 cursor-not-allowed' : 'bg-white'}`}
                   >
                     <option value="">Select relationship</option>
                     {RELATION_OPTIONS.map((opt) => (
@@ -710,42 +712,30 @@ export default function TalentStudentNomination() {
                     label="Please Specify Relationship"
                     value={member.guardianRelationOther || ''}
                     onChange={(e) => updateTeamMember(index, 'guardianRelationOther', e.target.value)}
-                    required
+                  readOnly={index > 0}
                   />
                 )}
                 <div>
-                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                    Accompanying Person Phone <span className="text-red-500">*</span>
-
-                  </label>
-                  <input
+                  <Field
+                    label="Accompanying Person Phone"
                     type="tel"
                     required
+                    readOnly={index > 0}
                     value={member.guardianPhone}
-                    onChange={(e) => {
-                      // Only allow digits
-                      e.target.value = e.target.value.replace(/\D/g, '')
-                      handleGuardianPhoneChange(index, e.target.value)
-                    }}
-                    onKeyPress={(e) => {
-                      if (!/\d/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
+                  onChange={(e) => handleGuardianPhoneChange(index, e.target.value)}
                     pattern="\d{10}"
                     maxLength={10}
                     title="Enter exactly 10 digits"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
-                    placeholder={index === 0 ? "Enter phone number" : "Auto-filled or enter different number"}
+                    placeholder={index === 0 ? "Enter phone number" : "Auto-filled and locked"}
                   />
                   {index === 0 && (
-                    <p className="mt-1 text-xs text-slate-500">
-                      This phone number will be copied to all team members. You can change individual numbers if needed.
+                    <p className="mt-2 text-xs text-slate-500 pl-1">
+                      This information automatically applies to all team members.
                     </p>
                   )}
                   {index > 0 && (
-                    <p className="mt-1 text-xs text-slate-500">
-                      Same as team leader's number. Change if different person will accompany.
+                    <p className="mt-2 text-xs text-slate-500 pl-1">
+                      Auto-filled from team leader.
                     </p>
                   )}
                 </div>
@@ -754,6 +744,7 @@ export default function TalentStudentNomination() {
                   type="email"
                   value={member.guardianEmail}
                   onChange={(e) => updateTeamMember(index, 'guardianEmail', e.target.value)}
+                  readOnly={index > 0}
                 />
               </Section>
             ))}
@@ -967,8 +958,9 @@ function Section({ title, children }) {
   )
 }
 
-function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title, list }) {
+function Field({ label, value, onChange, type = 'text', required = false, pattern, maxLength, title, placeholder, readOnly = false }) {
   const handlePhoneInput = (e) => {
+    if (readOnly) return;
     if (type === 'tel') {
       // Only allow digits
       e.target.value = e.target.value.replace(/\D/g, '')
@@ -994,11 +986,10 @@ function Field({ label, value, onChange, type = 'text', required = false, patter
         pattern={pattern}
         maxLength={maxLength}
         title={title}
-        list={list}
-        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
+        placeholder={placeholder}
+        readOnly={readOnly}
+        className={`w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 ${readOnly ? 'bg-slate-50 opacity-70 cursor-not-allowed' : 'bg-white'}`}
       />
     </div>
   )
 }
-
-
