@@ -286,7 +286,7 @@ export default function Hero() {
                 transition={{ duration: 0.7, delay: 1.4 }}
                 className="max-w-3xl text-left text-sm font-medium leading-relaxed text-slate-700 sm:text-base"
               >
-                Space where innovation meets humanity where technology solves problems, <br className="hidden sm:block" />
+                Space where innovation meets impact where technology solves problems, <br className="hidden sm:block" />
                 sports build confidence, and talent finds recognition.
               </motion.p>
 

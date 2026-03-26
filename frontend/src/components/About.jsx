@@ -21,6 +21,7 @@ import srp2 from '../assets/aboutsrp/2.jpg'
 import srp3 from '../assets/aboutsrp/3.jpg'
 import nexyugaGroup from '../assets/nexyuga_group.png'
 import eventImage from '../assets/images/event.png'
+import triangleImg from '../assets/loading/triangle.png'
 
 function AnimatedCounter({ target, suffix = '', duration = 2000 }) {
   const [count, setCount] = useState(0)
@@ -99,7 +100,7 @@ const aims = [
 const eventsList = [
   {
     title: "Innovation Fest",
-    description: "An innovation fest focused on assistive technology, centered around themes for and by persons with disabilities. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
+    description: "An innovation fest focused on assistive technology, centered around themes for specially abled and by specially abled. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
     color: "!text-[#5BCB2B]",
     image: think
   },
@@ -135,7 +136,9 @@ function MarqueeBand() {
             <span className="whitespace-nowrap py-2 font-sans font-bold text-xl tracking-widest sm:text-2xl lg:text-3xl text-[#5BCB2B]">
               {item}
             </span>
-            <span className="text-sm text-[#0197B2] select-none sm:text-base">●</span>
+            <span className="flex items-center justify-center px-4 select-none">
+              <img src={triangleImg} alt="Separator" className="h-4 sm:h-5 w-auto object-contain opacity-80" />
+            </span>
           </span>
         ))}
       </div>
@@ -313,7 +316,7 @@ export default function About() {
               </p>
 
               <p className="mt-4 text-sm leading-relaxed text-slate-700 sm:text-base text-justify">
-                It is a space where innovation meets humanity where technology solves problems, sports build confidence, and talent finds recognition.
+                It is a space where innovation meets impact where technology solves problems, sports build confidence, and talent finds recognition.
                 Vyuga is not just about ideas. It is about creating experiences that empower, include, and inspire.
               </p>
 
