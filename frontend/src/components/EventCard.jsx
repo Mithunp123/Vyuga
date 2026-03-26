@@ -24,10 +24,10 @@ export default function EventCard({ title, accent, description, onClick, buttonT
 
           {/* Number + label row */}
           <div className="flex items-start justify-between mb-2">
-            <span className="font-impact text-3xl sm:text-4xl leading-none tracking-wider text-slate-900/30 transition-colors duration-500 group-hover:text-slate-900/50 select-none">
+            <span className="font-impact text-3xl sm:text-4xl leading-none tracking-wider text-[#0197B2]/30 transition-colors duration-500 group-hover:text-[#0197B2]/50 select-none">
               {num}
             </span>
-            <span className="font-mono-display mt-1 text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.2em] text-slate-900 transition-colors duration-300">
+            <span className="font-mono-display mt-1 text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.2em] text-[#0197B2] transition-colors duration-300">
               Event {num}
             </span>
           </div>

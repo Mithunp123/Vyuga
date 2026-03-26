@@ -84,6 +84,8 @@ export default function AttendAccommodation() {
     <PageShell
       title="Accommodation"
       subtitle="Request accessible and comfortable accommodation for your stay at VYUGA."
+      titleClass="text-slate-900"
+      subtitleClass="text-slate-900"
     >
       <SubmitLoader visible={loading} />
       
@@ -202,7 +204,7 @@ export default function AttendAccommodation() {
       <div className="mt-8 rounded-xl border-2 border-brand-cyan/20 bg-brand-cyan/5 p-8 text-center">
         <h3 className="text-xl font-bold text-slate-800 mb-2">Registration will open soon</h3>
         <p className="text-slate-600">
-          Our team will contact you regarding accommodation after the registration of all events is closed.
+          Accommodation details will be available by May.
         </p>
       </div>
     </PageShell>
