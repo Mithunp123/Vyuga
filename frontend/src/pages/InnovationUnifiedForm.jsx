@@ -625,7 +625,7 @@ export default function InnovationUnifiedForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? 'Processing...' : 'Pay ₹99 & Register'}
+          {loading ? 'Processing...' : 'Register Now'}
         </button>
       </motion.form>
     </PageShell>
