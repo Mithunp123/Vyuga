@@ -37,6 +37,7 @@ const COLUMNS = {
     { key: 'theme',         label: 'Theme' },
     { key: 'leader_email',  label: 'Email' },
     { key: 'leader_phone',  label: 'Phone' },
+    { key: 'payment_status',label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
   'innovation-pwd': [
     { key: 'id',                 label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
@@ -46,6 +47,7 @@ const COLUMNS = {
     { key: 'email',              label: 'Email' },
     { key: 'phone',              label: 'Phone' },
     { key: 'udid_card_path',     label: 'UDID',      fmt: (v) => v ? <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View File</a> : '—' },
+    { key: 'payment_status',     label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
   'talent-org': [
     { key: 'id',             label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
@@ -63,6 +65,7 @@ const COLUMNS = {
     { key: 'talent_category', label: 'Talent' },
     { key: 'contact_name',    label: 'Contact' },
     { key: 'contact_phone',   label: 'Phone' },
+    { key: 'payment_status',  label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
   cricket: [
     { key: 'id',                     label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
@@ -72,6 +75,7 @@ const COLUMNS = {
     { key: 'state',                  label: 'State' },
     { key: 'contact_name',           label: 'Contact' },
     { key: 'contact_phone',          label: 'Phone' },
+    { key: 'payment_status',         label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
   chess: [
     { key: 'id',                label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
@@ -292,6 +296,20 @@ function StatusBadge({ status }) {
     <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border"
       style={{ color: s.color, background: s.bg, borderColor: s.border }}>
       {s.label}
+    </span>
+  )
+}
+
+function PaymentBadge({ status }) {
+  const isPaid = status === 'paid'
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold border"
+      style={{ 
+        color: isPaid ? '#16a34a' : '#d97706', 
+        background: isPaid ? '#f0fdf4' : '#fffbeb', 
+        borderColor: isPaid ? '#bbf7d0' : '#fde68a' 
+      }}>
+      {isPaid ? 'Paid' : 'Pending'}
     </span>
   )
 }

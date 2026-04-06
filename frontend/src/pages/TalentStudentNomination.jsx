@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
+import { handlePaymentProcess } from '../paymentHandler.js'
 import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
@@ -349,6 +350,18 @@ export default function TalentStudentNomination() {
       if (performanceUrl.trim()) {
         fd.append('performanceUrl', performanceUrl.trim())
       }
+      
+      const userInfo = {
+        name: form.nominationType === 'team' ? form.contactName : form.studentName,
+        email: form.contactEmail,
+        phone: form.contactPhone,
+        eventType: 'talent-combined'
+      };
+      
+      const paymentData = await handlePaymentProcess(userInfo);
+      fd.append('razorpay_payment_id', paymentData.razorpay_payment_id);
+      fd.append('razorpay_order_id', paymentData.razorpay_order_id);
+      fd.append('razorpay_signature', paymentData.razorpay_signature);
       
       await postFormData('/api/talent-combined', fd)
       setSubmitted(true)
@@ -968,7 +981,7 @@ export default function TalentStudentNomination() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? 'Submitting…' : 'Submit Registration & Nomination'}
+          {loading ? 'Processing...' : 'Pay ₹99 & Submit Nomination'}
         </button>
       </motion.form>
     </PageShell>

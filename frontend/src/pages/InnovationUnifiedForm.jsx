@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
+import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 
 const INNOVATION_TYPE_OPTIONS = [
@@ -212,14 +213,28 @@ export default function InnovationUnifiedForm() {
     setLoading(true)
     setError('')
 
-    const err = validate()
+    const err = validateCommon()
     if (err) {
       showError(err)
       return
     }
 
     try {
-      await postFormData(endpoint, buildPayload())
+      const userInfo = {
+        name: isForSpeciallyAbled ? form.teamName : form.member1Name,
+        email: form.member1Email,
+        phone: form.member1Phone,
+        eventType: isForSpeciallyAbled ? 'innovation-college' : 'innovation-pwd'
+      };
+      
+      const paymentData = await handlePaymentProcess(userInfo);
+      
+      const payload = buildPayload();
+      payload.append('razorpay_payment_id', paymentData.razorpay_payment_id);
+      payload.append('razorpay_order_id', paymentData.razorpay_order_id);
+      payload.append('razorpay_signature', paymentData.razorpay_signature);
+
+      await postFormData(endpoint, payload)
       setSubmitted(true)
     } catch (err) {
       setError(err.message)
@@ -610,7 +625,7 @@ export default function InnovationUnifiedForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? 'Submitting...' : 'Submit Registration'}
+          {loading ? 'Processing...' : 'Pay ₹99 & Register'}
         </button>
       </motion.form>
     </PageShell>

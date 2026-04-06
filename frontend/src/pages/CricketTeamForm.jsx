@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
+import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
@@ -78,6 +79,19 @@ export default function CricketTeamForm() {
     }
 
     try {
+      const userInfo = {
+        name: form.teamName,
+        email: form.contactEmail,
+        phone: form.contactPhone,
+        eventType: 'cricket'
+      };
+      
+      const paymentData = await handlePaymentProcess(userInfo);
+      
+      submitData.razorpay_payment_id = paymentData.razorpay_payment_id;
+      submitData.razorpay_order_id = paymentData.razorpay_order_id;
+      submitData.razorpay_signature = paymentData.razorpay_signature;
+
       await postJSON('/api/cricket', submitData)
       setSubmitted(true)
     } catch (err) {
@@ -257,7 +271,7 @@ export default function CricketTeamForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
         >
-          {loading ? 'Submitting…' : 'Submit Interest'}
+          {loading ? 'Processing...' : 'Pay ₹99 & Submit Interest'}
         </button>
       </motion.form>
     </PageShell>

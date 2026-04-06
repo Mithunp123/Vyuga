@@ -114,6 +114,11 @@ async function sendInnovationCollegeConfirmation(d) {
       row('Description', d.ideaDescription),
     ].join(''))}
     ${section('Team Members', members)}
+    ${d.paymentStatus ? section('Payment Details', [
+      row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
+      row('Order ID', d.razorpayOrderId),
+      row('Transaction ID', d.razorpayPaymentId),
+    ].join('')) : ''}
   `)
   await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (For Specially Abled)', html)
 }
@@ -138,6 +143,11 @@ async function sendInnovationPwdConfirmation(d) {
       row('Disability Type', d.member1DisabilityType),
     ].join(''))}
     ${extraMembers ? section('Additional Team Members', extraMembers) : ''}
+    ${d.paymentStatus ? section('Payment Details', [
+      row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
+      row('Order ID', d.razorpayOrderId),
+      row('Transaction ID', d.razorpayPaymentId),
+    ].join('')) : ''}
   `)
   await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (By Specially Abled)', html)
 }
@@ -186,6 +196,11 @@ async function sendTalentStudentConfirmation(d) {
       row('Guardian Email', d.guardianEmail),
       row('Video Link', d.videoLink ? `<a href="${d.videoLink}" style="color:#0197B2;">${d.videoLink}</a>` : ''),
     ].join(''))}
+    ${d.paymentStatus ? section('Payment Details', [
+      row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
+      row('Order ID', d.razorpayOrderId),
+      row('Transaction ID', d.razorpayPaymentId),
+    ].join('')) : ''}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       📹 Your performance video has been received and will be reviewed by our team.
     </p>
@@ -233,6 +248,11 @@ async function sendCricketConfirmation(d) {
       row('Email', d.contactEmail),
       row('Phone', d.contactPhone),
     ].join(''))}
+    ${d.paymentStatus ? section('Payment Details', [
+      row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
+      row('Order ID', d.razorpayOrderId),
+      row('Transaction ID', d.razorpayPaymentId),
+    ].join('')) : ''}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Our team will reach out to you with tournament details soon.
     </p>

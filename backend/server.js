@@ -24,6 +24,22 @@ const {
   transporter,
 } = require('./mailer')
 
+const crypto = require('crypto')
+const Razorpay = require('razorpay')
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+})
+
+function verifyRazorpaySignature(orderId, paymentId, signature) {
+  if (!orderId || !paymentId || !signature) return false;
+  const generated = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .update(orderId + '|' + paymentId)
+    .digest('hex');
+  return generated === signature;
+}
+
 const app = express()
 app.set('trust proxy', 1)  // trust first proxy (Nginx/Cloudflare)
 const PORT = process.env.PORT || 3001
@@ -280,6 +296,42 @@ app.post('/api/log-error', errorReportLimiter, async (req, res) => {
   res.json({ success: true })
 })
 
+// ── Razorpay Payment Order Creation ───────────────────────────────────────────
+app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
+  try {
+    const { eventType, name, email, phone } = req.body;
+    const amount = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
+    
+    const options = {
+      amount,
+      currency: 'INR',
+      receipt: `rcpt_${Date.now()}`
+    };
+    
+    const order = await razorpay.orders.create(options);
+    
+    const { data: payRecord, error } = await supabase.from('payments').insert([{
+      razorpay_order_id: order.id,
+      event_type: eventType,
+      amount: amount,
+      payer_name: sanitizeText(name, 100),
+      payer_email: email ? email.trim().toLowerCase() : null,
+      payer_phone: phone ? phone.trim() : null,
+      status: 'created'
+    }]).select().single();
+    
+    if (error) {
+      console.error('Payment DB Error:', error);
+      throw error;
+    }
+    
+    res.json({ success: true, orderId: order.id, amount, currency: 'INR', keyId: process.env.RAZORPAY_KEY_ID });
+  } catch (err) {
+    await logError({ source: 'user', endpoint: '/api/payment/create-order', method: 'POST', errorType: 'server_error', message: err.message, req });
+    res.status(500).json({ success: false, message: 'Failed to create payment order' });
+  }
+})
+
 // ── 1. Innovation Fest – College Category ─────────────────────────────────────
 // POST /api/innovation-college
 app.post('/api/innovation-college', registrationLimiter, innovationUpload.single('prototypeImage'), async (req, res) => {
@@ -292,6 +344,14 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
       member2Name, member2Email, member2Phone,
       member3Name, member3Email, member3Phone,
     } = req.body
+
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      if (req.file) {
+        try { fs.unlinkSync(req.file.path) } catch(e) {}
+      }
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
@@ -370,6 +430,9 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
         members,
         prototype_image_path: protoImagePath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
+        razorpay_order_id: req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
       }])
       .select()
       .single()
@@ -378,12 +441,22 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
       await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature: req.body.razorpay_signature,
+      registration_id: data.id
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+
     try {
       sendInnovationCollegeConfirmation({
         teamName, collegeName, theme: sTheme, ideaTitle, ideaDescription,
         member1Name, member1Email, member1Phone,
         member2Name, member2Email, member2Phone,
         member3Name, member3Email, member3Phone,
+        paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
       })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
@@ -406,6 +479,13 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       member2Name, member2Email, member2Phone,
       member3Name, member3Email, member3Phone,
     } = req.body
+
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      if (req.files && req.files['prototypeImage']) { try { fs.unlinkSync(req.files['prototypeImage'][0].path) } catch(e) {} }
+      if (req.files && req.files['udidCard']) { try { fs.unlinkSync(req.files['udidCard'][0].path) } catch(e) {} }
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
@@ -510,6 +590,9 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         prototype_image_path: protoImagePath,
         udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
+        razorpay_order_id: req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
       }])
       .select()
       .single()
@@ -518,12 +601,22 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature: req.body.razorpay_signature,
+      registration_id: data.id
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+
     try {
       sendInnovationPwdConfirmation({
         participationType, ideaTitle, ideaDescription,
         member1Name, member1Email, member1Phone, member1DisabilityType: sDisability,
         member2Name, member2Email, member2Phone,
         member3Name, member3Email, member3Phone,
+        paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
       })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
@@ -630,6 +723,12 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl,
     } = req.body
 
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
+
     // ── Validation ───────────────────────────────────────
     const errors = validate([
       { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required' },
@@ -717,6 +816,9 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         video_link: videoLink ? videoLink.trim() : '',
         video_file_path: videoFileName,
         performance_url: performanceUrl ? performanceUrl.trim() : null,
+        razorpay_order_id: req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
       }])
       .select()
       .single()
@@ -725,6 +827,15 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       await logError({ source: 'user', endpoint: '/api/talent-student', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature: req.body.razorpay_signature,
+      registration_id: data.id
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+
     // Fetch org contact email so we can notify the organisation too
     const { data: orgData } = await supabase
       .from('talent_organizations')
@@ -788,6 +899,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       parsedOrgDisabilityTypes = []
     }
     console.log('Parsed orgDisabilityTypes:', parsedOrgDisabilityTypes)
+
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
@@ -958,7 +1075,10 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         guardian_email: nominationType === 'individual' && guardianEmail ? guardianEmail.toLowerCase() : null,
         video_link: videoLink ? sanitizeText(videoLink, 500) : null,
         video_file_path: videoFileName,
-        performance_url: sanitizedPerformanceUrl
+        performance_url: sanitizedPerformanceUrl,
+        razorpay_order_id: req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
       }])
 
     if (error) {
@@ -966,6 +1086,14 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature: req.body.razorpay_signature,
+      registration_id: data ? data[0]?.id : null
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
 
     console.log('✅ Database insertion successful')
 
@@ -979,6 +1107,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
           guardianName, guardianPhone, guardianEmail, videoLink: null,
           orgContactEmail: contactEmail,
           orgContactName: contactName,
+          paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
         })
       } else {
         // For team nominations, send email to organization contact
@@ -987,6 +1116,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
           disabilityType: 'Multiple (Team)', talentCategory: processedTalentCategory, 
           talentDescription, guardianName: null, guardianPhone: null, guardianEmail: null,
           videoLink: null, orgContactEmail: contactEmail, orgContactName: contactName,
+          paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
         })
       }
       console.log('✅ Emails sent successfully')
@@ -1016,6 +1146,11 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       contactName, contactEmail, contactPhone,
       tournamentExperience,
     } = req.body
+
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
@@ -1063,6 +1198,9 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
         contact_name: sanitizeText(contactName, 100),
         contact_email: contactEmail.trim().toLowerCase(),
         contact_phone: contactPhone.trim(),
+        razorpay_order_id: req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
       }])
       .select()
       .single()
@@ -1071,8 +1209,16 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature: req.body.razorpay_signature,
+      registration_id: data.id
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
     try {
-      sendCricketConfirmation({ teamName, city, state, playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone })
+      sendCricketConfirmation({ teamName, city, state, playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone, paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id })
     } catch (emailErr) {
       await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }
