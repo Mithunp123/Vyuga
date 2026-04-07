@@ -565,7 +565,7 @@ export default function About() {
                       {appOpen && appClose ? (
                         <div className="flex flex-col gap-1.5">
                           <span className="text-sm text-slate-600 font-medium whitespace-nowrap flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan shrink-0" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
                             <span className="w-10 text-xs text-slate-400 font-bold uppercase">Starts</span> {appOpen}
                           </span>
                           <span className="text-sm text-slate-600 font-medium whitespace-nowrap flex items-center gap-2">
