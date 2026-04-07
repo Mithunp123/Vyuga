@@ -40,7 +40,7 @@ const EVENT_DATA = [
     timeline: [
       { label: "Application Open", date: "10/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
-      { label: "1st Round Results", date: "20/05/2026" }
+      { label: "1st Round Results", date: "05/06/2026" }
     ],
     prizes: [
       { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
@@ -60,7 +60,7 @@ const EVENT_DATA = [
     timeline: [
       { label: "Application Open", date: "10/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
-      { label: "1st Round Results", date: "20/05/2026" }
+      { label: "1st Round Results", date: "05/06/2026" }
     ],
     prizes: [
       { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
