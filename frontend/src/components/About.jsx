@@ -133,8 +133,8 @@ const eventSchedules = [
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "For Specially Abled", rewards: [{pos: "1st", val: "25K"}, {pos: "2nd", val: "15K"}, {pos: "3rd", val: "10K"}] },
-      { category: "By Specially Abled", rewards: [{pos: "1st", val: "25K"}, {pos: "2nd", val: "15K"}, {pos: "3rd", val: "10K"}] }
+      { category: "For Specially Abled", rewards: [{pos: "1st", val: "25000"}, {pos: "2nd", val: "15000"}, {pos: "3rd", val: "10000"}] },
+      { category: "By Specially Abled", rewards: [{pos: "1st", val: "25000"}, {pos: "2nd", val: "15000"}, {pos: "3rd", val: "10000"}] }
     ]
   },
   {
@@ -145,7 +145,7 @@ const eventSchedules = [
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "15K"}, {pos: "2nd", val: "10K"}, {pos: "3rd", val: "5K"}] }
+      { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
     ]
   },
   {
@@ -156,21 +156,21 @@ const eventSchedules = [
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "15K"}, {pos: "2nd", val: "10K"}, {pos: "3rd", val: "5K"}] }
+      { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
     ]
   },
   {
     name: "Blind Cricket",
     timeline: [],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "10K"}, {pos: "2nd", val: "5K"}] }
+      { category: "Overall", rewards: [{pos: "1st", val: "10000"}, {pos: "2nd", val: "5000"}] }
     ]
   },
   {
     name: "Blind Chess",
     timeline: [],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "3K"}, {pos: "2nd", val: "2K"}] }
+      { category: "Overall", rewards: [{pos: "1st", val: "3000"}, {pos: "2nd", val: "2000"}] }
     ]
   }
 ]
