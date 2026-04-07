@@ -539,80 +539,90 @@ export default function About() {
           <p className="text-slate-500 font-medium tracking-wide text-sm sm:text-base text-center">Key dates and prize pool for Vyuga events</p>
         </div>
 
-        <div className="max-w-5xl mx-auto flex flex-col gap-6">
-          {eventSchedules.map((event, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="flex flex-col md:flex-row bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
-            >
-              {/* Event Name Left Banner */}
-              <div className="bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 md:w-1/3 p-6 sm:p-8 flex flex-col justify-center relative overflow-hidden">
-                <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-[#5BCB2B] opacity-80" />
-                <h3 className="font-display text-2xl lg:text-3xl font-bold text-slate-800 uppercase tracking-wide group-hover:text-brand-cyan transition-colors">{event.name}</h3>
-              </div>
+        <div className="max-w-6xl mx-auto w-full overflow-x-auto pb-4">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead>
+              <tr className="bg-slate-50 border-y border-slate-200 text-[11px] sm:text-xs uppercase tracking-widest text-slate-500">
+                <th className="py-4 px-6 font-bold w-1/4">Event Name</th>
+                <th className="py-4 px-6 font-bold">Registration Window</th>
+                <th className="py-4 px-6 font-bold">Results Date</th>
+                <th className="py-4 px-6 font-bold">Prize Pool</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 pb-8">
+              {eventSchedules.map((event, idx) => {
+                const appOpen = event.timeline.find(t => t.label.includes("Open"))?.date;
+                const appClose = event.timeline.find(t => t.label.includes("Close"))?.date;
+                const resultDt = event.timeline.find(t => t.label.includes("Result"))?.date;
 
-              {/* Event Details Right Config */}
-              <div className={`p-6 sm:p-8 md:w-2/3 grid gap-8 sm:gap-12 ${event.timeline.length > 0 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
-                
-                {/* Timeline Column */}
-                {event.timeline.length > 0 && (
-                  <div>
-                    <h4 className="font-bold text-slate-400 uppercase text-[11px] sm:text-xs tracking-widest mb-4 flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-brand-cyan" /> Key Dates
-                    </h4>
-                    <ul className="space-y-3 shrink-0">
-                      {event.timeline.map((step, sIdx) => (
-                        <li key={sIdx} className="flex justify-between items-center text-sm border-b border-slate-100 last:border-0 pb-2 last:pb-0">
-                          <span className="text-slate-600 font-medium pr-4">{step.label}</span>
-                          <span className={`font-bold shrink-0 text-right ${step.label.includes('Results') ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
-                            {step.date}
+                return (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="py-5 px-6 font-display font-bold text-slate-800 text-lg sm:text-xl uppercase group-hover:text-brand-cyan transition-colors align-top">
+                      {event.name}
+                    </td>
+                    
+                    <td className="py-5 px-6 align-top">
+                      {appOpen && appClose ? (
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-sm text-slate-600 font-medium whitespace-nowrap flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan shrink-0" />
+                            <span className="w-10 text-xs text-slate-400 font-bold uppercase">Starts</span> {appOpen}
                           </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Prizes Column */}
-                {event.prizes.length > 0 && (
-                  <div>
-                    <h4 className="font-bold text-slate-400 uppercase text-[11px] sm:text-xs tracking-widest mb-4 flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-[#5BCB2B]" /> Prizes
-                    </h4>
-                    <div className="space-y-5">
-                      {event.prizes.map((prizeGrp, pIdx) => (
-                        <div key={pIdx}>
-                          {prizeGrp.category !== "Overall" && (
-                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                              {prizeGrp.category}
-                            </span>
-                          )}
-                          <div className="flex flex-wrap gap-x-5 gap-y-3 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
-                            {prizeGrp.rewards.map((rew, rIdx) => {
-                              let rankColor = rew.pos === "1st" ? "text-yellow-500" : rew.pos === "2nd" ? "text-slate-400" : "text-amber-600"
-                              return (
-                                <div key={rIdx} className="flex items-center gap-2 min-w-fit">
-                                  <Medal className={`w-4 h-4 ${rankColor}`} />
-                                  <span className="text-sm text-slate-600 whitespace-nowrap flex items-center gap-1.5">
-                                    <span className="font-black text-slate-800">{rew.pos}</span> <div className="w-1 h-1 rounded-full bg-slate-300" /> <span className="font-bold text-slate-800 tracking-wide">₹{rew.val}</span>
-                                  </span>
-                                </div>
-                              )
-                            })}
-                          </div>
+                          <span className="text-sm text-slate-600 font-medium whitespace-nowrap flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span className="w-10 text-xs text-slate-400 font-bold uppercase">Ends</span> {appClose}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-              </div>
-            </motion.div>
-          ))}
+                      ) : (
+                        <span className="text-slate-400 font-medium">-</span>
+                      )}
+                    </td>
+
+                    <td className="py-5 px-6 align-top">
+                      {resultDt ? (
+                        <span className="text-sm font-bold text-[#5BCB2B] whitespace-nowrap flex items-center gap-2">
+                            <Trophy className="w-3.5 h-3.5 text-[#5BCB2B]" /> {resultDt}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 font-medium">-</span>
+                      )}
+                    </td>
+
+                    <td className="py-5 px-6 align-top">
+                      <div className="flex flex-col gap-4">
+                        {event.prizes.map((prizeGrp, pIdx) => (
+                          <div key={pIdx} className="flex flex-col">
+                            {prizeGrp.category !== "Overall" && (
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 leading-none">
+                                {prizeGrp.category}
+                              </span>
+                            )}
+                            <div className="flex flex-wrap gap-x-5 gap-y-1">
+                              {prizeGrp.rewards.map((rew, rIdx) => {
+                                let rankColor = rew.pos === "1st" ? "text-yellow-500" : rew.pos === "2nd" ? "text-slate-400" : "text-amber-600";
+                                const posNum = rew.pos.replace(/\D/g, '');
+                                const posSuffix = rew.pos.replace(/\d/g, '');
+                                
+                                return (
+                                  <div key={rIdx} className="flex items-baseline gap-1 w-max text-sm">
+                                    <Medal className={`w-4 h-4 translate-y-0.5 mr-0.5 ${rankColor}`} />
+                                    <span className="font-bold text-slate-500">
+                                      {posNum}<sup className="text-[10px] lowercase -top-1 font-semibold">{posSuffix}</sup>
+                                    </span>
+                                    <span className="font-black text-slate-800 tracking-wide text-[15px] ml-1">₹{rew.val}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
