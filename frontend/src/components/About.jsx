@@ -551,9 +551,12 @@ export default function About() {
             </thead>
             <tbody className="divide-y divide-slate-100 pb-8">
               {eventSchedules.map((event, idx) => {
-                const appOpen = event.timeline.find(t => t.label.includes("Open"))?.date;
-                const appClose = event.timeline.find(t => t.label.includes("Close"))?.date;
-                const resultDt = event.timeline.find(t => t.label.includes("Result"))?.date;
+                const appOpen = event.timeline.find(t => t.label.toLowerCase().includes("open"))?.date;
+                const appClose = event.timeline.find(t => t.label.toLowerCase().includes("close"))?.date;
+                const resultDt = event.timeline.find(t => {
+                  const lbl = t.label.toLowerCase();
+                  return lbl.includes("result") || lbl.includes("announcement") || lbl.includes("finalist");
+                })?.date;
 
                 return (
                   <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">

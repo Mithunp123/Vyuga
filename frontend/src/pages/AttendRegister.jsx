@@ -235,10 +235,10 @@ export default function AttendRegister() {
                         <ul className="space-y-4 border-l-2 border-brand-cyan/20 ml-2 pl-4">
                           {event.timeline.map((step, sIdx) => (
                             <li key={sIdx} className="relative">
-                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-white ring-2 ${step.label.includes("Result") ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
+                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-white ring-2 ${/(result|announcement|finalist)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
-                                <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${step.label.includes('Results') ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
+                                <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${/(result|announcement|finalist)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
                                   {step.date}
                                 </span>
                               </div>
