@@ -124,36 +124,55 @@ const eventsList = [
   }
 ]
 
-const timelines = [
+const eventSchedules = [
   {
-    title: "Innovative Fest Applications",
-    date: "Open: 10/04/2026 — Close: 10/05/2026",
-    type: "registration"
+    name: "Innovative Fest",
+    timeline: [
+      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Close", date: "10/05/2026" },
+      { label: "1st Round Results", date: "20/05/2026" }
+    ],
+    prizes: [
+      { category: "For Specially Abled", rewards: [{pos: "1st", val: "25K"}, {pos: "2nd", val: "15K"}, {pos: "3rd", val: "10K"}] },
+      { category: "By Specially Abled", rewards: [{pos: "1st", val: "25K"}, {pos: "2nd", val: "15K"}, {pos: "3rd", val: "10K"}] }
+    ]
   },
   {
-    title: "Special Talent Applications",
-    date: "Open: 10/04/2026 — Close: 20/05/2026",
-    type: "registration"
+    name: "Special Talent",
+    timeline: [
+      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Close", date: "20/05/2026" },
+      { label: "1st Round Results", date: "20/05/2026" }
+    ],
+    prizes: [
+      { category: "Overall", rewards: [{pos: "1st", val: "15K"}, {pos: "2nd", val: "10K"}, {pos: "3rd", val: "5K"}] }
+    ]
   },
   {
-    title: "Short Film Applications",
-    date: "Open: 10/04/2026 — Close: 20/05/2026",
-    type: "registration"
+    name: "Short Film",
+    timeline: [
+      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Close", date: "20/05/2026" },
+      { label: "1st Round Results", date: "20/05/2026" }
+    ],
+    prizes: [
+      { category: "Overall", rewards: [{pos: "1st", val: "15K"}, {pos: "2nd", val: "10K"}, {pos: "3rd", val: "5K"}] }
+    ]
   },
   {
-    title: "1st Round Results",
-    date: "20/05/2026",
-    type: "result"
+    name: "Blind Cricket",
+    timeline: [],
+    prizes: [
+      { category: "Overall", rewards: [{pos: "1st", val: "10K"}, {pos: "2nd", val: "5K"}] }
+    ]
+  },
+  {
+    name: "Blind Chess",
+    timeline: [],
+    prizes: [
+      { category: "Overall", rewards: [{pos: "1st", val: "3K"}, {pos: "2nd", val: "2K"}] }
+    ]
   }
-]
-
-const prizeList = [
-  { category: "Innovative Fest (For)", first: "25K", second: "15K", third: "10K" },
-  { category: "Innovative Fest (By)", first: "25K", second: "15K", third: "10K" },
-  { category: "Special Talent", first: "15K", second: "10K", third: "5K" },
-  { category: "Short Film", first: "15K", second: "10K", third: "5K" },
-  { category: "Blind Cricket", first: "10K", second: "5K" },
-  { category: "Blind Chess", first: "3K", second: "2K" },
 ]
 
 /* ── Marquee ── */
@@ -520,87 +539,80 @@ export default function About() {
           <p className="text-slate-500 font-medium tracking-wide text-sm sm:text-base text-center">Key dates and prize pool for Vyuga events</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Timeline Column */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-8">
-              <Calendar className="w-6 h-6 text-brand-cyan" />
-              <h3 className="font-display text-xl sm:text-2xl font-bold text-slate-800">Event Timeline</h3>
-            </div>
-            
-            <div className="relative border-l-2 border-brand-cyan/20 pl-6 space-y-6 py-2 ml-3">
-              {timelines.map((item, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="relative"
-                >
-                  <div className={`absolute -left-[31px] top-4 h-3 w-3 rounded-full border-2 border-white ring-4 ${item.type === 'result' ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
-                  <div className="bg-slate-50 rounded-xl p-4 sm:p-5 border border-slate-100 hover:border-brand-cyan/40 hover:bg-white transition-all shadow-sm hover:shadow-md group">
-                    <h4 className="font-bold text-slate-800 text-base sm:text-lg mb-1 group-hover:text-brand-cyan transition-colors">{item.title}</h4>
-                    <p className="font-mono text-xs sm:text-sm font-semibold text-slate-500">{item.date}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+        <div className="max-w-5xl mx-auto flex flex-col gap-6">
+          {eventSchedules.map((event, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              className="flex flex-col md:flex-row bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+            >
+              {/* Event Name Left Banner */}
+              <div className="bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 md:w-1/3 p-6 sm:p-8 flex flex-col justify-center relative overflow-hidden">
+                <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-brand-cyan to-[#5BCB2B] opacity-80" />
+                <h3 className="font-display text-2xl lg:text-3xl font-bold text-slate-800 uppercase tracking-wide group-hover:text-brand-cyan transition-colors">{event.name}</h3>
+              </div>
 
-          {/* Prizes Column */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-8">
-              <Trophy className="w-6 h-6 text-[#5BCB2B]" />
-              <h3 className="font-display text-xl sm:text-2xl font-bold text-slate-800">Prize Pool</h3>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              {prizeList.map((prize, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-[#5BCB2B]/40 hover:-translate-y-1 transition-all group"
-                >
-                  <h4 className="font-bold text-slate-700 text-sm mb-3 uppercase tracking-wide border-b border-slate-100 pb-2 group-hover:text-[#5BCB2B] transition-colors line-clamp-1" title={prize.category}>
-                    {prize.category}
-                  </h4>
-                  <div className="space-y-2.5">
-                    {prize.first && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <Medal className="w-4 h-4 text-yellow-500 drop-shadow-sm" />
-                          <span className="font-medium text-slate-600">1st Prize</span>
-                        </div>
-                        <span className="font-bold text-slate-800 bg-yellow-50 px-2 py-0.5 rounded text-yellow-700">₹{prize.first}</span>
-                      </div>
-                    )}
-                    {prize.second && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
-                          <span className="font-medium text-slate-600">2nd Prize</span>
-                        </div>
-                        <span className="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-slate-600">₹{prize.second}</span>
-                      </div>
-                    )}
-                    {prize.third && (
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <Medal className="w-4 h-4 text-amber-600 drop-shadow-sm" />
-                          <span className="font-medium text-slate-600">3rd Prize</span>
-                        </div>
-                        <span className="font-bold text-slate-800 bg-amber-50 px-2 py-0.5 rounded text-amber-700">₹{prize.third}</span>
-                      </div>
-                    )}
+              {/* Event Details Right Config */}
+              <div className={`p-6 sm:p-8 md:w-2/3 grid gap-8 sm:gap-12 ${event.timeline.length > 0 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+                
+                {/* Timeline Column */}
+                {event.timeline.length > 0 && (
+                  <div>
+                    <h4 className="font-bold text-slate-400 uppercase text-[11px] sm:text-xs tracking-widest mb-4 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-brand-cyan" /> Key Dates
+                    </h4>
+                    <ul className="space-y-3 shrink-0">
+                      {event.timeline.map((step, sIdx) => (
+                        <li key={sIdx} className="flex justify-between items-center text-sm border-b border-slate-100 last:border-0 pb-2 last:pb-0">
+                          <span className="text-slate-600 font-medium pr-4">{step.label}</span>
+                          <span className={`font-bold shrink-0 text-right ${step.label.includes('Results') ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
+                            {step.date}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+                )}
+
+                {/* Prizes Column */}
+                {event.prizes.length > 0 && (
+                  <div>
+                    <h4 className="font-bold text-slate-400 uppercase text-[11px] sm:text-xs tracking-widest mb-4 flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-[#5BCB2B]" /> Prizes
+                    </h4>
+                    <div className="space-y-5">
+                      {event.prizes.map((prizeGrp, pIdx) => (
+                        <div key={pIdx}>
+                          {prizeGrp.category !== "Overall" && (
+                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                              {prizeGrp.category}
+                            </span>
+                          )}
+                          <div className="flex flex-wrap gap-x-5 gap-y-3 bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
+                            {prizeGrp.rewards.map((rew, rIdx) => {
+                              let rankColor = rew.pos === "1st" ? "text-yellow-500" : rew.pos === "2nd" ? "text-slate-400" : "text-amber-600"
+                              return (
+                                <div key={rIdx} className="flex items-center gap-2 min-w-fit">
+                                  <Medal className={`w-4 h-4 ${rankColor}`} />
+                                  <span className="text-sm text-slate-600 whitespace-nowrap flex items-center gap-1.5">
+                                    <span className="font-black text-slate-800">{rew.pos}</span> <div className="w-1 h-1 rounded-full bg-slate-300" /> <span className="font-bold text-slate-800 tracking-wide">₹{rew.val}</span>
+                                  </span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
 
