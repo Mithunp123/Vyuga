@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Calendar, Trophy, Medal } from 'lucide-react'
+import { Calendar, Trophy, Medal, Crown, Award } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 
 const EVENT_DATA = [
@@ -268,7 +268,7 @@ export default function AttendRegister() {
                                   return (
                                     <div className="flex flex-col items-center gap-0.5 mt-2 mb-2 bg-white px-6 py-2.5 rounded-xl border border-slate-100 shadow-sm">
                                       <div className="flex items-center gap-1.5">
-                                        <Medal className="w-6 h-6 text-yellow-500 drop-shadow-sm" />
+                                        <Crown className="w-6 h-6 text-yellow-500 drop-shadow-sm" />
                                         <span className="font-bold text-slate-500 text-sm">
                                           1<sup className="text-[10px] lowercase -top-1 font-semibold">st</sup> Place
                                         </span>
@@ -301,7 +301,7 @@ export default function AttendRegister() {
                                     return (
                                       <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm min-w-[100px]">
                                         <div className="flex items-center gap-1.5">
-                                          <Medal className="w-5 h-5 text-amber-600 drop-shadow-sm" />
+                                          <Award className="w-5 h-5 text-amber-600 drop-shadow-sm" />
                                           <span className="font-bold text-slate-500 text-sm">
                                             3<sup className="text-[10px] lowercase -top-1 font-semibold">rd</sup>
                                           </span>

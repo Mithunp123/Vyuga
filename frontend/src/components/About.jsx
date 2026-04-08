@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useInView, useScroll, useTransform, motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
-import { ArrowUpRight, Calendar, Trophy, Medal } from 'lucide-react'
+import { ArrowUpRight, Calendar, Trophy, Medal, Crown, Award } from 'lucide-react'
 
 import group from '../assets/images/group.png'
 import hand from '../assets/images/hand.png'
@@ -606,7 +606,7 @@ export default function About() {
                                 if (!first) return null;
                                 return (
                                   <div className="flex items-center gap-1.5 w-max">
-                                    <Medal className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
+                                    <Crown className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
                                     <span className="font-bold text-slate-500 text-sm">
                                       1<sup className="text-[10px] lowercase -top-1 font-semibold">st</sup>
                                     </span>
@@ -635,7 +635,7 @@ export default function About() {
                                   if (!third) return <div />;
                                   return (
                                     <div className="flex items-center gap-1 w-max">
-                                      <Medal className="w-4 h-4 text-amber-600 drop-shadow-sm" />
+                                      <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
                                       <span className="font-bold text-slate-500 text-sm">
                                         3<sup className="text-[10px] lowercase -top-1 font-semibold">rd</sup>
                                       </span>
