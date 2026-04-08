@@ -600,22 +600,50 @@ export default function About() {
                                 {prizeGrp.category}
                               </span>
                             )}
-                            <div className="flex flex-wrap gap-x-5 gap-y-1">
-                              {prizeGrp.rewards.map((rew, rIdx) => {
-                                let rankColor = rew.pos === "1st" ? "text-yellow-500" : rew.pos === "2nd" ? "text-slate-400" : "text-amber-600";
-                                const posNum = rew.pos.replace(/\D/g, '');
-                                const posSuffix = rew.pos.replace(/\d/g, '');
-                                
+                            <div className="flex flex-col items-center gap-1 w-max py-2">
+                              {(() => {
+                                const first = prizeGrp.rewards.find(r => r.pos === "1st");
+                                if (!first) return null;
                                 return (
-                                  <div key={rIdx} className="flex items-baseline gap-1 w-max text-sm">
-                                    <Medal className={`w-4 h-4 translate-y-0.5 mr-0.5 ${rankColor}`} />
-                                    <span className="font-bold text-slate-500">
-                                      {posNum}<sup className="text-[10px] lowercase -top-1 font-semibold">{posSuffix}</sup>
+                                  <div className="flex items-center gap-1.5 w-max">
+                                    <Medal className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
+                                    <span className="font-bold text-slate-500 text-sm">
+                                      1<sup className="text-[10px] lowercase -top-1 font-semibold">st</sup>
                                     </span>
-                                    <span className="font-black text-slate-800 tracking-wide text-[15px] ml-1">₹{rew.val}</span>
+                                    <span className="font-black text-slate-800 tracking-wide text-[16px] ml-0.5">₹{first.val}</span>
                                   </div>
                                 )
-                              })}
+                              })()}
+                              
+                              <div className="flex w-full min-w-[200px] justify-between gap-8 mt-1">
+                                {(() => {
+                                  const second = prizeGrp.rewards.find(r => r.pos === "2nd");
+                                  if (!second) return <div />;
+                                  return (
+                                    <div className="flex items-center gap-1 w-max">
+                                      <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
+                                      <span className="font-bold text-slate-500 text-sm">
+                                        2<sup className="text-[10px] lowercase -top-1 font-semibold">nd</sup>
+                                      </span>
+                                      <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{second.val}</span>
+                                    </div>
+                                  );
+                                })()}
+                                
+                                {(() => {
+                                  const third = prizeGrp.rewards.find(r => r.pos === "3rd");
+                                  if (!third) return <div />;
+                                  return (
+                                    <div className="flex items-center gap-1 w-max">
+                                      <Medal className="w-4 h-4 text-amber-600 drop-shadow-sm" />
+                                      <span className="font-bold text-slate-500 text-sm">
+                                        3<sup className="text-[10px] lowercase -top-1 font-semibold">rd</sup>
+                                      </span>
+                                      <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{third.val}</span>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
                             </div>
                           </div>
                         ))}

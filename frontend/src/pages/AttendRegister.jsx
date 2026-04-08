@@ -261,24 +261,56 @@ export default function AttendRegister() {
                                   {prizeGrp.category}
                                 </span>
                               )}
-                              <div className="flex flex-col gap-3">
-                                {prizeGrp.rewards.map((rew, rIdx) => {
-                                  let rankColor = rew.pos === "1st" ? "text-yellow-500" : rew.pos === "2nd" ? "text-slate-400" : "text-amber-600";
-                                  const posNum = rew.pos.replace(/\D/g, '');
-                                  const posSuffix = rew.pos.replace(/\d/g, '');
-                                  
+                              <div className="flex flex-col items-center gap-1 w-full py-2 bg-slate-50/50 rounded-2xl border border-slate-100 px-4">
+                                {(() => {
+                                  const first = prizeGrp.rewards.find(r => r.pos === "1st");
+                                  if (!first) return null;
                                   return (
-                                    <div key={rIdx} className="flex justify-between items-center text-sm bg-slate-50/80 rounded-xl p-3 border border-slate-100">
-                                      <div className="flex items-center gap-2">
-                                        <Medal className={`w-5 h-5 ${rankColor} drop-shadow-sm`} />
-                                        <span className="font-bold text-slate-600 uppercase text-[15px]">
-                                          {posNum}<sup className="text-[10px] -top-1.5 lowercase font-semibold ml-[1px]">{posSuffix}</sup> Place
+                                    <div className="flex flex-col items-center gap-0.5 mt-2 mb-2 bg-white px-6 py-2.5 rounded-xl border border-slate-100 shadow-sm">
+                                      <div className="flex items-center gap-1.5">
+                                        <Medal className="w-6 h-6 text-yellow-500 drop-shadow-sm" />
+                                        <span className="font-bold text-slate-500 text-sm">
+                                          1<sup className="text-[10px] lowercase -top-1 font-semibold">st</sup> Place
                                         </span>
                                       </div>
-                                      <span className="font-black text-slate-900 tracking-wide text-[16px]">₹{rew.val}</span>
+                                      <span className="font-black text-[#5BCB2B] tracking-wide text-xl mt-0.5">₹{first.val}</span>
                                     </div>
                                   )
-                                })}
+                                })()}
+                                
+                                <div className={`flex w-full ${prizeGrp.rewards.find(r => r.pos === "3rd") ? 'justify-between' : 'justify-center'} gap-4 mb-2`}>
+                                  {(() => {
+                                    const second = prizeGrp.rewards.find(r => r.pos === "2nd");
+                                    if (!second) return null;
+                                    return (
+                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm min-w-[100px]">
+                                        <div className="flex items-center gap-1.5">
+                                          <Medal className="w-5 h-5 text-slate-400 drop-shadow-sm" />
+                                          <span className="font-bold text-slate-500 text-sm">
+                                            2<sup className="text-[10px] lowercase -top-1 font-semibold">nd</sup>
+                                          </span>
+                                        </div>
+                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{second.val}</span>
+                                      </div>
+                                    );
+                                  })()}
+                                  
+                                  {(() => {
+                                    const third = prizeGrp.rewards.find(r => r.pos === "3rd");
+                                    if (!third) return null;
+                                    return (
+                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm min-w-[100px]">
+                                        <div className="flex items-center gap-1.5">
+                                          <Medal className="w-5 h-5 text-amber-600 drop-shadow-sm" />
+                                          <span className="font-bold text-slate-500 text-sm">
+                                            3<sup className="text-[10px] lowercase -top-1 font-semibold">rd</sup>
+                                          </span>
+                                        </div>
+                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{third.val}</span>
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
                               </div>
                             </div>
                           ))}
