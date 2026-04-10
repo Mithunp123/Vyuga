@@ -235,10 +235,10 @@ export default function AttendRegister() {
                         <ul className="space-y-4 border-l-2 border-brand-cyan/20 ml-2 pl-4">
                           {event.timeline.map((step, sIdx) => (
                             <li key={sIdx} className="relative">
-                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-white ring-2 ${/(result|announcement|finalist)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
+                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-white ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
-                                <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${/(result|announcement|finalist)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
+                                <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
                                   {step.date}
                                 </span>
                               </div>
@@ -270,7 +270,7 @@ export default function AttendRegister() {
                                       <div className="flex items-center gap-1.5">
                                         <Crown className="w-6 h-6 text-yellow-500 drop-shadow-sm" />
                                         <span className="font-bold text-slate-500 text-sm">
-                                          1<sup className="text-[10px] lowercase -top-1 font-semibold">st</sup> Place
+                                          Winner
                                         </span>
                                       </div>
                                       <span className="font-black text-[#5BCB2B] tracking-wide text-xl mt-0.5">₹{first.val}</span>
@@ -287,7 +287,7 @@ export default function AttendRegister() {
                                         <div className="flex items-center gap-1.5">
                                           <Medal className="w-5 h-5 text-slate-400 drop-shadow-sm" />
                                           <span className="font-bold text-slate-500 text-sm">
-                                            2<sup className="text-[10px] lowercase -top-1 font-semibold">nd</sup>
+                                            Runner
                                           </span>
                                         </div>
                                         <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{second.val}</span>
@@ -303,7 +303,7 @@ export default function AttendRegister() {
                                         <div className="flex items-center gap-1.5">
                                           <Award className="w-5 h-5 text-amber-600 drop-shadow-sm" />
                                           <span className="font-bold text-slate-500 text-sm">
-                                            3<sup className="text-[10px] lowercase -top-1 font-semibold">rd</sup>
+                                            Runner Up
                                           </span>
                                         </div>
                                         <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{third.val}</span>
