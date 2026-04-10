@@ -10,6 +10,7 @@ import think from '../assets/images/think.png'
 import child from '../assets/images/child.png'
 import cricketImg from '../assets/images/cirket.png'
 import chessImg from '../assets/images/chess.png'
+import shortFilmImg from '../assets/images/shortflim.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import srpLogo from '../assets/present by/SRP.webp'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
@@ -115,6 +116,12 @@ const eventsList = [
     description: "An inclusive blind cricket tournament showcasing skill, teamwork, and determination beyond vision.Players compete using adapted rules, highlighting true sportsmanship and ability. Winner and runner-up teams will receive cash prizes and trophies, celebrating excellence and inspiring every participant.",
     color: "!text-[#5BCB2B]",
     image: cricketImg
+  },
+  {
+    title: "Short Film Contest",
+    description: "Showcase your filmmaking skills by submitting impactful short films centered around inclusivity, accessibility, and empowerment.",
+    color: "!text-[#5BCB2B]",
+    image: shortFilmImg
   },
   {
     title: "Blind Chess",
@@ -485,10 +492,8 @@ export default function About() {
             let gridClass = ""
             // Layout: 
             // 0 (Innovation): col-span-2 (Full width top)
-            // 1 (Talent): row-span-2 (Vertical left)
-            // 2 (Cricket) & 3 (Chess): normal cells (Right stack)
+            // 1 to 4: standard 2-col horizontal grid (Left/Right)
             if (index === 0) gridClass = "md:col-span-2"
-            else if (index === 1) gridClass = "md:row-span-2"
             
             return (
               <div key={index} className={`group relative bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 flex flex-col ${gridClass}`}>
@@ -497,8 +502,8 @@ export default function About() {
                 
                 {/* Card Content */}
                 <div className="flex-1 flex flex-col h-full">
-                  <div className={`flex items-center justify-between gap-4 sm:gap-10 h-full ${index === 1 ? 'flex-col items-start' : 'flex-row'}`}>
-                    <div className={`flex-1 w-full`}>
+                  <div className="flex items-center justify-between gap-4 sm:gap-10 h-full flex-row">
+                    <div className="flex-1 w-full">
                       <h4 className={`font-display text-lg sm:text-xl font-bold ${event.color} mb-2 uppercase tracking-wide`}>
                         {event.title}
                       </h4>
@@ -507,17 +512,10 @@ export default function About() {
                       </p>
                     </div>
                     
-                    {/* Horizontal side images (Innovation, Cricket, Chess) ALWAYS on the right */}
-                    {(index === 0 || index === 2 || index === 3) && event.image && (
+                    {/* Horizontal side images ALWAYS on the right */}
+                    {event.image && (
                       <div className="w-auto flex shrink-0">
-                         <img src={event.image} alt={event.title} className="max-h-24 sm:max-h-40 w-auto object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-105" />
-                      </div>
-                    )}
-
-                    {/* Vertical bottom image (Talent Utsav) */}
-                    {index === 1 && event.image && (
-                      <div className="mt-auto pt-6 flex justify-center w-full">
-                         <img src={event.image} alt={event.title} className="max-h-72 w-full object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-[1.02]" />
+                         <img src={event.image} alt={event.title} className="max-h-24 sm:max-h-32 lg:max-h-40 w-auto object-contain drop-shadow-sm group-hover:drop-shadow-md transition-transform duration-300 group-hover:scale-105" />
                       </div>
                     )}
                   </div>
