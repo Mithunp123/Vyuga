@@ -163,7 +163,7 @@ export default function AttendRegister() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="min-h-[75vh] flex flex-col justify-center border-b border-slate-100 pb-16 sm:pb-24 last:border-0 last:pb-8"
+              className="py-12 lg:py-16 flex flex-col justify-center border-b border-slate-100 last:border-0"
             >
               <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
                 
@@ -219,31 +219,33 @@ export default function AttendRegister() {
                   </p>
 
                   <div className="grid sm:grid-cols-2 gap-4 mt-2">
-                    {event.details.map((sec, sIdx) => (
-                      <div key={sIdx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                        <h4 className="font-marker text-sm text-slate-800 tracking-wide mb-3 uppercase">{sec.label}</h4>
-                        <ul className="space-y-2">
-                          {sec.value.map((val, vIdx) => (
-                            <li key={vIdx} className="flex gap-2 text-sm text-slate-600">
-                              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
-                              <span>{val}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Image framed in a rectangular block */}
-                  {event.image && (
-                    <div className="mt-4 hidden sm:flex w-full bg-slate-50 border border-slate-100 rounded-2xl py-8 px-6 justify-center items-center relative overflow-hidden group">
-                      <img src={event.image} alt={event.title} className={`object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-105 ${
-                        event.id === 'shortfilm' ? 'h-48 md:h-64 lg:h-[300px]' :
-                        event.id === 'innovation' ? 'h-40 md:h-56 lg:h-[240px]' :
-                        'h-48 md:h-64 lg:h-[280px]'
-                      }`} />
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-6">
+                      {event.details.map((sec, sIdx) => (
+                        <div key={sIdx}>
+                          <h4 className="font-marker text-sm text-slate-800 tracking-wide mb-3 uppercase">{sec.label}</h4>
+                          <ul className="space-y-2">
+                            {sec.value.map((val, vIdx) => (
+                              <li key={vIdx} className="flex gap-2 text-sm text-slate-600">
+                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
+                                <span>{val}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
                     </div>
-                  )}
+
+                    {/* Image embedded seamlessly beside details */}
+                    {event.image && (
+                      <div className="hidden sm:flex bg-slate-50 border border-slate-100 rounded-2xl p-4 justify-center items-center relative overflow-hidden group min-h-[160px]">
+                        <img src={event.image} alt={event.title} className={`object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-105 ${
+                          event.id === 'shortfilm' ? 'h-36 md:h-48 scale-110' :
+                          event.id === 'innovation' ? 'h-40 md:h-56' :
+                          'h-36 md:h-48'
+                        }`} />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Right Side: Timeline and Prizes Panel */}
@@ -256,10 +258,10 @@ export default function AttendRegister() {
                         <h4 className="font-bold text-slate-400 uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-brand-cyan" /> Key Dates
                         </h4>
-                        <ul className="space-y-4 border-l-2 border-brand-cyan/20 ml-2 pl-4">
+                        <ul className="space-y-4 border-l-2 border-[#5BCB2B]/30 ml-2 pl-4">
                           {event.timeline.map((step, sIdx) => (
                             <li key={sIdx} className="relative">
-                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border border-white ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-brand-cyan ring-brand-cyan/20'}`} />
+                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] border border-white ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
                                 <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
