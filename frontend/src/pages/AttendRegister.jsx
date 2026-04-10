@@ -4,12 +4,19 @@ import { useNavigate } from 'react-router-dom'
 import { Calendar, Trophy, Medal, Crown, Award } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 
+import thinkImage from '../assets/images/think.png'
+import eventImage from '../assets/images/event.png'
+import cricketImage from '../assets/images/cirket.png'
+import chessImage from '../assets/images/chess.png'
+import shortFilmImage from '../assets/images/shortflim.png'
+
 const EVENT_DATA = [
   {
     id: "innovation",
     title: "Inclusive Innovation Fest",
     accent: "For Specially Abled / By Specially Abled",
     description: "Participants choose whether their submission is for specially abled or by specially abled and continue with relevant fields. College teams and individuals develop innovative solutions to improve accessibility.",
+    image: thinkImage,
     details: [
       { label: 'Focus Sector', value: ['Assistive Technology'] },
       { label: 'Eligibility', value: ['Open to specially abled innovators & college students', 'Team of exactly 3 members for college', 'Innovator from any age group for PwD'] }
@@ -34,6 +41,7 @@ const EVENT_DATA = [
     title: "Special Talent Hunt",
     accent: "Live Performance",
     description: "A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!",
+    image: eventImage,
     details: [
       { label: 'Eligibility & Selection', value: ['Schools/organizations nominate 1 team or individual', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
     ],
@@ -54,6 +62,7 @@ const EVENT_DATA = [
     title: "Short Film Contest",
     accent: "Cinematic Showcase",
     description: "Showcase your filmmaking skills by submitting impactful short films centered around inclusivity, accessibility, and empowerment.",
+    image: shortFilmImage,
     details: [
       { label: 'Eligibility', value: ['Open to everyone', 'Short films must be related to the inclusivity theme'] }
     ],
@@ -75,6 +84,7 @@ const EVENT_DATA = [
     title: "Blind Cricket",
     accent: "Tournament",
     description: "Promoting inclusive sportsmanship, teamwork, and resilience among visually impaired players.",
+    image: cricketImage,
     details: [
       { label: 'Information', value: ['All participating teams receive cash prizes', 'Winner & Runner-up awarded trophies'] }
     ],
@@ -91,6 +101,7 @@ const EVENT_DATA = [
     title: "Blind Chess",
     accent: "Competition",
     description: "Highlighting the intellectual strength, focus, and strategic thinking of visually impaired individuals.",
+    image: chessImage,
     details: [
       { label: 'Information', value: ['Top performers receive trophies and cash prizes', 'All participants receive certificates'] }
     ],
@@ -157,9 +168,9 @@ export default function AttendRegister() {
               <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
                 
                 {/* Left Side: Information */}
-                <div className="lg:col-span-7 flex flex-col gap-6">
+                <div className="lg:col-span-7 flex flex-col gap-6 relative">
                   <div>
-                    <h2 className="font-hero text-4xl sm:text-5xl font-bold text-slate-800 tracking-tight leading-tight mb-2">
+                    <h2 className="font-hero text-4xl sm:text-5xl font-bold text-[#5BCB2B] tracking-tight leading-tight mb-2">
                       {event.title}
                     </h2>
                     <p className="font-serif text-xl italic text-brand-cyan-light/90">
@@ -188,36 +199,47 @@ export default function AttendRegister() {
                   </div>
 
                   {/* Actions natively placed */}
-                  <div className="mt-6 flex flex-wrap gap-4 items-center">
-                    {event.isExpandable ? (
-                      <>
-                        {event.tracks.map((track, tIdx) => {
-                          const trackClosed = isFormClosed(track.id);
-                          return (
-                            <button
-                              key={tIdx}
-                              disabled={trackClosed}
-                              onClick={() => navigate(track.link)}
-                              className={`rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
-                            >
-                              {trackClosed ? 'Closed' : `Register (${track.label})`}
-                            </button>
-                          )
-                        })}
-                      </>
-                    ) : (
-                      <button
-                        disabled={closed}
-                        onClick={() => navigate(event.registerLink)}
-                        className={`group inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
-                      >
-                        {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
-                        {!closed && (
-                          <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        )}
-                      </button>
+                  <div className="mt-8 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 relative">
+                    <div className="flex flex-wrap gap-4 items-center z-10 w-full sm:w-auto">
+                      {event.isExpandable ? (
+                        <>
+                          {event.tracks.map((track, tIdx) => {
+                            const trackClosed = isFormClosed(track.id);
+                            return (
+                              <button
+                                key={tIdx}
+                                disabled={trackClosed}
+                                onClick={() => navigate(track.link)}
+                                className={`rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
+                              >
+                                {trackClosed ? 'Closed' : `Register (${track.label})`}
+                              </button>
+                            )
+                          })}
+                        </>
+                      ) : (
+                        <button
+                          disabled={closed}
+                          onClick={() => navigate(event.registerLink)}
+                          className={`group inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
+                        >
+                          {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
+                          {!closed && (
+                            <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    {event.image && (
+                      <div className="hidden sm:block z-0 sm:-mt-12 md:-mt-20 lg:-mt-24 pointer-events-none">
+                        <img src={event.image} alt={event.title} className={`object-contain opacity-95 drop-shadow-2xl transition-transform duration-500 ${
+                          event.id === 'shortfilm' ? 'h-40 md:h-60 lg:h-[300px] scale-125 origin-bottom lg:-mt-6' :
+                          event.id === 'innovation' ? 'h-32 md:h-48 lg:h-[220px] lg:-mb-2 mr-2 mt-4 lg:mt-12' :
+                          'h-40 md:h-60 lg:h-[280px]'
+                        }`} />
+                      </div>
                     )}
                   </div>
                 </div>
