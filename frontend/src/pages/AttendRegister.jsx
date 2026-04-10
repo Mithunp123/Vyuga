@@ -77,7 +77,6 @@ const EVENT_DATA = [
     registerLink: '/register/shortfilm', 
     buttonText: 'Register Now',
     formId: 'shortfilm',
-    disabled: true 
   },
   {
     id: "cricket",

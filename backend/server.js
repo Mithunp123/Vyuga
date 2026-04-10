@@ -1136,6 +1136,110 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
   }
 })
 
+// ── Short Film Contest Registration ────────────────────────────────────────────
+// POST /api/shortfilm
+app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
+  try {
+    const {
+      filmTitle, genre, duration, synopsis, filmUrl, filmLanguage,
+      directorName, teamName, collegeName,
+      contactName, contactEmail, contactPhone, additionalInfo,
+    } = req.body
+
+    // ── Payment Verification ─────────────────────────────
+    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
+      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    }
+
+    // ── Validation ───────────────────────────────────────
+    const errors = validate([
+      { field: 'filmTitle',    check: filmTitle && sanitizeText(filmTitle, 200).length > 0,    msg: 'required, max 200 chars' },
+      { field: 'genre',        check: genre && sanitizeText(genre, 100).length > 0,            msg: 'required' },
+      { field: 'duration',     check: isValidInt(duration, 1, 600),                            msg: 'must be 1–600 minutes' },
+      { field: 'synopsis',     check: synopsis && sanitizeText(synopsis, 2000).length > 0,     msg: 'required, max 2000 chars' },
+      { field: 'filmUrl',      check: filmUrl && isValidURL(filmUrl),                          msg: 'must be a valid http/https URL' },
+      { field: 'directorName', check: directorName && sanitizeText(directorName, 100).length > 0, msg: 'required' },
+      { field: 'contactName',  check: contactName && sanitizeText(contactName, 100).length > 0,   msg: 'required' },
+      { field: 'contactEmail', check: isValidEmail(contactEmail),                              msg: 'invalid email' },
+      { field: 'contactPhone', check: isValidPhone(contactPhone),                              msg: 'must be exactly 10 digits' },
+    ])
+    if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    const { data, error } = await supabase
+      .from('shortfilm_registrations')
+      .insert([{
+        film_title:    sanitizeText(filmTitle, 200),
+        genre:         sanitizeText(genre, 100),
+        duration:      parseInt(duration, 10),
+        synopsis:      sanitizeText(synopsis, 2000),
+        film_url:      filmUrl.trim(),
+        film_language: filmLanguage ? sanitizeText(filmLanguage, 100) : null,
+        director_name: sanitizeText(directorName, 100),
+        team_name:     teamName ? sanitizeText(teamName, 200) : null,
+        college_name:  collegeName ? sanitizeText(collegeName, 200) : null,
+        contact_name:  sanitizeText(contactName, 100),
+        contact_email: contactEmail.trim().toLowerCase(),
+        contact_phone: contactPhone.trim(),
+        additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
+        razorpay_order_id:   req.body.razorpay_order_id,
+        razorpay_payment_id: req.body.razorpay_payment_id,
+        payment_status: 'paid'
+      }])
+      .select()
+      .single()
+
+    if (error) {
+      await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    // Update payment record
+    supabase.from('payments').update({
+      status: 'paid',
+      razorpay_payment_id: req.body.razorpay_payment_id,
+      razorpay_signature:  req.body.razorpay_signature,
+      registration_id: data.id
+    }).eq('razorpay_order_id', req.body.razorpay_order_id).then()
+
+    // Send simple confirmation email to registrant
+    try {
+      const mailOptions = {
+        from: process.env.MAIL_FROM || process.env.MAIL_USER,
+        to: contactEmail.trim().toLowerCase(),
+        subject: `Short Film Submitted – VYUGA | ${filmTitle}`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:linear-gradient(135deg,#0197B2,#5BCB2B);padding:28px;text-align:center">
+              <h1 style="color:#fff;margin:0;font-size:22px">🎬 Short Film Submission Received</h1>
+            </div>
+            <div style="padding:24px">
+              <p>Dear <strong>${sanitizeText(contactName, 100)}</strong>,</p>
+              <p>Thank you for submitting your short film to <strong>VYUGA – Short Film Contest</strong>!</p>
+              <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                <tr><td style="padding:6px 0;color:#64748b;width:140px">Film Title</td><td style="padding:6px 0;font-weight:bold">${sanitizeText(filmTitle, 200)}</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Genre</td><td style="padding:6px 0">${sanitizeText(genre, 100)}</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Duration</td><td style="padding:6px 0">${duration} minutes</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Director</td><td style="padding:6px 0">${sanitizeText(directorName, 100)}</td></tr>
+              </table>
+              <p style="color:#64748b;font-size:13px">Our team will review your submission and get back to you. If you have any questions,
+              please contact the organizers.</p>
+              <p style="margin-top:24px">Warm regards,<br/><strong>VYUGA Team</strong></p>
+            </div>
+          </div>
+        `,
+      }
+      transporter.sendMail(mailOptions)
+    } catch (emailErr) {
+      await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    }
+
+    res.status(201).json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // ── 5. Blind Cricket Tournament ───────────────────────────────────────────────
 // POST /api/cricket
 app.post('/api/cricket', registrationLimiter, async (req, res) => {
@@ -1814,6 +1918,24 @@ app.get('/api/admin/chess', requireAdmin, async (req, res) => {
   }
 })
 
+// ── Admin: all short film registrations ──────────────────────────────────────
+app.get('/api/admin/shortfilm', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('shortfilm_registrations')
+      .select('*')
+      .order('submitted_at', { ascending: false })
+    if (error) {
+      await logError({ source: 'admin', endpoint: '/api/admin/shortfilm', method: 'GET', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: '/api/admin/shortfilm', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // ── Admin: all accommodation requests ─────────────────────────────────────────
 app.get('/api/admin/accommodation', requireAdmin, async (req, res) => {
   try {
@@ -1883,6 +2005,12 @@ const TABLE_MAP = {
     emailField: 'email',
     nameField: 'participant_name',
     event: 'Blind Chess Competition',
+  },
+  shortfilm: {
+    table: 'shortfilm_registrations',
+    emailField: 'contact_email',
+    nameField: 'contact_name',
+    event: 'Short Film Contest',
   },
   accommodation: {
     table: 'accommodation_requests',

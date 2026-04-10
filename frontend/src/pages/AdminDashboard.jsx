@@ -13,6 +13,7 @@ const TABS = [
   { id: 'innovation-college', label: 'Innovation (For Specially Abled)', endpoint: '/api/admin/innovation-college' },
   { id: 'innovation-pwd',     label: 'Innovation (By Specially Abled)',  endpoint: '/api/admin/innovation-pwd' },
   { id: 'talent-student',     label: 'Talent Utsav – Nominations',       endpoint: '/api/admin/talent-student' },
+  { id: 'shortfilm',          label: 'Short Film Contest',               endpoint: '/api/admin/shortfilm' },
   { id: 'cricket',            label: 'Blind Cricket',                    endpoint: '/api/admin/cricket' },
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
   { id: 'accommodation',      label: 'Accommodation Requests',           endpoint: '/api/admin/accommodation' },
@@ -105,6 +106,18 @@ const COLUMNS = {
     { key: 'email',         label: 'Email' },
     { key: 'website_url',   label: 'Website',   fmt: (v) => v ? <a href={v} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a> : '-' },
     { key: 'logo_path',     label: 'Logo',      fmt: (v) => v ? <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View</a> : '-' },
+  ],
+  shortfilm: [
+    { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
+    { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
+    { key: 'film_title',    label: 'Film Title' },
+    { key: 'genre',         label: 'Genre' },
+    { key: 'duration',      label: 'Duration',  fmt: (v) => v ? `${v} min` : '—' },
+    { key: 'director_name', label: 'Director' },
+    { key: 'contact_email', label: 'Email' },
+    { key: 'contact_phone', label: 'Phone' },
+    { key: 'film_url',      label: 'Film Link', fmt: (v) => v ? <a href={v} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View Film</a> : '—' },
+    { key: 'payment_status',label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
 }
 
