@@ -607,7 +607,7 @@ export default function About() {
                                 return (
                                   <div className="flex items-center gap-1.5 w-max">
                                     <Crown className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
-                                    <span className="font-bold text-slate-500 text-sm">
+                                    <span className="font-bold text-slate-500 text-sm whitespace-nowrap">
                                       Winner
                                     </span>
                                     <span className="font-black text-slate-800 tracking-wide text-[16px] ml-0.5">₹{first.val}</span>
@@ -621,7 +621,7 @@ export default function About() {
                                 return (
                                   <div className="flex items-center gap-1 w-max">
                                     <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
-                                    <span className="font-bold text-slate-500 text-sm">
+                                    <span className="font-bold text-slate-500 text-sm whitespace-nowrap">
                                       Runner
                                     </span>
                                     <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{second.val}</span>
@@ -635,7 +635,7 @@ export default function About() {
                                 return (
                                   <div className="flex items-center gap-1 w-max">
                                     <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
-                                    <span className="font-bold text-slate-500 text-sm">
+                                    <span className="font-bold text-slate-500 text-sm whitespace-nowrap">
                                       Runner Up
                                     </span>
                                     <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{third.val}</span>
