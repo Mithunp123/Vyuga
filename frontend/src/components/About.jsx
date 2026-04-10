@@ -600,7 +600,7 @@ export default function About() {
                                 {prizeGrp.category}
                               </span>
                             )}
-                            <div className="flex flex-col items-center gap-1 w-max py-2">
+                            <div className="flex items-center gap-4 sm:gap-6 w-max py-2">
                               {(() => {
                                 const first = prizeGrp.rewards.find(r => r.pos === "1st");
                                 if (!first) return null;
@@ -615,35 +615,33 @@ export default function About() {
                                 )
                               })()}
                               
-                              <div className="flex w-full min-w-[200px] justify-between gap-8 mt-1">
-                                {(() => {
-                                  const second = prizeGrp.rewards.find(r => r.pos === "2nd");
-                                  if (!second) return <div />;
-                                  return (
-                                    <div className="flex items-center gap-1 w-max">
-                                      <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
-                                      <span className="font-bold text-slate-500 text-sm">
-                                        Runner
-                                      </span>
-                                      <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{second.val}</span>
-                                    </div>
-                                  );
-                                })()}
-                                
-                                {(() => {
-                                  const third = prizeGrp.rewards.find(r => r.pos === "3rd");
-                                  if (!third) return <div />;
-                                  return (
-                                    <div className="flex items-center gap-1 w-max">
-                                      <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
-                                      <span className="font-bold text-slate-500 text-sm">
-                                        Runner Up
-                                      </span>
-                                      <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{third.val}</span>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
+                              {(() => {
+                                const second = prizeGrp.rewards.find(r => r.pos === "2nd");
+                                if (!second) return null;
+                                return (
+                                  <div className="flex items-center gap-1 w-max">
+                                    <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
+                                    <span className="font-bold text-slate-500 text-sm">
+                                      Runner
+                                    </span>
+                                    <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{second.val}</span>
+                                  </div>
+                                );
+                              })()}
+                              
+                              {(() => {
+                                const third = prizeGrp.rewards.find(r => r.pos === "3rd");
+                                if (!third) return null;
+                                return (
+                                  <div className="flex items-center gap-1 w-max">
+                                    <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
+                                    <span className="font-bold text-slate-500 text-sm">
+                                      Runner Up
+                                    </span>
+                                    <span className="font-black text-slate-800 tracking-wide text-[15px] ml-0.5">₹{third.val}</span>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
                         ))}
