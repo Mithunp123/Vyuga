@@ -169,13 +169,49 @@ export default function AttendRegister() {
                 
                 {/* Left Side: Information */}
                 <div className="lg:col-span-7 flex flex-col gap-6 relative">
-                  <div>
-                    <h2 className="font-hero text-4xl sm:text-5xl font-bold text-[#5BCB2B] tracking-tight leading-tight mb-2">
-                      {event.title}
-                    </h2>
-                    <p className="font-serif text-xl italic text-brand-cyan-light/90">
-                      {event.accent}
-                    </p>
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div>
+                      <h2 className="font-hero text-4xl sm:text-5xl font-bold text-[#5BCB2B] tracking-tight leading-tight mb-2">
+                        {event.title}
+                      </h2>
+                      <p className="font-serif text-xl italic text-brand-cyan-light/90">
+                        {event.accent}
+                      </p>
+                    </div>
+
+                    {/* Actions natively placed next to title */}
+                    <div className="flex flex-wrap gap-3 items-center z-10 shrink-0 mt-2 md:mt-1">
+                      {event.isExpandable ? (
+                        <>
+                          {event.tracks.map((track, tIdx) => {
+                            const trackClosed = isFormClosed(track.id);
+                            return (
+                              <button
+                                key={tIdx}
+                                disabled={trackClosed}
+                                onClick={() => navigate(track.link)}
+                                className={`rounded-full px-6 py-3 text-[14px] font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
+                              >
+                                {trackClosed ? 'Closed' : `Register (${track.label})`}
+                              </button>
+                            )
+                          })}
+                        </>
+                      ) : (
+                        <button
+                          disabled={closed}
+                          onClick={() => navigate(event.registerLink)}
+                          className={`group inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
+                        >
+                          {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
+                          {!closed && (
+                            <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                   
                   <p className="text-slate-600 text-lg leading-relaxed">
@@ -198,50 +234,16 @@ export default function AttendRegister() {
                     ))}
                   </div>
 
-                  {/* Actions natively placed */}
-                  <div className="mt-8 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 relative">
-                    <div className="flex flex-wrap gap-4 items-center z-10 w-full sm:w-auto">
-                      {event.isExpandable ? (
-                        <>
-                          {event.tracks.map((track, tIdx) => {
-                            const trackClosed = isFormClosed(track.id);
-                            return (
-                              <button
-                                key={tIdx}
-                                disabled={trackClosed}
-                                onClick={() => navigate(track.link)}
-                                className={`rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
-                              >
-                                {trackClosed ? 'Closed' : `Register (${track.label})`}
-                              </button>
-                            )
-                          })}
-                        </>
-                      ) : (
-                        <button
-                          disabled={closed}
-                          onClick={() => navigate(event.registerLink)}
-                          className={`group inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-[15px] font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
-                        >
-                          {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
-                          {!closed && (
-                            <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                            </svg>
-                          )}
-                        </button>
-                      )}
+                  {/* Image framed in a rectangular block */}
+                  {event.image && (
+                    <div className="mt-4 hidden sm:flex w-full bg-slate-50 border border-slate-100 rounded-2xl py-8 px-6 justify-center items-center relative overflow-hidden group">
+                      <img src={event.image} alt={event.title} className={`object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-105 ${
+                        event.id === 'shortfilm' ? 'h-48 md:h-64 lg:h-[300px]' :
+                        event.id === 'innovation' ? 'h-40 md:h-56 lg:h-[240px]' :
+                        'h-48 md:h-64 lg:h-[280px]'
+                      }`} />
                     </div>
-                    {event.image && (
-                      <div className="hidden sm:block z-0 sm:-mt-12 md:-mt-20 lg:-mt-24 pointer-events-none">
-                        <img src={event.image} alt={event.title} className={`object-contain opacity-95 drop-shadow-2xl transition-transform duration-500 ${
-                          event.id === 'shortfilm' ? 'h-40 md:h-60 lg:h-[300px] scale-125 origin-bottom lg:-mt-6' :
-                          event.id === 'innovation' ? 'h-32 md:h-48 lg:h-[220px] lg:-mb-2 mr-2 mt-4 lg:mt-12' :
-                          'h-40 md:h-60 lg:h-[280px]'
-                        }`} />
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 {/* Right Side: Timeline and Prizes Panel */}
