@@ -29,6 +29,12 @@ import AdminDashboard from './pages/AdminDashboard.jsx'
 import ErrorLogs from './pages/ErrorLogs.jsx'
 import AccessibilityWidget from './components/AccessibilityWidget.jsx'
 
+import TermsAndConditions from './pages/TermsAndConditions.jsx'
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
+import ShippingPolicy from './pages/ShippingPolicy.jsx'
+import ContactUs from './pages/ContactUs.jsx'
+import CancellationAndRefunds from './pages/CancellationAndRefunds.jsx'
+
 export default function App() {
   return (
     <>
@@ -46,6 +52,12 @@ export default function App() {
       <Route path="/attend/register" element={<AttendRegister />} />
       <Route path="/attend/accommodation" element={<AttendAccommodation />} />
       <Route path="/attend/travel-information" element={<AttendTravel />} />
+
+      <Route path="/terms" element={<TermsAndConditions />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/shipping" element={<ShippingPolicy />} />
+      <Route path="/contact" element={<ContactUs />} />
+      <Route path="/refunds" element={<CancellationAndRefunds />} />
 
       <Route path="/register/innovation" element={<InnovationUnifiedForm />} />
       <Route path="/register/innovation-college" element={<InnovationUnifiedForm />} />
