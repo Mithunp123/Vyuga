@@ -1,16 +1,4 @@
 export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
-  // BYPASS PAYMENT FOR NOW
-  const BYPASS_PAYMENT = true;
-  if (BYPASS_PAYMENT) {
-    const paymentResult = {
-      razorpay_payment_id: 'bypassed_' + Date.now().toString().slice(-6),
-      razorpay_order_id: 'bypassed_' + Date.now().toString().slice(-6),
-      razorpay_signature: 'bypassed',
-    };
-    if (paymentDataCallback) paymentDataCallback(paymentResult);
-    return paymentResult;
-  }
-
   try {
     // 1. Create order
     const apiUrl = import.meta.env.VITE_API_URL || '';
