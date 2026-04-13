@@ -27,7 +27,7 @@ const EVENT_DATA = [
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "Overall", genericText: "Prize up to ₹1 Lakh (both included)" }
+      { category: "Overall", genericText: "Prize up to ₹2 Lakh" }
     ],
     isExpandable: true,
     tracks: [
@@ -50,7 +50,7 @@ const EVENT_DATA = [
       { label: "Finalist Announcement", date: "05/06/2026" }
     ],
     prizes: [
-      { category: "Overall", genericText: "Prize up to ₹50 Thousand" }
+      { category: "Overall", genericText: "Prize up to ₹ 50,000" }
     ],
     registerLink: '/register/talent-student',
     buttonText: 'Register Now',
@@ -60,10 +60,43 @@ const EVENT_DATA = [
     id: "shortfilm",
     title: "Short Film Contest",
     accent: "Cinematic Showcase",
-    description: "Showcase your filmmaking skills by submitting impactful short films centered around inclusivity, accessibility, and empowerment.",
+    description: "Theme: \"Ability Beyond Disability\" — Films should focus on inclusion, empowerment, real-life challenges, or inspiring stories of persons with disabilities.",
     image: shortFilmImage,
     details: [
-      { label: 'Eligibility', value: ['Open to everyone', 'Team max 3 members', 'Short films must be related to the inclusivity theme'] }
+      {
+        label: 'Duration',
+        value: [
+          'Minimum: 1 minute',
+          'Maximum: 3 minutes (strict limit)',
+          'Titles + credits must be included within 3 minutes',
+        ]
+      },
+      {
+        label: 'Accessibility (Mandatory)',
+        value: [
+          'Subtitles/Captions (Compulsory) — English, must include dialogues & important sound cues (e.g., [door knocks])',
+          'Audio Description (Compulsory) — Narration describing visuals for visually impaired audiences, clear & synced',
+          'Clear Audio Quality — Dialogue and narration must be audible and noise-free',
+          'Both subtitle & audio description formats are compulsory',
+        ]
+      },
+      {
+        label: 'Participation',
+        value: [
+          'Open to students, freelancers, and filmmakers',
+          'Individual or team participation allowed',
+          'Max 1 entry per participant/team',
+        ]
+      },
+      {
+        label: 'Disqualification Rules',
+        value: [
+          'Exceeding the time limit',
+          'Missing captions or audio description',
+          'Plagiarism or copyright violation',
+          'Film irrelevant to the theme',
+        ]
+      },
     ],
     timeline: [
       { label: "Application Open", date: "14/04/2026" },
@@ -71,9 +104,9 @@ const EVENT_DATA = [
       { label: "Finalist Announcement", date: "05/06/2026" }
     ],
     prizes: [
-      { category: "Overall", genericText: "Prize up to ₹50 Thousand" }
+      { category: "Overall", genericText: "Prize up to ₹ 1 Lakh" }
     ],
-    registerLink: '/register/shortfilm', 
+    registerLink: '/register/shortfilm',
     buttonText: 'Register Now',
     formId: 'shortfilm',
   }
@@ -114,6 +147,13 @@ const EVENT_DATA = [
   // }
 ];
 
+// Prize accent colors per event index
+const PRIZE_ACCENTS = [
+  { bg: 'from-violet-600 to-indigo-500',  ring: 'ring-violet-300',  icon: 'text-yellow-300' },
+  { bg: 'from-rose-500 to-pink-400',      ring: 'ring-rose-300',    icon: 'text-yellow-200' },
+  { bg: 'from-amber-500 to-orange-400',   ring: 'ring-amber-300',   icon: 'text-white'      },
+]
+
 export default function AttendRegister() {
   const navigate = useNavigate()
   const [formSettings, setFormSettings] = useState([])
@@ -148,112 +188,185 @@ export default function AttendRegister() {
       compact={true}
       subtitleClass="text-slate-900"
     >
-      <div className="flex flex-col gap-12 sm:gap-24 py-8 sm:py-16 max-w-6xl mx-auto px-4">
+      <div className="flex flex-col gap-0 py-8 sm:py-12 max-w-6xl mx-auto px-4">
         {EVENT_DATA.map((event, idx) => {
-          const isInnovationMain = event.id === 'innovation';
-          const initiallyClosed = isInnovationMain ? isBothInnovationClosed : isFormClosed(event.formId);
-          const closed = initiallyClosed || event.disabled;
-          
+          const isInnovationMain = event.id === 'innovation'
+          const initiallyClosed = isInnovationMain ? isBothInnovationClosed : isFormClosed(event.formId)
+          const closed = initiallyClosed || event.disabled
+          const isShortFilm = event.id === 'shortfilm'
+          const accent = PRIZE_ACCENTS[idx % PRIZE_ACCENTS.length]
+
           return (
-            <motion.section 
+            <motion.section
               key={idx}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6 }}
-              className="py-12 lg:py-16 flex flex-col justify-center border-b border-slate-100 last:border-0"
+              className="py-10 lg:py-14 border-b border-slate-100 last:border-0"
             >
-              <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-                
-                {/* Left Side: Information */}
-                <div className="lg:col-span-7 flex flex-col gap-6 relative">
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                    <div>
-                      <h2 className="font-hero text-4xl sm:text-5xl font-bold text-[#5BCB2B] tracking-tight leading-tight mb-2">
-                        {event.title}
-                      </h2>
-                      <p className="font-serif text-xl italic text-brand-cyan-light/90">
-                        {event.accent}
-                      </p>
-                    </div>
+              {/* ── Event Header ── */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="font-hero text-3xl sm:text-4xl font-bold text-[#5BCB2B] tracking-tight leading-tight mb-1">
+                    {event.title}
+                  </h2>
+                  <p className="font-serif text-lg italic text-brand-cyan/80">{event.accent}</p>
+                </div>
 
-                    {/* Actions natively placed next to title */}
-                    <div className="flex flex-wrap gap-3 items-center z-10 shrink-0 mt-2 md:mt-1">
-                      {event.isExpandable ? (
-                        <>
-                          {event.tracks.map((track, tIdx) => {
-                            const trackClosed = isFormClosed(track.id);
-                            return (
-                              <button
-                                key={tIdx}
-                                disabled={trackClosed}
-                                onClick={() => navigate(track.link)}
-                                className={`rounded-full px-6 py-3 text-[14px] font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
-                              >
-                                {trackClosed ? 'Closed' : `Register (${track.label})`}
-                              </button>
-                            )
-                          })}
-                        </>
-                      ) : (
-                        <button
-                          disabled={closed}
-                          onClick={() => navigate(event.registerLink)}
-                          className={`group inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
-                        >
-                          {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
-                          {!closed && (
-                            <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                            </svg>
-                          )}
-                        </button>
+                {/* Register buttons */}
+                <div className="flex flex-wrap gap-3 items-center shrink-0">
+                  {event.isExpandable ? (
+                    <>
+                      {event.tracks.map((track, tIdx) => {
+                        const trackClosed = isFormClosed(track.id)
+                        return (
+                          <button
+                            key={tIdx}
+                            disabled={trackClosed}
+                            onClick={() => navigate(track.link)}
+                            className={`rounded-full px-5 py-2.5 text-sm font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
+                          >
+                            {trackClosed ? 'Closed' : `Register (${track.label})`}
+                          </button>
+                        )
+                      })}
+                    </>
+                  ) : (
+                    <button
+                      disabled={closed}
+                      onClick={() => navigate(event.registerLink)}
+                      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white transition-all shadow-md ${closed ? 'bg-slate-300 cursor-not-allowed' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
+                    >
+                      {closed ? 'Registration Closed' : (event.buttonText || 'Register Now')}
+                      {!closed && (
+                        <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
                       )}
-                    </div>
-                  </div>
-                  
-                  <p className="text-slate-600 text-lg leading-relaxed">
-                    {event.description}
-                  </p>
+                    </button>
+                  )}
+                </div>
+              </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4 mt-2">
-                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-6">
-                      {event.details.map((sec, sIdx) => (
-                        <div key={sIdx}>
-                          <h4 className="font-marker text-sm text-slate-800 tracking-wide mb-3 uppercase">{sec.label}</h4>
-                          <ul className="space-y-2">
+              <p className="text-slate-600 text-base leading-relaxed mb-6 max-w-3xl">{event.description}</p>
+
+              {/* ── Main Content Grid ── */}
+              {isShortFilm ? (
+                /* Short Film: compact single-page layout */
+                <div className="flex flex-col gap-5">
+                  {/* Details: 2x2 grid of sections */}
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {event.details.map((sec, sIdx) => {
+                      const sectionColors = [
+                        { border: 'border-sky-200',    bg: 'bg-sky-50',    title: 'text-sky-700',    dot: 'bg-sky-400'    },
+                        { border: 'border-violet-200', bg: 'bg-violet-50', title: 'text-violet-700', dot: 'bg-violet-400' },
+                        { border: 'border-emerald-200',bg: 'bg-emerald-50',title: 'text-emerald-700',dot: 'bg-emerald-500' },
+                        { border: 'border-rose-200',   bg: 'bg-rose-50',   title: 'text-rose-700',   dot: 'bg-rose-400'  },
+                      ]
+                      const sc = sectionColors[sIdx % sectionColors.length]
+                      return (
+                        <div key={sIdx} className={`rounded-xl border ${sc.border} ${sc.bg} p-4 flex flex-col gap-2`}>
+                          <h4 className={`font-bold text-xs uppercase tracking-widest ${sc.title} flex items-center gap-1.5 mb-1`}>
+                            <span className={`inline-block w-1.5 h-1.5 rounded-full ${sc.dot}`} />
+                            {sec.label}
+                          </h4>
+                          <ul className="space-y-1.5">
                             {sec.value.map((val, vIdx) => (
-                              <li key={vIdx} className="flex gap-2 text-sm text-slate-600">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
+                              <li key={vIdx} className="flex gap-2 text-xs text-slate-600 leading-snug">
+                                <span className={`mt-1 w-1 h-1 rounded-full ${sc.dot} shrink-0`} />
                                 <span>{val}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
-                      ))}
-                    </div>
+                      )
+                    })}
+                  </div>
 
-                    {/* Image embedded seamlessly beside details */}
-                    {event.image && (
-                      <div className="hidden sm:flex bg-slate-50 border border-slate-100 rounded-2xl p-4 justify-center items-center relative overflow-hidden group min-h-[160px]">
-                        <img src={event.image} alt={event.title} className={`object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-105 ${
-                          event.id === 'shortfilm' ? 'h-36 md:h-48 scale-110' :
-                          event.id === 'innovation' ? 'h-40 md:h-56' :
-                          'h-36 md:h-48'
-                        }`} />
+                  {/* Timeline + Prize row */}
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {/* Timeline */}
+                    {event.timeline && event.timeline.length > 0 && (
+                      <div className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-cyan to-[#5BCB2B]" />
+                        <h4 className="font-bold text-slate-400 uppercase text-xs tracking-widest mb-4 flex items-center gap-2 mt-1">
+                          <Calendar className="w-3.5 h-3.5 text-brand-cyan" /> Key Dates
+                        </h4>
+                        <ul className="space-y-3 border-l-2 border-[#5BCB2B]/30 ml-2 pl-4">
+                          {event.timeline.map((step, sIdx) => (
+                            <li key={sIdx} className="relative">
+                              <div className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-600 font-bold mr-2">{step.label}</span>
+                                <span className={`font-black uppercase tracking-wide ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Prize Card */}
+                    {event.prizes && event.prizes.length > 0 && (
+                      <div className={`relative rounded-2xl bg-gradient-to-br ${accent.bg} p-5 overflow-hidden flex flex-col justify-center items-center text-center`}>
+                        {/* Background glow */}
+                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+                        <Trophy className={`w-8 h-8 ${accent.icon} drop-shadow-lg mb-2 relative z-10`} />
+                        <p className="text-white/70 uppercase text-[10px] tracking-widest font-bold mb-1 relative z-10">Prize Pool</p>
+                        {event.prizes.map((pg, pIdx) => (
+                          <p key={pIdx} className="text-white font-black text-2xl sm:text-3xl tracking-tight drop-shadow relative z-10">
+                            {pg.genericText || pg.rewards?.map(r => `₹${r.val}`).join(' / ')}
+                          </p>
+                        ))}
+                        <div className={`absolute -bottom-4 -right-4 w-24 h-24 rounded-full ${accent.ring} ring-[20px] opacity-20`} />
                       </div>
                     )}
                   </div>
                 </div>
+              ) : (
+                /* Other events: standard 2-col layout */
+                <div className="grid lg:grid-cols-12 gap-6 lg:gap-10">
+                  {/* Left: details + image */}
+                  <div className="lg:col-span-7 flex flex-col gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-5">
+                        {event.details.map((sec, sIdx) => (
+                          <div key={sIdx}>
+                            <h4 className="font-marker text-sm text-slate-800 tracking-wide mb-2 uppercase">{sec.label}</h4>
+                            <ul className="space-y-1.5">
+                              {sec.value.map((val, vIdx) => (
+                                <li key={vIdx} className="flex gap-2 text-sm text-slate-600">
+                                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
+                                  <span>{val}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
 
-                {/* Right Side: Timeline and Prizes Panel */}
-                <div className="lg:col-span-5 w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-cyan to-[#5BCB2B] opacity-80" />
-                  
-                  <div className="space-y-8 mt-2">
+                      {event.image && (
+                        <div className="hidden sm:flex bg-slate-50 border border-slate-100 rounded-2xl p-4 justify-center items-center overflow-hidden group min-h-[160px]">
+                          <img
+                            src={event.image}
+                            alt={event.title}
+                            className={`object-contain drop-shadow-xl transition-transform duration-700 group-hover:scale-105 ${
+                              event.id === 'innovation' ? 'h-40 md:h-52' : 'h-36 md:h-44'
+                            }`}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right: Timeline + Prize */}
+                  <div className="lg:col-span-5 flex flex-col gap-4">
+                    {/* Timeline */}
                     {event.timeline && event.timeline.length > 0 && (
-                      <div>
-                        <h4 className="font-bold text-slate-400 uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                      <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-cyan to-[#5BCB2B] opacity-80" />
+                        <h4 className="font-bold text-slate-400 uppercase text-xs tracking-widest mb-4 flex items-center gap-2 mt-1">
                           <Calendar className="w-4 h-4 text-brand-cyan" /> Key Dates
                         </h4>
                         <ul className="space-y-4 border-l-2 border-[#5BCB2B]/30 ml-2 pl-4">
@@ -262,9 +375,7 @@ export default function AttendRegister() {
                               <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] border border-white ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
-                                <span className={`font-black text-right border-b border-dashed border-slate-200 uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>
-                                  {step.date}
-                                </span>
+                                <span className={`font-black uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
                               </div>
                             </li>
                           ))}
@@ -272,90 +383,43 @@ export default function AttendRegister() {
                       </div>
                     )}
 
+                    {/* ── Attractive Prize Card ── */}
                     {event.prizes && event.prizes.length > 0 && (
-                      <div>
-                        <h4 className="font-bold text-slate-400 uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
-                          <Trophy className="w-4 h-4 text-[#5BCB2B]" /> Prize Pool
-                        </h4>
-                        <div className="space-y-5">
-                          {event.prizes.map((prizeGrp, pIdx) => (
-                            <div key={pIdx}>
-                              {prizeGrp.category !== "Overall" && (
-                                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                                  {prizeGrp.category}
-                                </span>
-                              )}
-                              {prizeGrp.genericText ? (
-                                <div className="flex items-center justify-center w-full py-5 bg-[#5BCB2B]/10 rounded-2xl border border-[#5BCB2B]/20 px-3 text-center shadow-inner">
-                                  <span className="font-extrabold text-[#5BCB2B] tracking-wide text-lg sm:text-xl uppercase drop-shadow-sm flex items-center justify-center gap-2.5">
-                                     <Trophy className="w-5 h-5 text-yellow-500" />
-                                     {prizeGrp.genericText}
-                                  </span>
+                      <div className={`relative rounded-3xl bg-gradient-to-br ${accent.bg} p-6 overflow-hidden flex flex-col justify-center items-center text-center shadow-xl`}>
+                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+                        <Trophy className={`w-10 h-10 ${accent.icon} drop-shadow-lg mb-3 relative z-10`} />
+                        <p className="text-white/70 uppercase text-[10px] tracking-widest font-bold mb-1.5 relative z-10">Prize Pool</p>
+                        {event.prizes.map((pg, pIdx) => (
+                          pg.genericText ? (
+                            <p key={pIdx} className="text-white font-black text-2xl sm:text-3xl tracking-tight drop-shadow relative z-10">
+                              {pg.genericText}
+                            </p>
+                          ) : (
+                            <div key={pIdx} className="flex gap-3 flex-wrap justify-center relative z-10">
+                              {pg.rewards?.map((r, rIdx) => (
+                                <div key={rIdx} className="flex flex-col items-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
+                                  {r.pos === '1st' && <Crown className="w-4 h-4 text-yellow-300 mb-0.5" />}
+                                  {r.pos === '2nd' && <Medal className="w-4 h-4 text-slate-200 mb-0.5" />}
+                                  {r.pos === '3rd' && <Award className="w-4 h-4 text-amber-300 mb-0.5" />}
+                                  <span className="text-white/70 text-[10px] font-bold uppercase">{r.pos}</span>
+                                  <span className="text-white font-black text-lg">₹{r.val}</span>
                                 </div>
-                              ) : (
-                                <div className="flex flex-row flex-wrap items-center justify-center gap-3 w-full py-4 bg-slate-50/50 rounded-2xl border border-slate-100 px-3">
-                                  {(() => {
-                                    const first = prizeGrp.rewards.find(r => r.pos === "1st");
-                                    if (!first) return null;
-                                    return (
-                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                        <div className="flex items-center gap-1">
-                                          <Crown className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
-                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                            Winner
-                                          </span>
-                                        </div>
-                                        <span className="font-black text-[#5BCB2B] tracking-wide text-lg mt-0.5">₹{first.val}</span>
-                                      </div>
-                                    )
-                                  })()}
-                                  
-                                  {(() => {
-                                    const second = prizeGrp.rewards.find(r => r.pos === "2nd");
-                                    if (!second) return null;
-                                    return (
-                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                        <div className="flex items-center gap-1">
-                                          <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
-                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                            Runner
-                                          </span>
-                                        </div>
-                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{second.val}</span>
-                                      </div>
-                                    );
-                                  })()}
-                                  
-                                  {(() => {
-                                    const third = prizeGrp.rewards.find(r => r.pos === "3rd");
-                                    if (!third) return null;
-                                    return (
-                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                        <div className="flex items-center gap-1">
-                                          <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
-                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                            Runner Up
-                                          </span>
-                                        </div>
-                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{third.val}</span>
-                                      </div>
-                                    );
-                                  })()}
-                                </div>
-                              )}
+                              ))}
                             </div>
-                          ))}
-                        </div>
+                          )
+                        ))}
+                        <div className={`absolute -bottom-6 -right-6 w-32 h-32 rounded-full ${accent.ring} ring-[28px] opacity-20`} />
+                        <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-white/10" />
                       </div>
                     )}
                   </div>
                 </div>
-
-              </div>
+              )}
             </motion.section>
-          );
+          )
         })}
       </div>
     </PageShell>
   )
 }
+

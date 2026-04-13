@@ -526,6 +526,7 @@ export default function About() {
       </div>
 
       {/* ── TIMELINE & PRIZES SECTION ── */}
+      {/* COMMENTED OUT: SCHEDULE & AWARDS section
       {location.pathname === '/about' && (
       <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 border-t border-slate-100 bg-white">
         <div className="flex flex-col items-center justify-center gap-3 mb-12">
@@ -662,6 +663,7 @@ export default function About() {
         </div>
       </div>
       )}
+      END COMMENTED OUT: SCHEDULE & AWARDS */}
 
       {/* ── ABOUT NEXYUGA ── */}
       {location.pathname === '/about' && (
