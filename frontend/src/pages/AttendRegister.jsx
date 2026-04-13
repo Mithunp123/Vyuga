@@ -225,9 +225,9 @@ export default function AttendRegister() {
                             key={tIdx}
                             disabled={trackClosed}
                             onClick={() => navigate(track.link)}
-                            className={`rounded-full px-5 py-2.5 text-sm font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed' : 'bg-[#0197B2] hover:bg-[#01788e] hover:shadow-lg hover:-translate-y-0.5'}`}
+                            className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white transition-all shadow-md ${trackClosed ? 'bg-slate-300 cursor-not-allowed' : 'bg-[#5BCB2B] hover:bg-[#4eaa25] hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5BCB2B]/20'}`}
                           >
-                            {trackClosed ? 'Closed' : `Register (${track.label})`}
+                            {trackClosed ? 'Registration Closed' : `Register (${track.label})`}
                           </button>
                         )
                       })}
