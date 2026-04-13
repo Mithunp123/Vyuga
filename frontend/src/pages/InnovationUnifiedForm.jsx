@@ -65,6 +65,8 @@ export default function InnovationUnifiedForm() {
   const [udidFile, setUdidFile] = useState(null)
   const [prototypeUrl, setPrototypeUrl] = useState('')
   const [showDriveInfo, setShowDriveInfo] = useState(false)
+  const [isClosed, setIsClosed] = useState(false)
+  const [fee, setFee] = useState(null)
 
   // Auto-detect innovation type based on route
   useEffect(() => {
@@ -74,6 +76,27 @@ export default function InnovationUnifiedForm() {
     } else if (path.includes('innovation-pwd')) {
       setForm(prev => ({ ...prev, innovationType: 'by_specially_abled' }))
     }
+  }, [location.pathname])
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          const formId = location.pathname.includes('innovation-college') ? 'innovation-college' :
+                         location.pathname.includes('innovation-pwd') ? 'innovation-pwd' : null
+          if (formId) {
+            const setting = json.data.find(s => s.id === formId)
+            if (setting) {
+              if (setting.is_open === false) setIsClosed(true)
+              if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
+                setFee(setting.registration_fee_paise / 100)
+              }
+            }
+          }
+        }
+      })
+      .catch(console.error)
   }, [location.pathname])
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -254,6 +277,19 @@ export default function InnovationUnifiedForm() {
             Registration submitted successfully for <span className="text-brand-cyan">{name}</span> ({categoryText}).
           </p>
           <p className="mt-3 text-sm text-slate-500">We'll contact you at the provided email address.</p>
+        </div>
+      </PageShell>
+    )
+  }
+
+  if (isClosed) {
+    return (
+      <PageShell title="Registration Closed" subtitle="Thank you for your interest.">
+        <div className="max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <p className="font-display text-lg font-bold text-slate-800">
+            Registrations for Innovation Fest are currently closed.
+          </p>
+          <p className="mt-2 text-sm text-slate-500">Please check back later or contact support for queries.</p>
         </div>
       </PageShell>
     )
@@ -625,7 +661,7 @@ export default function InnovationUnifiedForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? 'Processing...' : 'Pay ₹99 & Register'}
+          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Register` : 'Register Form'}
         </button>
       </motion.form>
     </PageShell>

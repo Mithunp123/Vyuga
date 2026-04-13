@@ -45,6 +45,7 @@ const DISABILITY_TYPES = [
 export default function BlindChessForm() {
   const [form, setForm] = useState(EMPTY)
   const [isClosed, setIsClosed] = useState(false)
+  const [fee, setFee] = useState(null)
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
@@ -52,7 +53,12 @@ export default function BlindChessForm() {
       .then(json => {
         if (json.success) {
           const setting = json.data.find(s => s.id === 'chess')
-          if (setting && setting.is_open === false) setIsClosed(true)
+          if (setting) {
+            if (setting.is_open === false) setIsClosed(true)
+            if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
+              setFee(setting.registration_fee_paise / 100)
+            }
+          }
         }
       })
       .catch(console.error)
@@ -293,7 +299,7 @@ export default function BlindChessForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
         >
-          {loading ? 'Submitting…' : 'Register Now'}
+          {loading ? 'Submitting...' : fee ? `Pay ₹${fee} & Register` : 'Register Now'}
         </button>
       </motion.form>
     </PageShell>

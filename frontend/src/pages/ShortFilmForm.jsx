@@ -49,6 +49,7 @@ export default function ShortFilmForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
+  const [fee, setFee] = useState(null)
 
   const setCheck = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.checked }))
 
@@ -68,7 +69,12 @@ export default function ShortFilmForm() {
       .then(json => {
         if (json.success) {
           const setting = json.data.find(s => s.id === 'shortfilm')
-          if (setting && setting.is_open === false) setIsClosed(true)
+          if (setting) {
+            if (setting.is_open === false) setIsClosed(true)
+            if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
+              setFee(setting.registration_fee_paise / 100)
+            }
+          }
         }
       })
       .catch(console.error)
@@ -401,7 +407,7 @@ export default function ShortFilmForm() {
           style={{ backgroundColor: '#0197B2' }}
           className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
         >
-          {loading ? 'Processing...' : 'Submit Film'}
+          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Film` : 'Submit Film'}
         </button>
       </motion.form>
     </PageShell>

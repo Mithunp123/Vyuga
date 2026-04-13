@@ -27,7 +27,7 @@ const EVENT_DATA = [
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "Overall", genericText: "Prize up to ₹2 Lakh" }
+      { category: "Overall", genericText: "Prize up to ₹ 2 Lakh" }
     ],
     isExpandable: true,
     tracks: [
