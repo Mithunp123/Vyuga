@@ -74,7 +74,7 @@ export default function SponsorsPage() {
     email: '',
     message: '',
     orgName: '',
-    sponsorType: 'GOLD',
+    sponsorType: 'NULL',
     amount: '',
     website: '',
     logo: null
@@ -113,7 +113,7 @@ export default function SponsorsPage() {
       const result = await res.json()
       if (result.success) {
         setSuccess(true)
-        setFormData({ name: '', phone: '', email: '', message: '', orgName: '', sponsorType: 'GOLD', amount: '', website: '', logo: null })
+        setFormData({ name: '', phone: '', email: '', message: '', orgName: '', sponsorType: 'NULL', amount: '', website: '', logo: null })
         setTimeout(() => {
           setSuccess(false)
           setModalOpen(false)
@@ -153,7 +153,7 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* Sponsorship Benefits Table */}
+      {/* Sponsorship Benefits Table — commented out
       <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <motion.div
@@ -162,72 +162,13 @@ export default function SponsorsPage() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden rounded-2xl bg-white shadow-xl border border-slate-200"
           >
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200">
-                    <th className="p-4 text-sm font-bold text-slate-500 uppercase tracking-wider w-1/3">Benefit</th>
-                    {sponsorshipTiers.map((tier) => (
-                      <th key={tier.name} className="p-4 text-center w-1/5 align-bottom">
-                        <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold text-white mb-2 bg-gradient-to-r ${tier.color}`}>
-                          {tier.name}
-                        </div>
-                        <div className={`text-xl font-bold ${tier.textColor}`}>
-                          {tier.price}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {sponsorshipTiers[0].benefits.map((benefit, idx) => (
-                    <motion.tr
-                      key={idx}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.05, duration: 0.4 }}
-                      className="hover:bg-slate-50/60 transition-colors group"
-                    >
-                      <td className="p-3 pl-6 text-sm font-medium text-slate-700 group-hover:text-slate-900">
-                        {benefit.name}
-                      </td>
-                      {sponsorshipTiers.map((tier, tIdx) => {
-                        const item = tier.benefits[idx]
-                        return (
-                          <td key={tIdx} className="p-3 text-center align-middle">
-                            {item.included ? (
-                              <motion.div 
-                                initial={{ scale: 0 }}
-                                whileInView={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 200, delay: 0.1 + (idx * 0.05) }}
-                                className="flex flex-col items-center justify-center"
-                              >
-                                <div className={`flex items-center justify-center w-6 h-6 rounded-full ${tier.bgColor} text-green-600`}>
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                  </svg>
-                                </div>
-                                {item.note && (
-                                  <span className="mt-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
-                                    {item.note}
-                                  </span>
-                                )}
-                              </motion.div>
-                            ) : (
-                              <span className="block w-1.5 h-1.5 mx-auto rounded-full bg-slate-200" />
-                            )}
-                          </td>
-                        )
-                      })}
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            ... table content hidden ...
           </motion.div>
         </div>
-        
+      </section>
+      */}
+
+      <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mt-8 text-center">
              <button
               onClick={() => setModalOpen(true)}
@@ -302,33 +243,20 @@ export default function SponsorsPage() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="mb-1 block text-sm font-medium text-slate-700">Sponsor Type <span className="text-red-500">*</span></label>
-                          <select
-                            name="sponsorType"
-                            value={formData.sponsorType}
-                            onChange={handleChange}
-                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan bg-white"
-                          >
-                            <option value="PLATINUM">Platinum</option>
-                            <option value="GOLD">Gold</option>
-                            <option value="SILVER">Silver</option>
-                            <option value="OTHER">Other</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-sm font-medium text-slate-700">Amount (₹) <span className="text-red-500">*</span></label>
-                          <input
-                            required
-                            type="number"
-                            name="amount"
-                            value={formData.amount}
-                            onChange={handleChange}
-                            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
-                            placeholder="500000"
-                          />
-                        </div>
+                      {/* Sponsor Type — hidden, set to NULL */}
+                      <input type="hidden" name="sponsorType" value="NULL" />
+
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">Amount (₹) <span className="text-red-500">*</span></label>
+                        <input
+                          required
+                          type="number"
+                          name="amount"
+                          value={formData.amount}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan"
+                          placeholder="500000"
+                        />
                       </div>
 
                       <div>
