@@ -19,16 +19,15 @@ const EVENT_DATA = [
     image: thinkImage,
     details: [
       { label: 'Focus Sector', value: ['Assistive Technology'] },
-      { label: 'Eligibility', value: ['Open to specially abled innovators & college students', 'Team of exactly 3 members for college', 'Innovator from any age group for PwD'] }
+      { label: 'Eligibility', value: ['Open to specially abled innovators & college students', 'Team max 3 members', 'Innovator from any age group for PwD'] }
     ],
     timeline: [
-      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Open", date: "14/04/2026" },
       { label: "Application Close", date: "10/05/2026" },
       { label: "1st Round Results", date: "20/05/2026" }
     ],
     prizes: [
-      { category: "For Specially Abled", rewards: [{pos: "1st", val: "25000"}, {pos: "2nd", val: "15000"}, {pos: "3rd", val: "10000"}] },
-      { category: "By Specially Abled", rewards: [{pos: "1st", val: "25000"}, {pos: "2nd", val: "15000"}, {pos: "3rd", val: "10000"}] }
+      { category: "Overall", genericText: "Prize up to ₹1 Lakh (both included)" }
     ],
     isExpandable: true,
     tracks: [
@@ -43,15 +42,15 @@ const EVENT_DATA = [
     description: "A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!",
     image: eventImage,
     details: [
-      { label: 'Eligibility & Selection', value: ['Schools/organizations nominate 1 team or individual', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
+      { label: 'Eligibility & Selection', value: ['Schools/organizations nominate 1 team or individual', 'Team max 3 members', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
     ],
     timeline: [
-      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Open", date: "14/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
       { label: "Finalist Announcement", date: "05/06/2026" }
     ],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
+      { category: "Overall", genericText: "Prize up to ₹50 Thousand" }
     ],
     registerLink: '/register/talent-student',
     buttonText: 'Register Now',
@@ -64,55 +63,55 @@ const EVENT_DATA = [
     description: "Showcase your filmmaking skills by submitting impactful short films centered around inclusivity, accessibility, and empowerment.",
     image: shortFilmImage,
     details: [
-      { label: 'Eligibility', value: ['Open to everyone', 'Short films must be related to the inclusivity theme'] }
+      { label: 'Eligibility', value: ['Open to everyone', 'Team max 3 members', 'Short films must be related to the inclusivity theme'] }
     ],
     timeline: [
-      { label: "Application Open", date: "10/04/2026" },
+      { label: "Application Open", date: "14/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
       { label: "Finalist Announcement", date: "05/06/2026" }
     ],
     prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "15000"}, {pos: "2nd", val: "10000"}, {pos: "3rd", val: "5000"}] }
+      { category: "Overall", genericText: "Prize up to ₹50 Thousand" }
     ],
     registerLink: '/register/shortfilm', 
     buttonText: 'Register Now',
     formId: 'shortfilm',
-  },
-  {
-    id: "cricket",
-    title: "Blind Cricket",
-    accent: "Tournament",
-    description: "Promoting inclusive sportsmanship, teamwork, and resilience among visually impaired players.",
-    image: cricketImage,
-    details: [
-      { label: 'Information', value: ['All participating teams receive cash prizes', 'Winner & Runner-up awarded trophies'] }
-    ],
-    timeline: [],
-    prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "10000"}, {pos: "2nd", val: "5000"}] }
-    ],
-    registerLink: '/register/cricket',
-    buttonText: 'Enquiry Now',
-    formId: 'cricket'
-  },
-  {
-    id: "chess",
-    title: "Blind Chess",
-    accent: "Competition",
-    description: "Highlighting the intellectual strength, focus, and strategic thinking of visually impaired individuals.",
-    image: chessImage,
-    details: [
-      { label: 'Information', value: ['Top performers receive trophies and cash prizes', 'All participants receive certificates'] }
-    ],
-    timeline: [],
-    prizes: [
-      { category: "Overall", rewards: [{pos: "1st", val: "3000"}, {pos: "2nd", val: "2000"}] }
-    ],
-    registerLink: '/register/chess',
-    buttonText: 'Register will open soon',
-    disabled: true,
-    formId: 'chess'
   }
+  // {
+  //   id: "cricket",
+  //   title: "Blind Cricket",
+  //   accent: "Tournament",
+  //   description: "Promoting inclusive sportsmanship, teamwork, and resilience among visually impaired players.",
+  //   image: cricketImage,
+  //   details: [
+  //     { label: 'Information', value: ['All participating teams receive cash prizes', 'Winner & Runner-up awarded trophies'] }
+  //   ],
+  //   timeline: [],
+  //   prizes: [
+  //     { category: "Overall", rewards: [{pos: "1st", val: "10000"}, {pos: "2nd", val: "5000"}] }
+  //   ],
+  //   registerLink: '/register/cricket',
+  //   buttonText: 'Enquiry Now',
+  //   formId: 'cricket'
+  // },
+  // {
+  //   id: "chess",
+  //   title: "Blind Chess",
+  //   accent: "Competition",
+  //   description: "Highlighting the intellectual strength, focus, and strategic thinking of visually impaired individuals.",
+  //   image: chessImage,
+  //   details: [
+  //     { label: 'Information', value: ['Top performers receive trophies and cash prizes', 'All participants receive certificates'] }
+  //   ],
+  //   timeline: [],
+  //   prizes: [
+  //     { category: "Overall", rewards: [{pos: "1st", val: "3000"}, {pos: "2nd", val: "2000"}] }
+  //   ],
+  //   registerLink: '/register/chess',
+  //   buttonText: 'Register will open soon',
+  //   disabled: true,
+  //   formId: 'chess'
+  // }
 ];
 
 export default function AttendRegister() {
@@ -286,55 +285,64 @@ export default function AttendRegister() {
                                   {prizeGrp.category}
                                 </span>
                               )}
-                              <div className="flex flex-row flex-wrap items-center justify-center gap-3 w-full py-4 bg-slate-50/50 rounded-2xl border border-slate-100 px-3">
-                                {(() => {
-                                  const first = prizeGrp.rewards.find(r => r.pos === "1st");
-                                  if (!first) return null;
-                                  return (
-                                    <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                      <div className="flex items-center gap-1">
-                                        <Crown className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
-                                        <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                          Winner
-                                        </span>
+                              {prizeGrp.genericText ? (
+                                <div className="flex items-center justify-center w-full py-5 bg-[#5BCB2B]/10 rounded-2xl border border-[#5BCB2B]/20 px-3 text-center shadow-inner">
+                                  <span className="font-extrabold text-[#5BCB2B] tracking-wide text-lg sm:text-xl uppercase drop-shadow-sm flex items-center justify-center gap-2.5">
+                                     <Trophy className="w-5 h-5 text-yellow-500" />
+                                     {prizeGrp.genericText}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="flex flex-row flex-wrap items-center justify-center gap-3 w-full py-4 bg-slate-50/50 rounded-2xl border border-slate-100 px-3">
+                                  {(() => {
+                                    const first = prizeGrp.rewards.find(r => r.pos === "1st");
+                                    if (!first) return null;
+                                    return (
+                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
+                                        <div className="flex items-center gap-1">
+                                          <Crown className="w-5 h-5 text-yellow-500 drop-shadow-sm" />
+                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
+                                            Winner
+                                          </span>
+                                        </div>
+                                        <span className="font-black text-[#5BCB2B] tracking-wide text-lg mt-0.5">₹{first.val}</span>
                                       </div>
-                                      <span className="font-black text-[#5BCB2B] tracking-wide text-lg mt-0.5">₹{first.val}</span>
-                                    </div>
-                                  )
-                                })()}
-                                
-                                {(() => {
-                                  const second = prizeGrp.rewards.find(r => r.pos === "2nd");
-                                  if (!second) return null;
-                                  return (
-                                    <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                      <div className="flex items-center gap-1">
-                                        <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
-                                        <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                          Runner
-                                        </span>
+                                    )
+                                  })()}
+                                  
+                                  {(() => {
+                                    const second = prizeGrp.rewards.find(r => r.pos === "2nd");
+                                    if (!second) return null;
+                                    return (
+                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
+                                        <div className="flex items-center gap-1">
+                                          <Medal className="w-4 h-4 text-slate-400 drop-shadow-sm" />
+                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
+                                            Runner
+                                          </span>
+                                        </div>
+                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{second.val}</span>
                                       </div>
-                                      <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{second.val}</span>
-                                    </div>
-                                  );
-                                })()}
-                                
-                                {(() => {
-                                  const third = prizeGrp.rewards.find(r => r.pos === "3rd");
-                                  if (!third) return null;
-                                  return (
-                                    <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
-                                      <div className="flex items-center gap-1">
-                                        <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
-                                        <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
-                                          Runner Up
-                                        </span>
+                                    );
+                                  })()}
+                                  
+                                  {(() => {
+                                    const third = prizeGrp.rewards.find(r => r.pos === "3rd");
+                                    if (!third) return null;
+                                    return (
+                                      <div className="flex flex-col items-center gap-0.5 bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm flex-1 min-w-[90px]">
+                                        <div className="flex items-center gap-1">
+                                          <Award className="w-4 h-4 text-amber-600 drop-shadow-sm" />
+                                          <span className="font-bold text-slate-500 text-xs whitespace-nowrap">
+                                            Runner Up
+                                          </span>
+                                        </div>
+                                        <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{third.val}</span>
                                       </div>
-                                      <span className="font-black text-slate-800 tracking-wide text-lg mt-0.5">₹{third.val}</span>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
+                                    );
+                                  })()}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
