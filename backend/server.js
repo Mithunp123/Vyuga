@@ -296,11 +296,23 @@ app.post('/api/log-error', errorReportLimiter, async (req, res) => {
   res.json({ success: true })
 })
 
-// ── Razorpay Payment Order Creation ───────────────────────────────────────────
+// ── Razorpay Payment Order Creation ───────────────────────────────────────────────
 app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
   try {
     const { eventType, name, email, phone } = req.body;
-    const amount = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
+    
+    // Look up per-event fee from form_settings, fall back to env var
+    let amount = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
+    if (eventType) {
+      const { data: setting } = await supabase
+        .from('form_settings')
+        .select('registration_fee_paise')
+        .eq('id', eventType)
+        .maybeSingle();
+      if (setting && setting.registration_fee_paise != null) {
+        amount = setting.registration_fee_paise;
+      }
+    }
     
     const options = {
       amount,
@@ -1141,6 +1153,8 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
   try {
     const {
       filmTitle, genre, duration, synopsis, filmUrl, filmLanguage,
+      participationType, teamMembers,
+      hasSubtitles, hasAudioDescription,
       directorName, teamName, collegeName,
       contactName, contactEmail, contactPhone, additionalInfo,
     } = req.body
@@ -1152,37 +1166,59 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
 
     // ── Validation ───────────────────────────────────────
     const errors = validate([
-      { field: 'filmTitle',    check: filmTitle && sanitizeText(filmTitle, 200).length > 0,    msg: 'required, max 200 chars' },
-      { field: 'genre',        check: genre && sanitizeText(genre, 100).length > 0,            msg: 'required' },
-      { field: 'duration',     check: isValidInt(duration, 1, 600),                            msg: 'must be 1–600 minutes' },
-      { field: 'synopsis',     check: synopsis && sanitizeText(synopsis, 2000).length > 0,     msg: 'required, max 2000 chars' },
-      { field: 'filmUrl',      check: filmUrl && isValidURL(filmUrl),                          msg: 'must be a valid http/https URL' },
-      { field: 'directorName', check: directorName && sanitizeText(directorName, 100).length > 0, msg: 'required' },
-      { field: 'contactName',  check: contactName && sanitizeText(contactName, 100).length > 0,   msg: 'required' },
-      { field: 'contactEmail', check: isValidEmail(contactEmail),                              msg: 'invalid email' },
-      { field: 'contactPhone', check: isValidPhone(contactPhone),                              msg: 'must be exactly 10 digits' },
+      { field: 'filmTitle',             check: filmTitle && sanitizeText(filmTitle, 200).length > 0,               msg: 'required, max 200 chars' },
+      { field: 'genre',                 check: genre && sanitizeText(genre, 100).length > 0,                       msg: 'required' },
+      { field: 'duration',              check: isValidInt(duration, 1, 3),                                         msg: 'must be 1–3 minutes (strict event rule)' },
+      { field: 'synopsis',              check: synopsis && sanitizeText(synopsis, 2000).length > 0,                msg: 'required, max 2000 chars' },
+      { field: 'filmUrl',               check: filmUrl && isValidURL(filmUrl),                                     msg: 'must be a valid http/https URL' },
+      { field: 'participationType',     check: isValidEnum(participationType, ['individual', 'team']),             msg: 'must be individual or team' },
+      { field: 'hasSubtitles',          check: hasSubtitles === true || hasSubtitles === 'true',                   msg: 'subtitles/captions are mandatory for this event' },
+      { field: 'hasAudioDescription',   check: hasAudioDescription === true || hasAudioDescription === 'true',     msg: 'audio description is mandatory for this event' },
+      { field: 'directorName',          check: directorName && sanitizeText(directorName, 100).length > 0,         msg: 'required' },
+      { field: 'contactName',           check: contactName && sanitizeText(contactName, 100).length > 0,           msg: 'required' },
+      { field: 'contactEmail',          check: isValidEmail(contactEmail),                                         msg: 'invalid email' },
+      { field: 'contactPhone',          check: isValidPhone(contactPhone),                                         msg: 'must be exactly 10 digits' },
     ])
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    // Parse and validate team members (only for team participation)
+    let parsedTeamMembers = null
+    if (participationType === 'team') {
+      try {
+        parsedTeamMembers = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : (teamMembers || [])
+      } catch (_) { parsedTeamMembers = [] }
+      parsedTeamMembers = parsedTeamMembers
+        .map(n => sanitizeText(String(n), 100))
+        .filter(Boolean)
+        .slice(0, 3) // enforce max 3
+      if (parsedTeamMembers.length === 0) {
+        return res.status(400).json({ success: false, message: 'Validation failed', errors: [{ field: 'teamMembers', msg: 'at least one team member name is required' }] })
+      }
+    }
 
     const { data, error } = await supabase
       .from('shortfilm_registrations')
       .insert([{
-        film_title:    sanitizeText(filmTitle, 200),
-        genre:         sanitizeText(genre, 100),
-        duration:      parseInt(duration, 10),
-        synopsis:      sanitizeText(synopsis, 2000),
-        film_url:      filmUrl.trim(),
-        film_language: filmLanguage ? sanitizeText(filmLanguage, 100) : null,
-        director_name: sanitizeText(directorName, 100),
-        team_name:     teamName ? sanitizeText(teamName, 200) : null,
-        college_name:  collegeName ? sanitizeText(collegeName, 200) : null,
-        contact_name:  sanitizeText(contactName, 100),
-        contact_email: contactEmail.trim().toLowerCase(),
-        contact_phone: contactPhone.trim(),
-        additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
-        razorpay_order_id:   req.body.razorpay_order_id,
-        razorpay_payment_id: req.body.razorpay_payment_id,
-        payment_status: 'paid'
+        film_title:             sanitizeText(filmTitle, 200),
+        genre:                  sanitizeText(genre, 100),
+        duration:               parseInt(duration, 10),
+        synopsis:               sanitizeText(synopsis, 2000),
+        film_url:               filmUrl.trim(),
+        film_language:          filmLanguage ? sanitizeText(filmLanguage, 100) : null,
+        participation_type:     participationType.trim(),
+        team_members:           parsedTeamMembers,
+        has_subtitles:          hasSubtitles === true || hasSubtitles === 'true',
+        has_audio_description:  hasAudioDescription === true || hasAudioDescription === 'true',
+        director_name:          sanitizeText(directorName, 100),
+        team_name:              teamName ? sanitizeText(teamName, 200) : null,
+        college_name:           collegeName ? sanitizeText(collegeName, 200) : null,
+        contact_name:           sanitizeText(contactName, 100),
+        contact_email:          contactEmail.trim().toLowerCase(),
+        contact_phone:          contactPhone.trim(),
+        additional_info:        additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
+        razorpay_order_id:      req.body.razorpay_order_id,
+        razorpay_payment_id:    req.body.razorpay_payment_id,
+        payment_status:         'paid'
       }])
       .select()
       .single()
@@ -1200,8 +1236,9 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       registration_id: data.id
     }).eq('razorpay_order_id', req.body.razorpay_order_id).then()
 
-    // Send simple confirmation email to registrant
+    // Send confirmation email to registrant
     try {
+      const partType = participationType === 'team' ? `Team (${teamName || 'N/A'})` : 'Individual'
       const mailOptions = {
         from: process.env.MAIL_FROM || process.env.MAIL_USER,
         to: contactEmail.trim().toLowerCase(),
@@ -1215,13 +1252,15 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
               <p>Dear <strong>${sanitizeText(contactName, 100)}</strong>,</p>
               <p>Thank you for submitting your short film to <strong>VYUGA – Short Film Contest</strong>!</p>
               <table style="width:100%;border-collapse:collapse;margin:16px 0">
-                <tr><td style="padding:6px 0;color:#64748b;width:140px">Film Title</td><td style="padding:6px 0;font-weight:bold">${sanitizeText(filmTitle, 200)}</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b;width:160px">Film Title</td><td style="padding:6px 0;font-weight:bold">${sanitizeText(filmTitle, 200)}</td></tr>
                 <tr><td style="padding:6px 0;color:#64748b">Genre</td><td style="padding:6px 0">${sanitizeText(genre, 100)}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Duration</td><td style="padding:6px 0">${duration} minutes</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Duration</td><td style="padding:6px 0">${duration} min</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Participation</td><td style="padding:6px 0">${partType}</td></tr>
                 <tr><td style="padding:6px 0;color:#64748b">Director</td><td style="padding:6px 0">${sanitizeText(directorName, 100)}</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Subtitles</td><td style="padding:6px 0">✅ Confirmed</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Audio Description</td><td style="padding:6px 0">✅ Confirmed</td></tr>
               </table>
-              <p style="color:#64748b;font-size:13px">Our team will review your submission and get back to you. If you have any questions,
-              please contact the organizers.</p>
+              <p style="color:#64748b;font-size:13px">Our team will review your submission and get back to you. If you have any questions, please contact the organizers.</p>
               <p style="margin-top:24px">Warm regards,<br/><strong>VYUGA Team</strong></p>
             </div>
           </div>
@@ -1714,12 +1753,12 @@ app.get('/api/form-settings', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('form_settings')
-      .select('id, name, is_open')
+      .select('id, name, is_open, registration_fee_paise')
       
     if (error) throw error
     res.json({ success: true, data })
   } catch (err) {
-    console.error('❌ Fetch form settings error:', err)
+    console.error('Fetch form settings error:', err)
     await logError({ source: 'user', endpoint: '/api/form-settings', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Failed to fetch form settings' })
   }
@@ -2065,15 +2104,29 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
 app.patch('/api/admin/form-settings/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params
-    const { is_open } = req.body
-    
-    if (typeof is_open !== 'boolean') {
+    const { is_open, registration_fee_paise } = req.body
+
+    if (is_open !== undefined && typeof is_open !== 'boolean') {
       return res.status(400).json({ success: false, message: 'is_open must be a boolean' })
+    }
+    if (registration_fee_paise !== undefined) {
+      const fee = parseInt(registration_fee_paise, 10)
+      if (isNaN(fee) || fee < 0) {
+        return res.status(400).json({ success: false, message: 'registration_fee_paise must be a non-negative integer (in paise)' })
+      }
+    }
+
+    const updatePayload = { updated_at: new Date() }
+    if (is_open !== undefined) updatePayload.is_open = is_open
+    if (registration_fee_paise !== undefined) updatePayload.registration_fee_paise = parseInt(registration_fee_paise, 10)
+
+    if (Object.keys(updatePayload).length === 1) {
+      return res.status(400).json({ success: false, message: 'No valid fields to update' })
     }
 
     const { data, error } = await supabase
       .from('form_settings')
-      .update({ is_open, updated_at: new Date() })
+      .update(updatePayload)
       .eq('id', id)
       .select()
       .single()

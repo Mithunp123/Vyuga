@@ -6,10 +6,18 @@ create table if not exists shortfilm_registrations (
   -- Film details
   film_title          text not null,
   genre               text not null,
-  duration            integer not null,         -- in minutes
+  duration            integer not null check (duration >= 1 and duration <= 3),  -- strict 1–3 minutes
   synopsis            text,
   film_url            text not null,
   film_language       text,
+
+  -- Participation
+  participation_type  text not null default 'individual',  -- 'individual' | 'team'
+  team_members        jsonb,                               -- array of up to 3 member names (team only)
+
+  -- Accessibility compliance (mandatory per event rules)
+  has_subtitles         boolean not null default false,
+  has_audio_description boolean not null default false,
 
   -- Director / Team
   director_name       text not null,
@@ -33,6 +41,13 @@ create table if not exists shortfilm_registrations (
   status              text not null default 'pending',
   admin_note          text
 );
+
+-- Migration: add new columns if table already exists
+alter table shortfilm_registrations
+  add column if not exists participation_type  text not null default 'individual',
+  add column if not exists team_members        jsonb,
+  add column if not exists has_subtitles         boolean not null default false,
+  add column if not exists has_audio_description boolean not null default false;
 
 -- Optional: enable RLS so only authenticated service-role can write
 -- alter table shortfilm_registrations enable row level security;

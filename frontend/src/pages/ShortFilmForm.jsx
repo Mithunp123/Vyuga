@@ -24,6 +24,12 @@ const EMPTY = {
   synopsis: '',
   filmUrl: '',
   filmLanguage: '',
+  // Participation
+  participationType: 'individual',
+  teamMembers: ['', '', ''],   // names for up to 3 team members
+  // Accessibility (mandatory)
+  hasSubtitles: false,
+  hasAudioDescription: false,
   // Director / Team
   directorName: '',
   teamName: '',
@@ -43,6 +49,18 @@ export default function ShortFilmForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
+
+  const setCheck = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.checked }))
+
+  // Update a single team member name by index
+  const setMember = (idx) => (e) => {
+    const val = e.target.value
+    setForm((f) => {
+      const members = [...f.teamMembers]
+      members[idx] = val
+      return { ...f, teamMembers: members }
+    })
+  }
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
@@ -67,11 +85,19 @@ export default function ShortFilmForm() {
     if (!form.filmTitle.trim()) { setError('Film title is required.'); setLoading(false); return }
     if (!form.genre) { setError('Please select a genre.'); setLoading(false); return }
     if (form.genre === 'Other' && !form.genreOther.trim()) { setError('Please enter the genre.'); setLoading(false); return }
-    if (!form.duration.trim() || isNaN(Number(form.duration)) || Number(form.duration) <= 0) {
-      setError('Please enter a valid film duration in minutes.'); setLoading(false); return
+    const dur = Number(form.duration)
+    if (!form.duration.trim() || isNaN(dur) || dur < 1 || dur > 3) {
+      setError('Duration must be between 1 and 3 minutes (strict event rule).'); setLoading(false); return
     }
     if (!form.synopsis.trim()) { setError('Synopsis is required.'); setLoading(false); return }
     if (!form.filmUrl.trim()) { setError('Film link (Google Drive / YouTube) is required.'); setLoading(false); return }
+    if (!form.participationType) { setError('Please select participation type.'); setLoading(false); return }
+    if (form.participationType === 'team') {
+      const filled = form.teamMembers.filter(n => n.trim())
+      if (filled.length === 0) { setError('Please enter at least one team member name.'); setLoading(false); return }
+    }
+    if (!form.hasSubtitles) { setError('You must confirm that the film includes English subtitles/captions (mandatory).'); setLoading(false); return }
+    if (!form.hasAudioDescription) { setError('You must confirm that the film includes audio description (mandatory).'); setLoading(false); return }
     if (!form.directorName.trim()) { setError('Director name is required.'); setLoading(false); return }
     if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
     if (!form.contactEmail.trim() || !/\S+@\S+\.\S+/.test(form.contactEmail)) {
@@ -91,6 +117,12 @@ export default function ShortFilmForm() {
       const submitData = {
         ...form,
         genre: form.genre === 'Other' ? form.genreOther : form.genre,
+        participationType: form.participationType,
+        teamMembers: form.participationType === 'team'
+          ? JSON.stringify(form.teamMembers.filter(n => n.trim()))
+          : null,
+        hasSubtitles: form.hasSubtitles,
+        hasAudioDescription: form.hasAudioDescription,
         razorpay_payment_id: paymentData.razorpay_payment_id,
         razorpay_order_id: paymentData.razorpay_order_id,
         razorpay_signature: paymentData.razorpay_signature,
@@ -125,7 +157,7 @@ export default function ShortFilmForm() {
       <PageShell title="Application Submitted!" subtitle="Thank you for submitting your short film.">
         <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
           <p className="font-display text-lg font-bold text-slate-900">
-            🎬 <span className="text-brand-cyan">{form.filmTitle}</span> has been submitted for the Short Film Contest!
+            <span className="text-brand-cyan">{form.filmTitle}</span> has been submitted for the Short Film Contest!
           </p>
           <p className="mt-3 text-sm text-slate-500">
             Our team will review your submission and reach out to <strong>{form.contactEmail}</strong> with further details.
@@ -177,13 +209,22 @@ export default function ShortFilmForm() {
             <Field label="Specify Genre" value={form.genreOther} onChange={set('genreOther')} required />
           )}
 
-          <Field
-            label="Duration (minutes)"
-            type="number"
-            value={form.duration}
-            onChange={set('duration')}
-            required
-          />
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Duration (minutes) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              required
+              min={1}
+              max={3}
+              value={form.duration}
+              onChange={set('duration')}
+              placeholder="1 – 3"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+            />
+            <p className="mt-1 text-xs text-amber-600 font-semibold">Strict limit: 1–3 minutes including titles & credits</p>
+          </div>
 
           <Field label="Language of Film" value={form.filmLanguage} onChange={set('filmLanguage')} />
 
@@ -216,6 +257,92 @@ export default function ShortFilmForm() {
             <p className="mt-1 text-xs text-slate-400">Ensure the link is publicly accessible or view-enabled.</p>
           </div>
         </Section>
+
+        {/* ── Participation Type ── */}
+        <Section title="Participation">
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
+              Participation Type <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-4">
+              {['individual', 'team'].map((type) => (
+                <label key={type} className={`flex items-center gap-2 cursor-pointer rounded-xl border px-5 py-3 text-sm font-semibold capitalize transition-all ${
+                  form.participationType === type
+                    ? 'border-brand-cyan bg-brand-cyan/5 text-brand-cyan'
+                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="participationType"
+                    value={type}
+                    checked={form.participationType === type}
+                    onChange={set('participationType')}
+                    className="accent-[#0197B2]"
+                  />
+                  {type === 'individual' ? 'Individual' : 'Team'}
+                </label>
+              ))}
+            </div>
+            <p className="mt-1.5 text-xs text-slate-400">Maximum 1 entry per participant/team</p>
+          </div>
+
+          {/* Conditional: team member names */}
+          {form.participationType === 'team' && (
+            <div className="sm:col-span-2">
+              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-brand-cyan">
+                Team Members <span className="text-slate-400 normal-case font-normal">(max 3)</span>
+              </p>
+              <div className="space-y-3">
+                {form.teamMembers.map((name, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-cyan/10 text-xs font-bold text-brand-cyan">
+                      {idx + 1}
+                    </span>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={setMember(idx)}
+                      placeholder={`Member ${idx + 1} full name${idx === 0 ? ' (required)' : ' (optional)'}`}
+                      required={idx === 0}
+                      className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-slate-400">At least 1 member name required · Max 3 members per team</p>
+            </div>
+          )}
+        </Section>
+
+        {/* ── Accessibility Compliance ── */}
+        <div className="rounded-xl border border-violet-200 bg-violet-50 px-5 py-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-800">Accessibility Compliance (Mandatory)</p>
+          <p className="mb-4 text-xs text-slate-500">Both items below are <strong>compulsory</strong> per event rules. Your film will be disqualified if either is missing.</p>
+          <div className="space-y-3">
+            <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={form.hasSubtitles}
+                onChange={setCheck('hasSubtitles')}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-violet-600"
+              />
+              <span>
+                <strong>Subtitles / Captions (English)</strong> — I confirm the film includes English subtitles covering all dialogues and important sound cues (e.g., [door knocks]).
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={form.hasAudioDescription}
+                onChange={setCheck('hasAudioDescription')}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-violet-600"
+              />
+              <span>
+                <strong>Audio Description</strong> — I confirm the film includes narration describing visuals for visually impaired audiences, clear and synced with the video.
+              </span>
+            </label>
+          </div>
+        </div>
 
         {/* ── Director / Team Details ── */}
         <Section title="Director & Team">
