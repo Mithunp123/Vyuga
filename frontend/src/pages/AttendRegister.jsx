@@ -52,9 +52,11 @@ const EVENT_DATA = [
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹ 50,000" }
     ],
-    registerLink: '/register/talent-student',
-    buttonText: 'Register Now',
-    formId: 'talent-student'
+    isExpandable: true,
+    tracks: [
+      { link: '/register/talent-student', label: 'School / Org', id: 'talent-student' },
+      { link: '/register/talent-parent', label: 'Parent / Individual', id: 'talent-parent' }
+    ]
   },
   {
     id: "shortfilm",

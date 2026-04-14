@@ -99,7 +99,7 @@ const EMPTY = {
   teamMembers: [],
 }
 
-export default function TalentStudentNomination() {
+export default function TalentParentNomination() {
   const [form, setForm] = useState(EMPTY)
   const [isClosed, setIsClosed] = useState(false)
   const [fee, setFee] = useState(null)
@@ -260,18 +260,14 @@ export default function TalentStudentNomination() {
 
     if (!declared) { showError('Please confirm the declaration at the bottom of the form.'); return }
     if (!videoFile && !performanceUrl.trim()) { showError('Please provide a performance video by either uploading a file OR providing a Google Drive link.'); return }
-    if (!form.orgName.trim()) { showError('Please enter organization name.'); return }
-    if (!form.orgCity.trim()) { showError('Please enter organization city.'); return }
-    if (!form.orgState.trim()) { showError('Please enter organization state.'); return }
-    if (!form.contactName.trim()) { showError('Please enter contact person name.'); return }
-    if (!form.contactEmail.trim()) { showError('Please enter contact email.'); return }
-    if (!/^\d{10}$/.test(form.contactPhone)) { showError('Contact phone number must be exactly 10 digits.'); return }
-    if (!form.orgSize) { showError('Please select organization size.'); return }
-    if (!form.orgDisabilityFocus) { showError('Please select organization disability focus.'); return }
-    if (!form.orgDisabilityTypes || form.orgDisabilityTypes.length === 0) { showError('Please select at least one disability type for organization.'); return }
-    if (form.orgDisabilityFocus === 'single' && form.orgDisabilityTypes.length > 1) { showError('Single focus organizations can only select one disability type.'); return }
+    if (!form.contactName.trim()) { showError('Please enter parent/guardian name.'); return }
+    if (!form.contactEmail.trim()) { showError('Please enter email.'); return }
+    if (!/^\d{10}$/.test(form.contactPhone)) { showError('Phone number must be exactly 10 digits.'); return }
+    if (!form.orgAddress || !form.orgAddress.trim()) { showError('Please enter address.'); return }
+    if (!form.orgCity.trim()) { showError('Please select city.'); return }
+    if (!form.orgState.trim()) { showError('Please select state.'); return }
     if (!form.nominationType) { showError('Please select the nomination type (Individual or Team).'); return }
-    if (form.orgType === 'Other' && !form.orgTypeOther.trim()) { showError('Please enter organization type.'); return }
+    if (!form.gradeCategory) { showError('Please select a grade category.'); return }
     
     // Individual vs Team validation
     if (form.nominationType === 'individual') {
@@ -352,20 +348,27 @@ export default function TalentStudentNomination() {
       
       // Inject dummy values for removed Category fields
       fd.set('talentCategory', 'N/A')
-      fd.set('gradeCategory', 'N/A')
-      
-      if (videoFile) {
+if (videoFile) {
         fd.append('performanceVideo', videoFile)
       }
       if (performanceUrl.trim()) {
         fd.append('performanceUrl', performanceUrl.trim())
       }
       
+      
+      // Inject dummy org fields for Parent Nomination
+      fd.set('orgName', '(Parent Nomination) ' + form.contactName);
+      fd.set('orgSize', '<10');
+      fd.set('orgDisabilityFocus', 'single');
+      fd.set('orgDisabilityTypes', JSON.stringify(['Parent/Individual']));
+      fd.set('orgType', 'Other');
+      fd.set('orgTypeOther', 'Parent');
+
       const userInfo = {
         name: form.nominationType === 'team' ? form.contactName : form.studentName,
         email: form.contactEmail,
         phone: form.contactPhone,
-        eventType: 'talent-combined'
+        eventType: 'talent-student'
       };
       
       const paymentData = await handlePaymentProcess(userInfo);
@@ -397,8 +400,8 @@ export default function TalentStudentNomination() {
 
   return (
     <PageShell
-      title="Special Talent Utsav – Organization & Nomination"
-      subtitle="Register your organization and nominate talented students or teams."
+      title="Special Talent Utsav – Parent / Individual Nomination"
+      subtitle="Nominate your child or individual student for the Special Talent Utsav."
     >
       <SuccessModal
         isOpen={submitted}
@@ -423,30 +426,13 @@ export default function TalentStudentNomination() {
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
 
-        {/* Organization Registration */}
-        <Section title="Organization Details">
-          <Field label="Organization Name" value={form.orgName} onChange={set('orgName')} required />
-          <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              Organization Type <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.orgType}
-              onChange={set('orgType')}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
-              required
-            >
-              <option value="">Select organization type</option>
-              {ORG_TYPES.map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
-          {form.orgType === 'Other' && (
-            <Field label="Enter Organization Type" value={form.orgTypeOther} onChange={set('orgTypeOther')} required />
-          )}
+        {/* Parent Details Section */}
+        <Section title="Parent / Guardian Details">
+          <Field label="Parent / Guardian Name" value={form.contactName} onChange={set('contactName')} required />
+          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
+          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
           <div className="sm:col-span-2">
-            <Field label="Organization Address" value={form.orgAddress} onChange={set('orgAddress')} required/>
+            <Field label="Address" value={form.orgAddress} onChange={set('orgAddress')} required/>
           </div>
           <CityAutocomplete
             value={form.orgCity}
@@ -454,7 +440,6 @@ export default function TalentStudentNomination() {
             required={true}
             label="City"
           />
-          
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               State <span className="text-red-500">*</span>
@@ -471,78 +456,6 @@ export default function TalentStudentNomination() {
               ))}
             </select>
           </div>
-          <Field label="ZIP Code" value={form.orgZip} onChange={set('orgZip')} placeholder="Optional" />
-          <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              Number of Students in Organization <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.orgSize}
-              onChange={set('orgSize')}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
-              required
-            >
-              <option value="">Select organization size</option>
-              {ORG_SIZE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              Organization Focus <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.orgDisabilityFocus}
-              onChange={handleOrgFocusChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2"
-              required
-            >
-              <option value="">Select organization focus</option>
-              <option value="single">Single Disability Type</option>
-              <option value="multiple">Multiple Disability Types</option>
-            </select>
-            <p className="mt-1 text-xs text-slate-500">
-              Does your organization serve people with a single type of disability or multiple types?
-            </p>
-          </div>
-          
-          {form.orgDisabilityFocus && (
-            <div className="sm:col-span-2">
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                Disability Types Supported <span className="text-red-500">*</span>
-                {form.orgDisabilityFocus === 'single' && <span className="text-xs normal-case text-slate-500"> (Select one)</span>}
-                {form.orgDisabilityFocus === 'multiple' && <span className="text-xs normal-case text-slate-500"> (Select multiple)</span>}
-              </label>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {DISABILITY_TYPES.map((disability) => (
-                  <label
-                    key={disability}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
-                  >
-                    <input
-                      type={form.orgDisabilityFocus === 'single' ? 'radio' : 'checkbox'}
-                      name={form.orgDisabilityFocus === 'single' ? 'singleOrgDisability' : undefined}
-                      checked={form.orgDisabilityTypes?.includes(disability) || false}
-                      onChange={() => handleOrgDisabilityTypeChange(disability)}
-                      className="shrink-0"
-                      style={{ accentColor: '#0197B2' }}
-                    />
-                    <span className="text-slate-700">{disability}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-        </Section>
-
-        {/* SPOC Details Section */}
-        <Section title="SPOC Details">
-          <Field label="Name" value={form.contactName} onChange={set('contactName')} required />
-          <Field label="Designation" value={form.contactDesignation} onChange={set('contactDesignation')} placeholder="e.g., Principal, Director, Manager" required/>
-          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
-          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
         </Section>
 
         {/* Nomination Type */}
@@ -582,7 +495,27 @@ export default function TalentStudentNomination() {
               </label>
             </div>
           </div>
-          
+
+          <div className="mt-4 sm:col-span-2">
+            <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+              Grade Category <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {GRADE_CATEGORIES.map((grade) => (
+                <label key={grade} className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 transition-colors">
+                  <input
+                    type="radio"
+                    name="gradeCategory"
+                    value={grade}
+                    checked={form.gradeCategory === grade}
+                    onChange={set('gradeCategory')}
+                    className="shrink-0 text-[#0197B2] focus:ring-[#0197B2]"
+                  />
+                  <span className="text-slate-700">{grade}</span>
+                </label>
+              ))}
+            </div>
+          </div>
         </Section>
 
         {/* Team Size Selection for Team nominations */}

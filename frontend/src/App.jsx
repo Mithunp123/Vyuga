@@ -20,6 +20,7 @@ import AttendTravel from './pages/AttendTravel.jsx'
 import InnovationUnifiedForm from './pages/InnovationUnifiedForm.jsx'
 import TalentOrgRegistration from './pages/TalentOrgRegistration.jsx'
 import TalentStudentNomination from './pages/TalentStudentNomination.jsx'
+import TalentParentNomination from './pages/TalentParentNomination.jsx'
 import CricketTeamForm from './pages/CricketTeamForm.jsx'
 import BlindChessForm from './pages/BlindChessForm.jsx'
 import ShortFilmForm from './pages/ShortFilmForm.jsx'
@@ -64,6 +65,7 @@ export default function App() {
       <Route path="/register/innovation-pwd" element={<InnovationUnifiedForm />} />
       <Route path="/register/talent-org" element={<Navigate to="/register/talent-student" replace />} />
       <Route path="/register/talent-student" element={<TalentStudentNomination />} />
+      <Route path="/register/talent-parent" element={<TalentParentNomination />} />
       <Route path="/register/cricket" element={<CricketTeamForm />} />
       <Route path="/register/chess" element={<BlindChessForm />} />
       <Route path="/register/shortfilm" element={<ShortFilmForm />} />
