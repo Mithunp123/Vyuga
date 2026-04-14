@@ -37,7 +37,7 @@ const EMPTY = {
   collegeName: '',
   theme: '',
   themeOther: '',
-  participationType: 'innovator',
+  participationType: 'individual',
   ideaTitle: '',
   ideaDescription: '',
   painPoint: '',
@@ -187,9 +187,7 @@ export default function InnovationUnifiedForm() {
       fd.append('member3Email', form.member3Email)
       fd.append('member3Phone', form.member3Phone)
     } else {
-      // Map 'innovators' to 'individual' for backend compatibility
-      const typeToSend = form.participationType === 'innovator' ? 'individual' : form.participationType
-      fd.append('participationType', typeToSend)
+      fd.append('participationType', form.participationType)
       
       fd.append('ideaTitle', form.ideaTitle)
       fd.append('ideaDescription', form.ideaDescription)
@@ -350,14 +348,60 @@ export default function InnovationUnifiedForm() {
         onProceed={executeSubmit}
         onCancel={() => setShowPaymentWarning(false)}
       />
+      
       <SubmitLoader visible={loading} />
+
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl space-y-8"
+        className="max-w-2xl space-y-8 relative"
       >
+        {isBySpeciallyAbled && (
+          <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
+            <h3 className="mb-4 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">Eligibility Criteria</h3>
+            <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Must be an Innovator</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Must not be a Registered entity / Startup</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Must be a person with disability</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Individual or team participation allowed (max 3 members)</span>
+              </li>
+            </ul>
+          </div>
+        )}
+
+        {isForSpeciallyAbled && (
+          <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
+            <h3 className="mb-4 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">Eligibility Criteria</h3>
+            <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Must be affiliated with a College/Institution</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Solutions must be designed for specially abled individuals</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Team participation only (exactly 3 members)</span>
+              </li>
+            </ul>
+          </div>
+        )}
+
         {error && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
@@ -417,7 +461,7 @@ export default function InnovationUnifiedForm() {
 
           {isBySpeciallyAbled && (
             <div className="sm:col-span-2 flex gap-6">
-              {['innovator', 'team'].map((type) => (
+              {['individual', 'team'].map((type) => (
                 <label key={type} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
                   <input
                     type="radio"
@@ -427,7 +471,7 @@ export default function InnovationUnifiedForm() {
                     onChange={set('participationType')}
                     className="accent-brand-cyan"
                   />
-                  {type === 'innovator' ? 'Innovator' : 'Team'}
+                  {type === 'individual' ? 'Individual' : 'Team'}
                 </label>
               ))}
             </div>
@@ -501,7 +545,7 @@ export default function InnovationUnifiedForm() {
 
         {(isForSpeciallyAbled || isBySpeciallyAbled) && (
           <>
-            <Section title={isBySpeciallyAbled ? (isTeamForBy ? 'Member 1 (Team Leader)' : 'Innovator Details') : 'Member 1 (Team Leader)'}>
+            <Section title={isBySpeciallyAbled ? (isTeamForBy ? 'Member 1 (Team Leader)' : 'Individual Details') : 'Member 1 (Team Leader)'}>
               <Field label="Full Name" value={form.member1Name} onChange={set('member1Name')} required />
               <Field label="Email" type="email" value={form.member1Email} onChange={set('member1Email')} required />
               <Field
