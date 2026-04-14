@@ -303,16 +303,22 @@ export default function ShortFilmForm() {
         </Section>
 
         {/* ── Accessibility Compliance ── */}
-        <div className="rounded-xl border border-violet-200 bg-violet-50 px-5 py-5">
-          <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-800">Accessibility Compliance (Mandatory)</p>
-          <p className="mb-4 text-xs text-slate-500">Both items below are <strong>compulsory</strong> per event rules. Your film will be disqualified if either is missing.</p>
+        <div className="rounded-xl border border-slate-200 bg-white px-5 py-5">
+          <p className="mb-1 text-xs font-bold uppercase tracking-widest text-slate-800">
+            Accessibility Compliance <span className="text-red-500">*</span>
+          </p>
+          <p className="mb-2 text-xs text-slate-500">Both items below are <strong>compulsory</strong> per event rules. Your film will be disqualified if either is missing.</p>
+          <p className="mb-4 text-xs font-semibold" style={{ color: '#0197B2' }}>
+            Ensure your video folder contains both of these video files before submitting.
+          </p>
           <div className="space-y-3">
             <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={form.hasSubtitles}
                 onChange={setCheck('hasSubtitles')}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-violet-600"
+                className="mt-0.5 h-4 w-4 shrink-0"
+                style={{ accentColor: '#0197B2' }}
               />
               <span>
                 <strong>Subtitles / Captions (English)</strong> — I confirm the film includes English subtitles covering all dialogues and important sound cues (e.g., [door knocks]).
@@ -323,7 +329,8 @@ export default function ShortFilmForm() {
                 type="checkbox"
                 checked={form.hasAudioDescription}
                 onChange={setCheck('hasAudioDescription')}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-violet-600"
+                className="mt-0.5 h-4 w-4 shrink-0"
+                style={{ accentColor: '#0197B2' }}
               />
               <span>
                 <strong>Audio Description</strong> — I confirm the film includes narration describing visuals for visually impaired audiences, clear and synced with the video.
