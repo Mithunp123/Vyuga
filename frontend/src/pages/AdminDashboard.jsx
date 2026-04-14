@@ -6,6 +6,7 @@ import logoImg from '../assets/logo.png'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import AdminSettingsView from '../components/AdminSettingsView.jsx'
 import AdminGalleryView from '../components/AdminGalleryView.jsx'
+import AdminPaymentsView from '../components/AdminPaymentsView.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -18,6 +19,7 @@ const TABS = [
   { id: 'chess',              label: 'Blind Chess',                      endpoint: '/api/admin/chess' },
   { id: 'accommodation',      label: 'Accommodation Requests',           endpoint: '/api/admin/accommodation' },
   { id: 'sponsors',           label: 'Sponsor Messages',                 endpoint: '/api/admin/sponsors' },
+  { id: 'payments',           label: 'Payments',                      endpoint: null },
   { id: 'settings',           label: 'Form Controls',                 endpoint: null },
   { id: 'gallery',             label: 'Gallery',                       endpoint: null },
 ]
@@ -1031,7 +1033,7 @@ export default function AdminDashboard() {
 
             {/* Per-event cards */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {TABS.map((tab) => {
+              {TABS.filter(t => t.endpoint).map((tab) => {
                 const tabRows = data[tab.id] || []
                 const count = tabRows.length
                 const isLoading = loading[tab.id]
@@ -1115,9 +1117,11 @@ export default function AdminDashboard() {
                   <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                     {TABS.find((t) => t.id === activeTab)?.label}
                   </h1>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {rows.length} registration{rows.length !== 1 ? 's' : ''} total
-                  </p>
+                  {activeTab !== 'payments' && activeTab !== 'settings' && activeTab !== 'gallery' && (
+                    <p className="mt-2 text-sm text-slate-600">
+                      {rows.length} registration{rows.length !== 1 ? 's' : ''} total
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -1133,6 +1137,8 @@ export default function AdminDashboard() {
               <AdminSettingsView token={token} />
             ) : activeTab === 'gallery' ? (
               <AdminGalleryView token={token} />
+            ) : activeTab === 'payments' ? (
+              <AdminPaymentsView token={token} />
             ) : (
              <>
             {/* Status summary pills (hidden for org tab) */}

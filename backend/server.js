@@ -2010,6 +2010,24 @@ app.get('/api/admin/sponsors', requireAdmin, async (req, res) => {
   }
 })
 
+// ── Admin: all payments ──────────────────────────────────────────────
+app.get('/api/admin/payments', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('payments')
+      .select('id, event_type, amount, payer_name, payer_email, payer_phone, status, created_at, razorpay_payment_id')
+      .order('created_at', { ascending: false })
+    if (error) {
+      await logError({ source: 'admin', endpoint: '/api/admin/payments', method: 'GET', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: '/api/admin/payments', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // ── Admin: update registration status ────────────────────────────────────────
 // PATCH /api/admin/status/:table/:id
 // body: { status: 'approved'|'rejected'|'pending', adminNote? }
