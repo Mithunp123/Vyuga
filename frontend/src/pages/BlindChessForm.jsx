@@ -4,6 +4,7 @@ import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
+import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
 const STATES = [
@@ -68,6 +69,7 @@ export default function BlindChessForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
+  const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
@@ -98,6 +100,19 @@ export default function BlindChessForm() {
     if (!form.disabilityType || form.disabilityType.length === 0) { setError('Please select at least one disability type.'); setLoading(false); return }
     if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); setLoading(false); return }
     if (form.experienceLevel === 'other' && !form.experienceLevelOther.trim()) { setError('Please enter experience level.'); setLoading(false); return }
+
+    if (fee) {
+      setShowPaymentWarning(true)
+      setLoading(false)
+    } else {
+      executeSubmit()
+    }
+  }
+
+  const executeSubmit = async () => {
+    setShowPaymentWarning(false)
+    setLoading(true)
+    setError('')
     try {
       await postJSON('/api/chess', form)
       setSubmitted(true)
@@ -131,6 +146,11 @@ export default function BlindChessForm() {
         onClose={() => setSubmitted(false)}
         title="Registration Submitted!"
         message={`${form.participantName} has successfully registered for the Blind Chess Competition! Our team will reach out to you at ${form.email} with further details.`}
+      />
+      <PaymentWarningModal
+        isOpen={showPaymentWarning}
+        onProceed={executeSubmit}
+        onCancel={() => setShowPaymentWarning(false)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -293,12 +313,6 @@ export default function BlindChessForm() {
           >
             {loading ? 'Submitting...' : fee ? `Pay ₹${fee} & Register` : 'Register Now'}
           </button>
-
-          {loading && fee && (
-            <p className="text-sm text-amber-600 font-semibold animate-pulse">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
-            </p>
-          )}
         </div>
       </motion.form>
     </PageShell>

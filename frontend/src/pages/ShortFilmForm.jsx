@@ -5,6 +5,7 @@ import { postJSON } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
+import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 
 const FILM_GENRES = [
   'Drama',
@@ -51,6 +52,7 @@ export default function ShortFilmForm() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [fee, setFee] = useState(null)
+  const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   const setCheck = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.checked }))
 
@@ -111,6 +113,19 @@ export default function ShortFilmForm() {
       setError('Please enter a valid email address.'); setLoading(false); return
     }
 
+    if (fee) {
+      setLoading(false)
+      setShowPaymentWarning(true)
+    } else {
+      executeSubmit()
+    }
+  }
+
+  const executeSubmit = async () => {
+    setShowPaymentWarning(false)
+    setLoading(true)
+    setError('')
+
     try {
       const userInfo = {
         name: form.directorName || form.contactName,
@@ -169,6 +184,11 @@ export default function ShortFilmForm() {
         onClose={() => setSubmitted(false)}
         title="Application Submitted!"
         message={`${form.filmTitle || 'Your film'} has been submitted! Our team will review your submission and reach out to ${form.contactEmail} with further details.`}
+      />
+      <PaymentWarningModal
+        isOpen={showPaymentWarning}
+        onProceed={executeSubmit}
+        onCancel={() => setShowPaymentWarning(false)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -402,12 +422,6 @@ export default function ShortFilmForm() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Film` : 'Submit Film'}
           </button>
-          
-          {loading && fee && (
-            <p className="text-sm text-amber-600 font-semibold animate-pulse">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
-            </p>
-          )}
         </div>
       </motion.form>
     </PageShell>

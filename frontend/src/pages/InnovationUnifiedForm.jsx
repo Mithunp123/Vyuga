@@ -7,6 +7,7 @@ import { postFormData } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
+import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 
 const INNOVATION_TYPE_OPTIONS = [
   { value: '', label: 'Select one' },
@@ -68,6 +69,7 @@ export default function InnovationUnifiedForm() {
   const [showDriveInfo, setShowDriveInfo] = useState(false)
   const [isClosed, setIsClosed] = useState(false)
   const [fee, setFee] = useState(null)
+  const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   // Auto-detect innovation type based on route
   useEffect(() => {
@@ -243,6 +245,19 @@ export default function InnovationUnifiedForm() {
       return
     }
 
+    if (fee) {
+      setLoading(false)
+      setShowPaymentWarning(true)
+    } else {
+      executeSubmit()
+    }
+  }
+
+  const executeSubmit = async () => {
+    setShowPaymentWarning(false)
+    setLoading(true)
+    setError('')
+
     try {
       const userInfo = {
         name: isForSpeciallyAbled ? form.teamName : form.member1Name,
@@ -329,6 +344,11 @@ export default function InnovationUnifiedForm() {
         onClose={() => setSubmitted(false)}
         title="Registration Successful"
         message={`Registration submitted successfully for ${name} (${categoryText}). We'll contact you at ${form.member1Email}.`}
+      />
+      <PaymentWarningModal
+        isOpen={showPaymentWarning}
+        onProceed={executeSubmit}
+        onCancel={() => setShowPaymentWarning(false)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -671,12 +691,6 @@ export default function InnovationUnifiedForm() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Register` : 'Register Form'}
           </button>
-
-          {loading && fee && (
-            <p className="text-sm text-amber-600 font-semibold animate-pulse">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
-            </p>
-          )}
         </div>
       </motion.form>
     </PageShell>

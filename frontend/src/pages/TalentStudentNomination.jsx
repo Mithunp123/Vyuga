@@ -7,6 +7,7 @@ import { handlePaymentProcess } from '../paymentHandler.js'
 import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
+import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
 const STATES = [
@@ -124,6 +125,7 @@ export default function TalentStudentNomination() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [videoFile, setVideoFile] = useState(null)
+  const [showPaymentWarning, setShowPaymentWarning] = useState(false)
   const [performanceUrl, setPerformanceUrl] = useState('')
   const [compressProgress, setCompressProgress] = useState(null)
   const [showDriveInfo, setShowDriveInfo] = useState(false)
@@ -308,20 +310,21 @@ export default function TalentStudentNomination() {
     if (!form.talentDescription.trim()) { showError('Please provide a brief description of the talent.'); return }
     if (talentWords.length > 50) { showError('Talent description must not exceed 50 words.'); return }
     
+    if (fee) {
+      setLoading(false)
+      setShowPaymentWarning(true)
+    } else {
+      executeSubmit()
+    }
+  }
+
+  const executeSubmit = async () => {
+    setShowPaymentWarning(false)
     setLoading(true)
     setError('')
-    try {
-      /*
-      // Compress video in browser before uploading
-      setCompressProgress(0)
-      const compressed = await compressVideo(videoFile, {
-        maxWidth: 720,
-        videoBitsPerSecond: 800_000,
-        onProgress: setCompressProgress,
-      })
-      setCompressProgress(null)
-      */
+    setCompressProgress(null)
 
+    try {
       const fd = new FormData()
       
       // Add basic form fields
@@ -402,6 +405,11 @@ export default function TalentStudentNomination() {
         onClose={() => setSubmitted(false)}
         title="Nomination Submitted"
         message={`${form.nominationType === 'team' ? 'Team nomination' : form.studentName} has been submitted for Special Talent Utsav! We'll review the submission and get back to you at the provided contact.`}
+      />
+      <PaymentWarningModal
+        isOpen={showPaymentWarning}
+        onProceed={executeSubmit}
+        onCancel={() => setShowPaymentWarning(false)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -982,12 +990,6 @@ export default function TalentStudentNomination() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Nomination` : 'Submit Nomination'}
           </button>
-
-          {loading && fee && (
-            <p className="text-sm text-amber-600 font-semibold animate-pulse">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
-            </p>
-          )}
         </div>
       </motion.form>
     </PageShell>

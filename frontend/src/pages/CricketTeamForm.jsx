@@ -5,6 +5,7 @@ import { postJSON } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
+import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
 const STATES = [
@@ -36,7 +37,12 @@ const EMPTY = {
 export default function CricketTeamForm() {
   const [form, setForm] = useState(EMPTY)
   const [isClosed, setIsClosed] = useState(false)
+  const [error, setError] = useState('')
+  const [declared, setDeclared] = useState(false)
   const [fee, setFee] = useState(null)
+  const [showPaymentWarning, setShowPaymentWarning] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
@@ -54,50 +60,56 @@ export default function CricketTeamForm() {
       })
       .catch(console.error)
   }, [])
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [declared, setDeclared] = useState(false)
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); return }
+    if (form.teamType === 'other' && !form.teamTypeOther.trim()) { setError('Please enter team type.'); return }
+    if (form.hasPlayedBefore === 'yes' && !form.tournamentCount.trim()) { setError('Please enter the number of tournaments played.'); return }
+    if (form.hasPlayedBefore === 'yes' && (isNaN(form.tournamentCount) || parseInt(form.tournamentCount) < 1)) { setError('Tournament count must be a valid positive number.'); return }
+    if (form.hasPlayedBefore === 'yes' && !form.tournamentEvents.trim()) { setError('Please enter the tournament/event names.'); return }
+
+    if (fee) {
+      setLoading(false)
+      setShowPaymentWarning(true)
+    } else {
+      executeSubmit()
+    }
+  }
+
+  const executeSubmit = async () => {
+    setShowPaymentWarning(false)
     setLoading(true)
     setError('')
-    if (!/^\d{10}$/.test(form.contactPhone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
-    if (form.teamType === 'other' && !form.teamTypeOther.trim()) { setError('Please enter team type.'); setLoading(false); return }
-    if (form.hasPlayedBefore === 'yes' && !form.tournamentCount.trim()) { setError('Please enter the number of tournaments played.'); setLoading(false); return }
-    if (form.hasPlayedBefore === 'yes' && (isNaN(form.tournamentCount) || parseInt(form.tournamentCount) < 1)) { setError('Tournament count must be a valid positive number.'); setLoading(false); return }
-    if (form.hasPlayedBefore === 'yes' && !form.tournamentEvents.trim()) { setError('Please enter the tournament/event names.'); setLoading(false); return }
-
-    // Prepare tournament experience data in JSON format
-    let tournamentExperience = {
-      hasPlayedBefore: form.hasPlayedBefore === 'yes'
-    }
-    if (form.hasPlayedBefore === 'yes') {
-      tournamentExperience.tournamentCount = parseInt(form.tournamentCount)
-      tournamentExperience.eventNames = form.tournamentEvents.trim()
-    }
-
-    const submitData = {
-      ...form,
-      tournamentExperience: JSON.stringify(tournamentExperience)
-    }
 
     try {
       const userInfo = {
-        name: form.teamName,
+        name: form.captainName || form.contactName,
         email: form.contactEmail,
         phone: form.contactPhone,
-        eventType: 'cricket'
-      };
-      
-      const paymentData = await handlePaymentProcess(userInfo);
-      
-      submitData.razorpay_payment_id = paymentData.razorpay_payment_id;
-      submitData.razorpay_order_id = paymentData.razorpay_order_id;
-      submitData.razorpay_signature = paymentData.razorpay_signature;
+        eventType: 'cricket',
+      }
+
+      const paymentData = await handlePaymentProcess(userInfo)
+
+      let tournamentExperience = {
+        hasPlayedBefore: form.hasPlayedBefore === 'yes'
+      }
+      if (form.hasPlayedBefore === 'yes') {
+        tournamentExperience.tournamentCount = parseInt(form.tournamentCount)
+        tournamentExperience.eventNames = form.tournamentEvents.trim()
+      }
+
+      const submitData = {
+        ...form,
+        tournamentExperience: JSON.stringify(tournamentExperience),
+        razorpay_payment_id: paymentData.razorpay_payment_id,
+        razorpay_order_id: paymentData.razorpay_order_id,
+        razorpay_signature: paymentData.razorpay_signature,
+      }
 
       await postJSON('/api/cricket', submitData)
       setSubmitted(true)
@@ -131,6 +143,11 @@ export default function CricketTeamForm() {
         onClose={() => setSubmitted(false)}
         title="Interest Submitted!"
         message={`Team ${form.teamName} has submitted their interest for the Blind Cricket Tournament! Our team will reach out to ${form.contactName} at ${form.contactEmail} with further details.`}
+      />
+      <PaymentWarningModal
+        isOpen={showPaymentWarning}
+        onProceed={executeSubmit}
+        onCancel={() => setShowPaymentWarning(false)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -271,12 +288,6 @@ export default function CricketTeamForm() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Interest` : 'Submit Interest'}
           </button>
-
-          {loading && fee && (
-            <p className="text-sm text-amber-600 font-semibold animate-pulse">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
-            </p>
-          )}
         </div>
       </motion.form>
     </PageShell>
