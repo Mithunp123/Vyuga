@@ -352,7 +352,7 @@ export default function TalentParentNomination() {
       fd.set('orgType', 'Other');
       fd.set('orgTypeOther', 'Parent');
       // gradeCategory is removed from parent form, inject dummy
-      fd.set('gradeCategory', 'N/A');
+      fd.set('gradeCategory', '1–5');
 
       if (videoFile) {
         fd.append('performanceVideo', videoFile)
