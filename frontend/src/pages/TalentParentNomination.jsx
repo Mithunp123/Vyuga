@@ -75,8 +75,8 @@ const EMPTY = {
   contactPhone: '',
   contactEmail: '',
   
-  // Nomination type
-  nominationType: '', // 'individual' or 'team'
+  // Nomination type — always individual for parent form
+  nominationType: 'individual',
   teamSize: '',
   
   // Student/Team details
@@ -86,7 +86,6 @@ const EMPTY = {
   disabilityTypeOther: '',
   talentCategory: '',
   talentCategoryOther: '',
-  gradeCategory: '',
   talentDescription: '',
   guardianName: '',
   guardianRelation: '',
@@ -266,8 +265,7 @@ export default function TalentParentNomination() {
     if (!form.orgAddress || !form.orgAddress.trim()) { showError('Please enter address.'); return }
     if (!form.orgCity.trim()) { showError('Please select city.'); return }
     if (!form.orgState.trim()) { showError('Please select state.'); return }
-    if (!form.nominationType) { showError('Please select the nomination type (Individual or Team).'); return }
-    if (!form.gradeCategory) { showError('Please select a grade category.'); return }
+    if (!form.talentCategory) { showError('Please select a talent category.'); return }
     
     // Individual vs Team validation
     if (form.nominationType === 'individual') {
@@ -346,16 +344,6 @@ export default function TalentParentNomination() {
         }
       })
       
-      // Inject dummy values for removed Category fields
-      fd.set('talentCategory', 'N/A')
-if (videoFile) {
-        fd.append('performanceVideo', videoFile)
-      }
-      if (performanceUrl.trim()) {
-        fd.append('performanceUrl', performanceUrl.trim())
-      }
-      
-      
       // Inject dummy org fields for Parent Nomination
       fd.set('orgName', '(Parent Nomination) ' + form.contactName);
       fd.set('orgSize', '<10');
@@ -363,6 +351,15 @@ if (videoFile) {
       fd.set('orgDisabilityTypes', JSON.stringify(['Parent/Individual']));
       fd.set('orgType', 'Other');
       fd.set('orgTypeOther', 'Parent');
+      // gradeCategory is removed from parent form, inject dummy
+      fd.set('gradeCategory', 'N/A');
+
+      if (videoFile) {
+        fd.append('performanceVideo', videoFile)
+      }
+      if (performanceUrl.trim()) {
+        fd.append('performanceUrl', performanceUrl.trim())
+      }
 
       const userInfo = {
         name: form.nominationType === 'team' ? form.contactName : form.studentName,
@@ -458,67 +455,7 @@ if (videoFile) {
           </div>
         </Section>
 
-        {/* Nomination Type */}
-        <Section title="Nomination Type">
-          <div className="sm:col-span-2">
-            <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              Select the nomination type <span className="text-red-500">*</span>
-            </label>
-            <div className="space-y-3">
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="nominationType"
-                  value="individual"
-                  checked={form.nominationType === 'individual'}
-                  onChange={set('nominationType')}
-                  className="mt-0.5 h-4 w-4 text-[#0197B2] focus:ring-[#0197B2] focus:ring-offset-0"
-                />
-                <div>
-                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Individual Student</span>
-                  <p className="text-xs text-slate-500">Nominate Individual Performer</p>
-                </div>
-              </label>
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="nominationType"
-                  value="team"
-                  checked={form.nominationType === 'team'}
-                  onChange={set('nominationType')}
-                  className="mt-0.5 h-4 w-4 text-[#0197B2] focus:ring-[#0197B2] focus:ring-offset-0"
-                />
-                <div>
-                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Team</span>
-                  <p className="text-xs text-slate-500">Nominate a group of students performing together</p>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div className="mt-4 sm:col-span-2">
-            <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-              Grade Category <span className="text-red-500">*</span>
-            </label>
-            <div className="flex flex-wrap gap-4">
-              {GRADE_CATEGORIES.map((grade) => (
-                <label key={grade} className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 transition-colors">
-                  <input
-                    type="radio"
-                    name="gradeCategory"
-                    value={grade}
-                    checked={form.gradeCategory === grade}
-                    onChange={set('gradeCategory')}
-                    className="shrink-0 text-[#0197B2] focus:ring-[#0197B2]"
-                  />
-                  <span className="text-slate-700">{grade}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </Section>
-
-        {/* Team Size Selection for Team nominations */}
+                {/* Team Size Selection for Team nominations */}
         {form.nominationType === 'team' && (
           <Section title="Team Details">
             <div>
@@ -709,9 +646,30 @@ if (videoFile) {
           </div>
         )}
 
-        {/* Talent Category */}
+        {/* Talent Details */}
         {(form.nominationType === 'individual' || form.nominationType === 'team') && (
           <Section title="Talent Details">
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+                Talent Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                value={form.talentCategory}
+                onChange={set('talentCategory')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-[#0197B2] focus:outline-none focus:ring-2 focus:ring-[#0197B2]/20"
+              >
+                <option value="">Select talent category</option>
+                {TALENT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              {form.talentCategory === 'Other' && (
+                <div className="mt-3">
+                  <Field label="Please specify talent category" value={form.talentCategoryOther} onChange={set('talentCategoryOther')} required />
+                </div>
+              )}
+            </div>
             <div className="sm:col-span-2">
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
                 Brief Description of Talent <span className="text-red-500">*</span>

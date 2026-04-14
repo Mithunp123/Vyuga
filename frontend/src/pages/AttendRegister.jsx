@@ -55,7 +55,7 @@ const EVENT_DATA = [
     isExpandable: true,
     tracks: [
       { link: '/register/talent-student', label: 'School / Org', id: 'talent-student' },
-      { link: '/register/talent-parent', label: 'Parent / Individual', id: 'talent-parent' }
+      { link: '/register/talent-parent', label: 'Parent / Guardian', id: 'talent-parent' }
     ]
   },
   {

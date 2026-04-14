@@ -301,8 +301,9 @@ export default function TalentStudentNomination() {
       }
     }
     
-    // Validate talent description word count
+    // Validate talent description and category
     const talentWords = form.talentDescription.trim() ? form.talentDescription.trim().split(/\s+/).filter(word => word.length > 0) : []
+    if (!form.talentCategory) { showError('Please select a talent category.'); return }
     if (!form.talentDescription.trim()) { showError('Please provide a brief description of the talent.'); return }
     if (talentWords.length > 50) { showError('Talent description must not exceed 50 words.'); return }
     
@@ -781,6 +782,27 @@ export default function TalentStudentNomination() {
           <Section title="Talent Details">
             <div className="sm:col-span-2">
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
+                Talent Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                value={form.talentCategory}
+                onChange={set('talentCategory')}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-[#0197B2] focus:outline-none focus:ring-2 focus:ring-[#0197B2]/20"
+              >
+                <option value="">Select talent category</option>
+                {TALENT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              {form.talentCategory === 'Other' && (
+                <div className="mt-3">
+                  <Field label="Please specify talent category" value={form.talentCategoryOther} onChange={set('talentCategoryOther')} required />
+                </div>
+              )}
+            </div>
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
                 Brief Description of Talent <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -813,6 +835,7 @@ export default function TalentStudentNomination() {
             </div>
           </Section>
         )}
+
 
         {/* Video Upload Options */}
 
