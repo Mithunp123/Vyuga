@@ -7,21 +7,11 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 
-const FILM_GENRES = [
-  'Drama',
-  'Documentary',
-  'Animation',
-  'Experimental',
-  'Social Awareness',
-  'Inspirational',
-  'Other',
-]
+// Film genres removed
 
 const EMPTY = {
   // Film details
   filmTitle: '',
-  genre: '',
-  genreOther: '',
   duration: '',
   synopsis: '',
   filmUrl: '',
@@ -92,13 +82,14 @@ export default function ShortFilmForm() {
 
     // Validate required fields
     if (!form.filmTitle.trim()) { setError('Film title is required.'); setLoading(false); return }
-    if (!form.genre) { setError('Please select a genre.'); setLoading(false); return }
-    if (form.genre === 'Other' && !form.genreOther.trim()) { setError('Please enter the genre.'); setLoading(false); return }
     const dur = Number(form.duration)
     if (!form.duration.trim() || isNaN(dur) || dur < 1 || dur > 3) {
       setError('Duration must be between 1 and 3 minutes (strict event rule).'); setLoading(false); return
     }
+    const synopsisWordCount = form.synopsis.trim().split(/\s+/).filter(Boolean).length;
     if (!form.synopsis.trim()) { setError('Synopsis is required.'); setLoading(false); return }
+    if (synopsisWordCount > 50) { setError('Synopsis must be 50 words or less.'); setLoading(false); return }
+    if (!form.filmLanguage.trim()) { setError('Film language is required.'); setLoading(false); return }
     if (!form.filmUrl.trim()) { setError('Film link (Google Drive / YouTube) is required.'); setLoading(false); return }
     if (!form.participationType) { setError('Please select participation type.'); setLoading(false); return }
     if (form.participationType === 'team') {
@@ -138,7 +129,7 @@ export default function ShortFilmForm() {
 
       const submitData = {
         ...form,
-        genre: form.genre === 'Other' ? form.genreOther : form.genre,
+        genre: 'N/A',
         participationType: form.participationType,
         teamMembers: form.participationType === 'team'
           ? JSON.stringify(form.teamMembers.filter(n => n.trim()))
@@ -208,27 +199,6 @@ export default function ShortFilmForm() {
 
           <div>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
-              Genre <span className="text-red-500">*</span>
-            </label>
-            <select
-              required
-              value={form.genre}
-              onChange={set('genre')}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
-            >
-              <option value="">Select Genre</option>
-              {FILM_GENRES.map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-          </div>
-
-          {form.genre === 'Other' && (
-            <Field label="Specify Genre" value={form.genreOther} onChange={set('genreOther')} required />
-          )}
-
-          <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Duration (minutes) <span className="text-red-500">*</span>
             </label>
             <input
@@ -244,7 +214,7 @@ export default function ShortFilmForm() {
             <p className="mt-1 text-xs text-amber-600 font-semibold">Strict limit: 1–3 minutes including titles & credits</p>
           </div>
 
-          <Field label="Language of Film" value={form.filmLanguage} onChange={set('filmLanguage')} />
+          <Field label="Language of Film" value={form.filmLanguage} onChange={set('filmLanguage')} required />
 
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -255,7 +225,7 @@ export default function ShortFilmForm() {
               required
               value={form.synopsis}
               onChange={set('synopsis')}
-              placeholder="Brief description of your film (max 300 words)..."
+              placeholder="Brief description of your film (max 50 words)..."
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
           </div>

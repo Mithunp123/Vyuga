@@ -147,7 +147,7 @@ export default function SponsorsPage() {
               Sponsorship{' '}
             </span>
             <span className="font-marker text-4xl gradient-text sm:text-5xl">
-              Benefits
+              {/*Benefits*/}
             </span>
           </motion.div>
         </div>
