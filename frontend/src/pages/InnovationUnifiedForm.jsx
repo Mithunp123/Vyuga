@@ -6,6 +6,7 @@ import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import SuccessModal from '../components/SuccessModal.jsx'
 
 const INNOVATION_TYPE_OPTIONS = [
   { value: '', label: 'Select one' },
@@ -266,17 +267,14 @@ export default function InnovationUnifiedForm() {
     }
   }
 
-  if (submitted) {
-    const name = isForSpeciallyAbled ? form.teamName : form.member1Name
-    const categoryText = isForSpeciallyAbled ? 'For Specially Abled' : 'By Specially Abled'
-
+  if (isClosed) {
     return (
-      <PageShell title="Registration Successful" subtitle="Thank you for registering!">
-        <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
-          <p className="font-display text-lg font-bold text-slate-900">
-            Registration submitted successfully for <span className="text-brand-cyan">{name}</span> ({categoryText}).
+      <PageShell title="Registration Closed" subtitle="Thank you for your interest.">
+        <div className="max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <p className="font-display text-lg font-bold text-slate-800">
+            Registrations for Innovation Fest are currently closed.
           </p>
-          <p className="mt-3 text-sm text-slate-500">We'll contact you at the provided email address.</p>
+          <p className="mt-2 text-sm text-slate-500">Please check back later or contact support for queries.</p>
         </div>
       </PageShell>
     )
@@ -318,11 +316,20 @@ export default function InnovationUnifiedForm() {
 
   const { title: pageTitle, subtitle: pageSubtitle } = getPageTitleAndSubtitle()
 
+  const name = isForSpeciallyAbled ? form.teamName : form.member1Name
+  const categoryText = isForSpeciallyAbled ? 'For Specially Abled' : 'By Specially Abled'
+
   return (
     <PageShell
       title={pageTitle}
       subtitle={pageSubtitle}
     >
+      <SuccessModal
+        isOpen={submitted}
+        onClose={() => setSubmitted(false)}
+        title="Registration Successful"
+        message={`Registration submitted successfully for ${name} (${categoryText}). We'll contact you at ${form.member1Email}.`}
+      />
       <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
@@ -655,14 +662,22 @@ export default function InnovationUnifiedForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Register` : 'Register Form'}
-        </button>
+        <div className="space-y-4">
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Register` : 'Register Form'}
+          </button>
+
+          {loading && fee && (
+            <p className="text-sm text-amber-600 font-semibold animate-pulse">
+              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            </p>
+          )}
+        </div>
       </motion.form>
     </PageShell>
   )

@@ -4,6 +4,7 @@ import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import SuccessModal from '../components/SuccessModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
 const STATES = [
@@ -120,27 +121,17 @@ export default function CricketTeamForm() {
     )
   }
 
-  if (submitted) {
-    return (
-      <PageShell title="Interest Submitted!" subtitle="Thank you for your participation interest.">
-        <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
-          <p className="font-display text-lg font-bold text-slate-900">
-            🏏 Team <span className="text-brand-cyan">{form.teamName}</span> has submitted their interest
-            for the Blind Cricket Tournament!
-          </p>
-          <p className="mt-3 text-sm text-slate-500">
-            Our team will reach out to {form.contactName} at {form.contactEmail} with further details.
-          </p>
-        </div>
-      </PageShell>
-    )
-  }
-
   return (
     <PageShell
       title="Blind Cricket Tournament"
       subtitle="Submit your team's interest to participate in the tournament."
     >
+      <SuccessModal
+        isOpen={submitted}
+        onClose={() => setSubmitted(false)}
+        title="Interest Submitted!"
+        message={`Team ${form.teamName} has submitted their interest for the Blind Cricket Tournament! Our team will reach out to ${form.contactName} at ${form.contactEmail} with further details.`}
+      />
       <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
@@ -271,14 +262,22 @@ export default function CricketTeamForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !declared}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
-        >
-          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Interest` : 'Submit Interest'}
-        </button>
+        <div className="space-y-4">
+          <button
+            type="submit"
+            disabled={loading || !declared}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
+          >
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Interest` : 'Submit Interest'}
+          </button>
+
+          {loading && fee && (
+            <p className="text-sm text-amber-600 font-semibold animate-pulse">
+              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            </p>
+          )}
+        </div>
       </motion.form>
     </PageShell>
   )

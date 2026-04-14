@@ -49,7 +49,8 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
 
       const rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
-        reject(new Error(response.error.description || 'Payment failed'));
+        console.warn('Payment failed attempt:', response.error.description);
+        // Do not reject() here. Razorpay modal remains open and allows the user to retry.
       });
       rzp1.open();
     });

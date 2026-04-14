@@ -4,6 +4,7 @@ import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import SuccessModal from '../components/SuccessModal.jsx'
 
 const FILM_GENRES = [
   'Drama',
@@ -158,26 +159,17 @@ export default function ShortFilmForm() {
     )
   }
 
-  if (submitted) {
-    return (
-      <PageShell title="Application Submitted!" subtitle="Thank you for submitting your short film.">
-        <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
-          <p className="font-display text-lg font-bold text-slate-900">
-            <span className="text-brand-cyan">{form.filmTitle}</span> has been submitted for the Short Film Contest!
-          </p>
-          <p className="mt-3 text-sm text-slate-500">
-            Our team will review your submission and reach out to <strong>{form.contactEmail}</strong> with further details.
-          </p>
-        </div>
-      </PageShell>
-    )
-  }
-
   return (
     <PageShell
       title="Short Film Contest"
       subtitle="Submit your short film celebrating inclusivity, accessibility, and empowerment."
     >
+      <SuccessModal
+        isOpen={submitted}
+        onClose={() => setSubmitted(false)}
+        title="Application Submitted!"
+        message={`${form.filmTitle || 'Your film'} has been submitted! Our team will review your submission and reach out to ${form.contactEmail} with further details.`}
+      />
       <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
@@ -401,14 +393,22 @@ export default function ShortFilmForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !declared}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
-        >
-          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Film` : 'Submit Film'}
-        </button>
+        <div className="space-y-4">
+          <button
+            type="submit"
+            disabled={loading || !declared}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
+          >
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Film` : 'Submit Film'}
+          </button>
+          
+          {loading && fee && (
+            <p className="text-sm text-amber-600 font-semibold animate-pulse">
+              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            </p>
+          )}
+        </div>
       </motion.form>
     </PageShell>
   )

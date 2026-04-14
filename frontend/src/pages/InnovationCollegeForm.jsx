@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import SuccessModal from '../components/SuccessModal.jsx'
 
 const THEMES = [
   'Assistive Technology',
@@ -80,25 +81,17 @@ export default function InnovationCollegeForm() {
     )
   }
 
-  if (submitted) {
-    return (
-      <PageShell title="Registration Successful" subtitle="Thank you for registering!">
-        <div className="max-w-xl rounded-2xl border border-brand-cyan/20 bg-brand-cyan-light p-8 text-center">
-          <p className="font-display text-lg font-bold text-slate-900">
-            🎉 Your team <span className="text-brand-cyan">{form.teamName}</span> has been registered for the
-            Inclusive Innovation Fest (College Category).
-          </p>
-          <p className="mt-3 text-sm text-slate-500">We'll contact you at the provided email addresses.</p>
-        </div>
-      </PageShell>
-    )
-  }
-
   return (
     <PageShell
       title="Inclusive Innovation Fest – For Specially Abled"
       subtitle="College students: register your 3-member team and choose a theme."
     >
+      <SuccessModal
+        isOpen={submitted}
+        onClose={() => setSubmitted(false)}
+        title="Registration Successful"
+        message={`Your team ${form.teamName} has been registered for the Inclusive Innovation Fest (College Category). We'll contact you at the provided email addresses.`}
+      />
       <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
@@ -250,14 +243,22 @@ export default function InnovationCollegeForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !declared}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
-        >
-          {loading ? 'Submitting…' : 'Submit Registration'}
-        </button>
+        <div className="space-y-4">
+          <button
+            type="submit"
+            disabled={loading || !declared}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
+          >
+            {loading ? 'Submitting…' : fee ? `Pay ₹${fee} & Submit Registration` : 'Submit Registration'}
+          </button>
+
+          {loading && fee && (
+            <p className="text-sm text-amber-600 font-semibold animate-pulse">
+              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            </p>
+          )}
+        </div>
       </motion.form>
     </PageShell>
   )

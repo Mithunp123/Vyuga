@@ -6,6 +6,7 @@ import { postFormData } from '../api'
 import { handlePaymentProcess } from '../paymentHandler.js'
 import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import SuccessModal from '../components/SuccessModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
 
 const STATES = [
@@ -391,26 +392,17 @@ export default function TalentStudentNomination() {
     )
   }
 
-  if (submitted) {
-    return (
-      <PageShell title="Nomination Submitted" subtitle="Thank you for nominating!">
-        <div className="max-w-xl rounded-2xl border border-[#5BCB2B]/30 bg-[#e8f9de] p-8 text-center">
-          <p className="font-display text-lg font-bold text-slate-900">
-            🌟 {form.nominationType === 'team' ? 'Team nomination' : <span style={{ color: '#0197B2' }}>{form.studentName}</span>} has been submitted for Special Talent Utsav!
-          </p>
-          <p className="mt-3 text-sm text-slate-500">
-            We'll review the submission and get back to you at the provided contact.
-          </p>
-        </div>
-      </PageShell>
-    )
-  }
-
   return (
     <PageShell
       title="Special Talent Utsav – Organization & Nomination"
       subtitle="Register your organization and nominate talented students or teams."
     >
+      <SuccessModal
+        isOpen={submitted}
+        onClose={() => setSubmitted(false)}
+        title="Nomination Submitted"
+        message={`${form.nominationType === 'team' ? 'Team nomination' : form.studentName} has been submitted for Special Talent Utsav! We'll review the submission and get back to you at the provided contact.`}
+      />
       <SubmitLoader visible={loading} />
       <motion.form
         onSubmit={handleSubmit}
@@ -981,14 +973,22 @@ export default function TalentStudentNomination() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Nomination` : 'Submit Nomination'}
-        </button>
+        <div className="space-y-4">
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Nomination` : 'Submit Nomination'}
+          </button>
+
+          {loading && fee && (
+            <p className="text-sm text-amber-600 font-semibold animate-pulse">
+              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            </p>
+          )}
+        </div>
       </motion.form>
     </PageShell>
   )
