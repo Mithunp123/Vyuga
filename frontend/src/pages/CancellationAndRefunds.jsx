@@ -21,7 +21,7 @@ export default function CancellationAndRefunds() {
         <p className="text-sm text-slate-500 mb-8">Last updated: April 2026</p>
 
         <Section title="1. Registration Fee">
-          <p>The registration fee for VYUGA events is ₹99. This fee is strictly non-refundable under standard circumstances due to the administrative costs involved in processing registrations and allocating event resources.</p>
+          <p>The registration fees for VYUGA events are Inno Fest - ₹599, Special Talent Hunt - ₹499, and Short Film - ₹899. These fees are strictly non-refundable under standard circumstances due to the administrative costs involved in processing registrations and allocating event resources.</p>
         </Section>
 
         <Section title="2. Cancellation by Participant">
@@ -29,7 +29,7 @@ export default function CancellationAndRefunds() {
         </Section>
 
         <Section title="3. Event Cancellation or Postponement">
-          <p>In the unlikely event that VYUGA is cancelled by the organizers entirely, registered participants will be entitled to a full refund of the ₹99 registration fee.</p>
+          <p>In the unlikely event that VYUGA is cancelled by the organizers entirely, registered participants will be entitled to a full refund of their registration fee (Inno Fest: ₹599, Special Talent Hunt: ₹499, Short Film: ₹899).</p>
           <p>If the event is postponed, your registration will automatically be transferred to the new date. If you cannot attend the new date, you may request a refund within 7 days of the postponement announcement.</p>
         </Section>
 

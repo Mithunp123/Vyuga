@@ -25,13 +25,13 @@ export default function TermsAndConditions() {
         </Section>
 
         <Section title="2. Event Registration">
-          <p>Registration for VYUGA events requires payment of a registration fee of ₹99 per submission. Registration is confirmed only upon successful payment via our payment gateway (Razorpay).</p>
+          <p>Registration for VYUGA events requires payment of a registration fee (Inno Fest - ₹599, Special Talent Hunt - ₹499, Short Film - ₹899) per submission. Registration is confirmed only upon successful payment via our payment gateway (Razorpay).</p>
           <p>Each registration is valid for one team or individual as specified in the respective event form. Duplicate registrations may be cancelled without a refund.</p>
         </Section>
 
         <Section title="3. Payment">
           <p>All payments are processed securely through Razorpay. VYUGA does not store your card or banking details on our servers.</p>
-          <p>The registration fee is ₹99 (Indian Rupees) and is inclusive of all applicable taxes. Payment must be completed online at the time of registration.</p>
+          <p>The registration fees are Inno Fest - ₹599, Special Talent Hunt - ₹499, and Short Film - ₹899 (Indian Rupees) and are inclusive of all applicable taxes. Payment must be completed online at the time of registration.</p>
         </Section>
 
         <Section title="4. Eligibility">

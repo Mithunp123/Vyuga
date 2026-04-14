@@ -26,7 +26,7 @@ export default function ShippingPolicy() {
         </Section>
 
         <Section title="2. Delivery of Confirmation">
-          <p>Upon successful payment of the registration fee (₹99), you will immediately receive a digital confirmation via email.</p>
+          <p>Upon successful payment of the registration fee (Inno Fest - ₹599, Special Talent Hunt - ₹499, Short Film - ₹899), you will immediately receive a digital confirmation via email.</p>
           <p>This email contains your registration details, transaction ID, and further instructions. This digital confirmation constitutes the full "delivery" of our service prior to the event date.</p>
         </Section>
 
