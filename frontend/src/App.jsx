@@ -27,6 +27,8 @@ import ShortFilmForm from './pages/ShortFilmForm.jsx'
 
 import AdminLogin from './pages/AdminLogin.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
+import JuryLogin from './pages/JuryLogin.jsx'
+import JuryDashboard from './pages/JuryDashboard.jsx'
 import ErrorLogs from './pages/ErrorLogs.jsx'
 import AccessibilityWidget from './components/AccessibilityWidget.jsx'
 
@@ -74,6 +76,10 @@ export default function App() {
       <Route path="/vyuga-admin" element={<AdminLogin />} />
       <Route path="/vyuga-admin/dashboard" element={<AdminDashboard />} />
       <Route path="/errorlog" element={<ErrorLogs />} />
+      
+      {/* ── Jury Portal ── */}
+      <Route path="/jury-login" element={<JuryLogin />} />
+      <Route path="/jury-dashboard" element={<JuryDashboard />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

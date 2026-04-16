@@ -2097,7 +2097,7 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
     const meta = TABLE_MAP[type]
     if (!meta) return res.status(400).json({ success: false, message: 'Unknown type' })
     if (!isValidUUID(id)) return res.status(400).json({ success: false, message: 'Invalid record ID format' })
-    if (!['selected', 'rejected', 'pending'].includes(status)) {
+    if (!['selected', 'rejected', 'pending', 'waitlist'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status' })
     }
     const safeNote = adminNote ? sanitizeText(adminNote, 1000) : null
@@ -2114,17 +2114,7 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Send email notification
-    const email = data[meta.emailField]
-    const name = data[meta.nameField]
-    if (email) {
-      try {
-        await sendStatusUpdateEmail({ to: email, name, event: meta.event, status, adminNote: safeNote })
-        console.log(`[status-update] Email sent to ${email}`)
-      } catch (err) {
-        await logError({ source: 'admin', endpoint: `/api/admin/status/${type}/${id}`, method: 'PATCH', errorType: 'email_error', message: err.message, stack: err.stack, req })
-      }
-    }
+    // Email notification has been moved to manual trigger route
     res.json({ success: true, data })
   } catch (err) {
     await logError({ source: 'admin', endpoint: `/api/admin/status/${req.params.type}/${req.params.id}`, method: 'PATCH', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -2132,7 +2122,445 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: update form settings ───────────────────────────────────────────────
+// ── Admin: trigger status email manually ──────────────────────────────────────
+app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) => {
+  try {
+    const { type, id } = req.params
+    const meta = TABLE_MAP[type]
+    if (!meta) return res.status(400).json({ success: false, message: 'Unknown type' })
+    if (!isValidUUID(id)) return res.status(400).json({ success: false, message: 'Invalid record ID format' })
+
+    // Fetch the registration
+    const { data: reg, error } = await supabase
+      .from(meta.table)
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error || !reg) {
+      await logError({ source: 'admin', endpoint: `/api/admin/trigger-email/${type}/${id}`, method: 'POST', errorType: 'db_error', message: error?.message || 'Record not found', req })
+      return res.status(error ? 500 : 404).json({ success: false, message: error?.message || 'Record not found' })
+    }
+
+    if (!reg.status || reg.status === 'pending') {
+      return res.status(400).json({ success: false, message: 'Cannot send email for pending status' })
+    }
+
+    const email = reg[meta.emailField]
+    const name = reg[meta.nameField]
+    
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'No email found for this registration' })
+    }
+
+    // Send email
+    try {
+      await sendStatusUpdateEmail({ to: email, name, event: meta.event, status: reg.status, adminNote: reg.admin_note })
+      console.log(`[manual-status-update] Email sent to ${email}`)
+      
+      // Update email_sent flag
+      await supabase
+        .from(meta.table)
+        .update({ email_sent: true })
+        .eq('id', id)
+        
+    } catch (err) {
+      await logError({ source: 'admin', endpoint: `/api/admin/trigger-email/${type}/${id}`, method: 'POST', errorType: 'email_error', message: err.message, stack: err.stack, req })
+      return res.status(500).json({ success: false, message: 'Failed to send email' })
+    }
+
+    res.json({ success: true, message: 'Email sent successfully' })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: `/api/admin/trigger-email/${req.params.type}/${req.params.id}`, method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: trigger ALL status emails manually ─────────────────────────────────
+app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) => {
+  try {
+    const { type } = req.params
+    const meta = TABLE_MAP[type]
+    if (!meta) return res.status(400).json({ success: false, message: 'Unknown type' })
+
+    const { data: records, error } = await supabase
+      .from(meta.table)
+      .select('*')
+      .neq('status', 'pending')
+      .neq('status', null)
+      .eq('email_sent', false)
+
+    if (error) throw error
+    if (!records || records.length === 0) {
+      return res.json({ success: true, message: 'No eligible distinct emails found (all are pending or already sent)' })
+    }
+
+    let sentCount = 0
+    let failedCount = 0
+
+    for (const reg of records) {
+      const email = reg[meta.emailField]
+      const name = reg[meta.nameField]
+      
+      if (!email) {
+        failedCount++
+        continue
+      }
+
+      try {
+        await sendStatusUpdateEmail({ to: email, name, event: meta.event, status: reg.status, adminNote: reg.admin_note })
+        await supabase
+          .from(meta.table)
+          .update({ email_sent: true })
+          .eq('id', reg.id)
+        
+        sentCount++
+      } catch (err) {
+        console.error(`Failed to send bulk email to ${email}:`, err.message)
+        failedCount++
+      }
+    }
+
+    const failedStr = failedCount > 0 ? ' (' + failedCount + ' failed)' : '';
+    res.json({ success: true, message: `Successfully sent ${sentCount} emails.${failedStr}` })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: Jury Management ───────────────────────────────────────────────────
+
+// Get Jury allocation stats across all events
+app.get('/api/admin/jury/stats', requireAdmin, async (req, res) => {
+  try {
+    const stats = {}
+    
+    // Get ALL existing assignments to count "allocated" easily
+    const { data: assignments, error: existErr } = await supabase
+      .from('jury_assignments')
+      .select('event_type')
+      
+    if (existErr) return res.status(500).json({ success: false, message: existErr.message })
+    
+    // Group allocated counts
+    const allocatedCounts = {}
+    assignments.forEach(a => {
+      allocatedCounts[a.event_type] = (allocatedCounts[a.event_type] || 0) + 1
+    })
+
+    // Fetch total registration count per table
+    for (const [evt, meta] of Object.entries(TABLE_MAP)) {
+      const { count, error } = await supabase
+        .from(meta.table)
+        .select('*', { count: 'exact', head: true })
+        
+      if (!error) {
+        const allocated = allocatedCounts[evt] || 0
+        const total = count || 0
+        stats[evt] = {
+          total,
+          allocated,
+          unassigned: Math.max(0, total - allocated)
+        }
+      }
+    }
+    
+    res.json({ success: true, data: stats })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+
+// Get all Juries
+app.get('/api/admin/jury', requireAdmin, async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('jury_users')
+      .select('id, username, created_at')
+      .order('created_at', { ascending: false })
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+
+    const { data: assignments, error: assignmentsErr } = await supabase
+      .from('jury_assignments')
+      .select('jury_id, event_type')
+
+    if (assignmentsErr) return res.status(500).json({ success: false, message: assignmentsErr.message })
+
+    // Build allocation counts
+    const allocationMap = {}
+    assignments.forEach(a => {
+      if (!allocationMap[a.jury_id]) allocationMap[a.jury_id] = {}
+      if (!allocationMap[a.jury_id][a.event_type]) allocationMap[a.jury_id][a.event_type] = 0
+      allocationMap[a.jury_id][a.event_type]++
+    })
+
+    const data = users.map(u => ({
+      ...u,
+      allocations: allocationMap[u.id] || {}
+    }))
+
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Create new Jury
+app.post('/api/admin/jury', requireAdmin, async (req, res) => {
+  try {
+    const { username, password } = req.body
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required' })
+    
+    const { data, error } = await supabase
+      .from('jury_users')
+      .insert([{ username: username.trim(), password }])
+      .select('id, username, created_at')
+      .single()
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Delete Jury
+app.delete('/api/admin/jury/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { error } = await supabase
+      .from('jury_users')
+      .delete()
+      .eq('id', id)
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    res.json({ success: true, message: 'Jury deleted' })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Allocate Registrations to Jury
+app.post('/api/admin/jury/allocate', requireAdmin, async (req, res) => {
+  try {
+    const { juryId, eventType, count } = req.body
+    if (!juryId || !eventType || !count) return res.status(400).json({ success: false, message: 'Missing parameters' })
+    
+    const meta = TABLE_MAP[eventType]
+    if (!meta) return res.status(400).json({ success: false, message: 'Unknown event type' })
+      
+    // Find registrations of this event type that are NOT in jury_assignments for this event
+    const { data: unassigned, error: unassignedErr } = await supabase
+      .from(meta.table)
+      .select('id')
+      .order('submitted_at', { ascending: true }) // Oldest first
+      
+    if (unassignedErr) return res.status(500).json({ success: false, message: unassignedErr.message })
+    
+    // Get ALL existing assignments for this event type across all juries to filter them out
+    const { data: existingAssignments, error: existErr } = await supabase
+      .from('jury_assignments')
+      .select('registration_id')
+      .eq('event_type', eventType)
+      
+    if (existErr) return res.status(500).json({ success: false, message: existErr.message })
+    
+    const assignedIds = new Set(existingAssignments.map(a => a.registration_id))
+    
+    // Filter unassigned
+    const availableToAssign = unassigned.filter(r => !assignedIds.has(r.id)).slice(0, parseInt(count, 10))
+    
+    if (availableToAssign.length === 0) {
+      return res.status(400).json({ success: false, message: 'No more unassigned registrations available for this event.' })
+    }
+    
+    // Insert into jury_assignments
+    const inserts = availableToAssign.map(r => ({
+      jury_id: juryId,
+      event_type: eventType,
+      registration_id: r.id
+    }))
+    
+    const { error: insertErr } = await supabase
+      .from('jury_assignments')
+      .insert(inserts)
+      
+    if (insertErr) return res.status(500).json({ success: false, message: insertErr.message })
+    
+    res.json({ success: true, message: `Successfully allocated ${inserts.length} registrations.`, count: inserts.length })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Jury Routes ──────────────────────────────────────────────────────────────
+
+// Jury Login
+app.post('/api/jury/login', loginLimiter, async (req, res) => {
+  try {
+    const { username, password } = req.body
+    
+    const { data, error } = await supabase
+      .from('jury_users')
+      .select('id, username, password')
+      .eq('username', username)
+      .single()
+      
+    if (error || !data) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    if (data.password !== password) return res.status(401).json({ success: false, message: 'Invalid credentials' })
+    
+    res.json({ success: true, token: data.id, username: data.username })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Middleware for Jury
+function requireJury(req, res, next) {
+  const token = req.headers['x-jury-token']
+  if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' })
+  // In a real app we'd verify a JWT, but here token is just jury ID
+  req.juryId = token
+  next()
+}
+
+// Get Allocated Registrations for a Jury
+app.get('/api/jury/registrations', requireJury, async (req, res) => {
+  try {
+    const juryId = req.juryId
+    
+    const { data: assignments, error } = await supabase
+      .from('jury_assignments')
+      .select('registration_id, event_type')
+      .eq('jury_id', juryId)
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    
+    // Fetch the actual registration data for these IDs
+    const results = []
+    
+    // Group by event type to minimize queries
+    const grouped = assignments.reduce((acc, curr) => {
+      if (!acc[curr.event_type]) acc[curr.event_type] = []
+      acc[curr.event_type].push(curr.registration_id)
+      return acc
+    }, {})
+    
+    // Also fetch evaluations by this jury so we know which ones are evaluated
+    const { data: evaluations, error: evalErr } = await supabase
+      .from('jury_evaluations')
+      .select('registration_id, score, comments')
+      .eq('jury_id', juryId)
+      
+    if (evalErr) return res.status(500).json({ success: false, message: evalErr.message })
+    
+    const evaluationMap = {}
+    evaluations.forEach(e => {
+      evaluationMap[e.registration_id] = { score: e.score, comments: e.comments }
+    })
+    
+    for (const [eventType, ids] of Object.entries(grouped)) {
+      const meta = TABLE_MAP[eventType]
+      if (!meta) continue
+        
+      const { data: recs, error: fetchErr } = await supabase
+        .from(meta.table)
+        .select('*')
+        .in('id', ids)
+        
+      if (!fetchErr && recs) {
+        recs.forEach(r => {
+          results.push({
+            event_type: eventType,
+            event_label: meta.event,
+            registration: r,
+            evaluation: evaluationMap[r.id] || null
+          })
+        })
+      }
+    }
+    
+    res.json({ success: true, data: results })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Jury update status
+app.patch('/api/jury/status/:type/:id', requireJury, async (req, res) => {
+  try {
+    const { type, id } = req.params
+    const { status } = req.body
+    const juryId = req.juryId
+    
+    const meta = TABLE_MAP[type]
+    if (!meta) return res.status(400).json({ success: false, message: 'Unknown event type' })
+    
+    if (!['selected', 'rejected', 'pending', 'waitlist'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' })
+    }
+    
+    // Check if jury is assigned to this reg
+    const { data: assignment, error: assignErr } = await supabase
+      .from('jury_assignments')
+      .select('id')
+      .eq('jury_id', juryId)
+      .eq('registration_id', id)
+      .eq('event_type', type)
+      .single()
+      
+    if (assignErr || !assignment) {
+      return res.status(403).json({ success: false, message: 'Not authorized for this registration' })
+    }
+    
+    // Update the registration status
+    const { error: updateErr } = await supabase
+      .from(meta.table)
+      .update({ status })
+      .eq('id', id)
+      
+    if (updateErr) return res.status(500).json({ success: false, message: updateErr.message })
+    
+    res.json({ success: true, status })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Submit Evaluation
+app.post('/api/jury/evaluate', requireJury, async (req, res) => {
+  try {
+    const juryId = req.juryId
+    const { eventType, registrationId, score, comments } = req.body
+    
+    if (!eventType || !registrationId || score === undefined) {
+      return res.status(400).json({ success: false, message: 'Missing parameters' })
+    }
+    
+    // Upsert the evaluation
+    const { data, error } = await supabase
+      .from('jury_evaluations')
+      .upsert({
+        jury_id: juryId,
+        event_type: eventType,
+        registration_id: registrationId,
+        score: parseInt(score, 10),
+        comments: comments || null
+      }, { onConflict: 'jury_id, event_type, registration_id' })
+      .select()
+      .single()
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    
+    res.json({ success: true, message: 'Evaluation saved successfully', data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+
 app.patch('/api/admin/form-settings/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params

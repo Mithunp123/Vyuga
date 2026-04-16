@@ -7,6 +7,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 import AdminSettingsView from '../components/AdminSettingsView.jsx'
 import AdminGalleryView from '../components/AdminGalleryView.jsx'
 import AdminPaymentsView from '../components/AdminPaymentsView.jsx'
+import AdminJuryView from '../components/AdminJuryView.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -21,11 +22,13 @@ const TABS = [
   { id: 'sponsors',           label: 'Sponsor Messages',                 endpoint: '/api/admin/sponsors' },
   { id: 'payments',           label: 'Payments',                      endpoint: null },
   { id: 'settings',           label: 'Form Controls',                 endpoint: null },
-  { id: 'gallery',             label: 'Gallery',                       endpoint: null },
+  { id: 'gallery',            label: 'Gallery',                       endpoint: null },
+  { id: 'jury',               label: 'Jury Management',               endpoint: null },
 ]
 
 const STATUS_CFG = {
   selected: { label: 'Selected', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+  waitlist: { label: 'Waitlist', color: '#0284c7', bg: '#f0f9ff', border: '#bae6fd' },
   rejected: { label: 'Rejected', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   pending:  { label: 'Pending',  color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
 }
@@ -335,6 +338,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
   const [adminNote, setAdminNote] = useState(row.admin_note || '')
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [triggering, setTriggering] = useState(false)
 
   // Org tab and Sponsors tab don't have status management
   const isOrgTab = ['talent-org', 'sponsors'].includes(tabId)
@@ -347,12 +351,6 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
   const mediaUrl = mediaFilename ? `${API_BASE}/uploads/${mediaFilename}` : null
 
   const save = async () => {
-    // Check if status has changed
-    if (status === (row.status || 'pending')) {
-      alert("There is no change on status so does not send any mail")
-      return
-    }
-
     setSaving(true)
     setSaveMsg('')
     try {
@@ -364,15 +362,36 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
       const json = await res.json()
       if (!json.success) throw new Error(json.message)
       
-      // Show popup and close modal
-      alert('✅ Saved & email sent')
+      alert('✅ Status saved successfully')
       onStatusChange(row.id, status, adminNote)
-      if (onClose) onClose()
-      
     } catch (err) {
       setSaveMsg('❌ ' + err.message)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const triggerEmail = async () => {
+    if (status === 'pending') {
+      alert("Cannot send email for pending status.")
+      return
+    }
+    if (!window.confirm("Are you sure you want to trigger the status email to the user?")) return
+    setTriggering(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/trigger-email/${tabId}/${row.id}`, {
+        method: 'POST',
+        headers: { 'x-admin-token': token },
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      
+      alert('✅ Email sent successfully')
+      row.email_sent = true
+    } catch (err) {
+      alert('❌ ' + err.message)
+    } finally {
+      setTriggering(false)
     }
   }
 
@@ -710,14 +729,22 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
             placeholder="Optional note to registrant (included in status email)…"
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none resize-none mb-3"
           />
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={save}
               disabled={saving}
               className="rounded-xl px-5 py-2.5 text-sm font-bold text-white transition disabled:opacity-60"
               style={{ backgroundColor: '#0197B2' }}
             >
-              {saving ? 'Saving…' : 'Save Status & Notify'}
+              {saving ? 'Saving…' : 'Save Status'}
+            </button>
+            <button
+              onClick={triggerEmail}
+              disabled={triggering || status === 'pending'}
+              className="rounded-xl px-5 py-2.5 text-sm font-bold text-white transition disabled:opacity-60 shadow-sm"
+              style={{ backgroundColor: '#5BCB2B' }}
+            >
+              {triggering ? 'Sending Email…' : row.email_sent ? 'Resend Status Email' : 'Trigger Status Email'}
             </button>
             {saveMsg && <span className="text-sm font-medium text-slate-600">{saveMsg}</span>}
           </div>
@@ -847,6 +874,27 @@ export default function AdminDashboard() {
 
   const totalRegs = Object.values(data).reduce((sum, arr) => sum + (arr?.length || 0), 0)
   const allLoaded = TABS.every((t) => data[t.id] || errors[t.id])
+
+  const [bulkTriggering, setBulkTriggering] = useState(false)
+  const triggerBulkEmailAll = async () => {
+    if (!window.confirm(`Are you sure you want to trigger status emails to EVERYONE in this event who hasn't received one yet?\nEvent: ${TABS.find(t=>t.id === activeTab)?.label}`)) return
+    
+    setBulkTriggering(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/trigger-email-all/${activeTab}`, {
+        method: 'POST',
+        headers: { 'x-admin-token': token }
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      alert('✅ ' + json.message)
+      await fetchData(activeTab)
+    } catch (err) {
+      alert('❌ Bulk Email Error: ' + err.message)
+    } finally {
+      setBulkTriggering(false)
+    }
+  }
 
   const logout = () => {
     sessionStorage.removeItem('vyuga_admin_token')
@@ -1111,17 +1159,28 @@ export default function AdminDashboard() {
                 <button onClick={goHome} className="lg:hidden inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 transition-colors hover:bg-white hover:shadow-sm" style={{ color: '#0197B2' }}>
                   ← Back to Dashboard
                 </button>
-                <div>
-                  <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                    {TABS.find((t) => t.id === activeTab)?.label}
-                  </h1>
-                  {activeTab !== 'payments' && activeTab !== 'settings' && activeTab !== 'gallery' && (
-                    <p className="mt-2 text-sm text-slate-600">
-                      {rows.length} registration{rows.length !== 1 ? 's' : ''} total
-                    </p>
-                  )}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full h-full gap-4">
+                    <div>
+                      <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                        {TABS.find((t) => t.id === activeTab)?.label}
+                      </h1>
+                      {activeTab !== 'payments' && activeTab !== 'settings' && activeTab !== 'gallery' && activeTab !== 'jury' && (
+                        <p className="mt-2 text-sm text-slate-600">
+                          {rows.length} registration{rows.length !== 1 ? 's' : ''} total
+                        </p>
+                      )}
+                    </div>
+                    {activeTab !== 'payments' && activeTab !== 'settings' && activeTab !== 'gallery' && activeTab !== 'jury' && activeTab !== 'accommodation' && activeTab !== 'sponsors' && (
+                      <button 
+                        onClick={triggerBulkEmailAll}
+                        disabled={bulkTriggering}
+                        className="inline-flex items-center gap-2 rounded-xl bg-[#0197B2] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#017a94] disabled:opacity-50"
+                      >
+                        {bulkTriggering ? 'Sending...' : 'Bulk Trigger Status Emails'} 
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 right-0">
               <svg viewBox="0 0 1440 40" className="w-full h-[40px]" preserveAspectRatio="none">
@@ -1137,6 +1196,8 @@ export default function AdminDashboard() {
               <AdminGalleryView token={token} />
             ) : activeTab === 'payments' ? (
               <AdminPaymentsView token={token} />
+            ) : activeTab === 'jury' ? (
+              <AdminJuryView token={token} />
             ) : (
              <>
             {/* Status summary pills (hidden for org tab) */}
