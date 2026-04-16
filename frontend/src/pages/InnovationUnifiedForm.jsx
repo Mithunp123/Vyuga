@@ -362,21 +362,18 @@ export default function InnovationUnifiedForm() {
           <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
             <h3 className="mb-4 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">Eligibility Criteria</h3>
             <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
+
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must be an Innovator</span>
+                <span>Not a registered startup or entity</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must not be a Registered entity / Startup</span>
+                <span>Must be a specially abled individual</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must be a person with disability</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Individual or team participation allowed (max 3 members)</span>
+                <span>Solo or team (up to 3 members)</span>
               </li>
             </ul>
           </div>
@@ -388,15 +385,15 @@ export default function InnovationUnifiedForm() {
             <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must be affiliated with a College</span>
+                <span>Open to college students</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Solutions must be designed for specially abled individuals</span>
+                <span>Solution must help specially abled people</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Team participation only (exactly 3 members)</span>
+                <span>Teams must have exactly 3 members</span>
               </li>
             </ul>
           </div>

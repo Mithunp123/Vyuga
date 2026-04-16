@@ -302,7 +302,8 @@ export default function AttendRegister() {
                               {!step.label ? (
                                 <div className="flex flex-col gap-1.5 text-xs">
                                   <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="italic text-slate-500">Follow us on</span>
                                     <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-3.5 h-3.5" />
                                     </a>
@@ -392,7 +393,8 @@ export default function AttendRegister() {
                               {!step.label ? (
                                 <div className="flex flex-col gap-1.5 text-sm">
                                   <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="italic text-slate-500">Follow us on</span>
                                     <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-4 h-4" />
                                     </a>
