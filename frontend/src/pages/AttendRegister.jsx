@@ -75,10 +75,10 @@ const EVENT_DATA = [
       {
         label: 'Accessibility (Mandatory)',
         value: [
-          'Subtitles/Captions (Compulsory) — English, must include dialogues & important sound cues (e.g., [door knocks])',
-          'Audio Description (Compulsory) — Narration describing visuals for visually impaired audiences, clear & synced',
-          'Clear Audio Quality — Dialogue and narration must be audible and noise-free',
-          'Both subtitle & audio description formats are compulsory',
+          'Provide one Google Drive link containing two video files:',
+          'Video 1: Normal video with English subtitles.',
+          'Video 2: The same video but with Sign Language interpretation for the hearing impaired.',
+          'Audio must be clear and noise-free in both videos.'
         ]
       },
       {
