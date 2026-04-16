@@ -68,7 +68,7 @@ export default function Footer() {
             <motion.div style={{ opacity: textOpacity }} className="mt-7 space-y-3 text-sm text-white">
               {[
                 { Icon: Phone, text: '04288-274374' },
-                { Icon: Mail, text: 'connect@nexyugainnovations.com' },
+                { Icon: Mail, text: 'vyuga@nexyugainnovations.com' },
                 { Icon: Globe, text: 'www.nexyugainnovations.com', href: 'https://www.nexyugainnovations.com' },
                 { Icon: MapPin, text: 'K.S.Rangasamy College of Technology, Tiruchengode' },
               ].map(({ Icon, text, href }) => (
@@ -93,6 +93,11 @@ export default function Footer() {
               <SocialIcon label="X" href="https://x.com/">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                   <path fill="currentColor" d="M18.9 2H22l-6.78 7.75L23 22h-6.78l-5.31-6.92L4.8 22H2l7.35-8.4L1 2h6.92l4.8 6.3L18.9 2Zm-1.2 18h1.68L7.1 3.9H5.3L17.7 20Z" />
+                </svg>
+              </SocialIcon>
+              <SocialIcon label="YouTube" href="https://www.youtube.com/@nexyugainnovations">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                  <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.376.55 9.376.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                 </svg>
               </SocialIcon>
             </div>

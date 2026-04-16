@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="6. Your Rights">
-          <p>You have the right to request access to, correction of, or deletion of your personal data. To exercise these rights, please contact us at <a href="mailto:connect@nexyugainnovations.com" className="text-[#0197B2] underline">connect@nexyugainnovations.com</a>.</p>
+          <p>You have the right to request access to, correction of, or deletion of your personal data. To exercise these rights, please contact us at <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] underline">vyuga@nexyugainnovations.com</a>.</p>
         </Section>
 
         <Section title="7. Changes to This Policy">
@@ -67,7 +67,7 @@ export default function PrivacyPolicy() {
         </Section>
 
         <Section title="8. Contact">
-          <p>For any privacy-related queries, contact us at <a href="mailto:connect@nexyugainnovations.com" className="text-[#0197B2] underline">connect@nexyugainnovations.com</a>.</p>
+          <p>For any privacy-related queries, contact us at <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] underline">vyuga@nexyugainnovations.com</a>.</p>
         </Section>
       </div>
     </PageShell>

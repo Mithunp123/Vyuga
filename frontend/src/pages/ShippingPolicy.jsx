@@ -35,7 +35,7 @@ export default function ShippingPolicy() {
         </Section>
 
         <Section title="4. Contact Us">
-          <p>If you have not received your confirmation email within 24 hours of successful payment, please check your spam folder or contact us at <a href="mailto:connect@nexyugainnovations.com" className="text-[#0197B2] underline">connect@nexyugainnovations.com</a>.</p>
+          <p>If you have not received your confirmation email within 24 hours of successful payment, please check your spam folder or contact us at <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] underline">vyuga@nexyugainnovations.com</a>.</p>
         </Section>
       </div>
     </PageShell>

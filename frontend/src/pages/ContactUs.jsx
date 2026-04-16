@@ -26,7 +26,7 @@ export default function ContactUs() {
                   </div>
                   <div>
                     <p className="font-bold text-slate-800">Email</p>
-                    <a href="mailto:connect@nexyugainnovations.com" className="text-[#0197B2] hover:underline">connect@nexyugainnovations.com</a>
+                    <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] hover:underline">vyuga@nexyugainnovations.com</a>
                   </div>
                 </div>
 
