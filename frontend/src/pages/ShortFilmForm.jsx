@@ -224,10 +224,16 @@ export default function ShortFilmForm() {
               rows={4}
               required
               value={form.synopsis}
-              onChange={set('synopsis')}
+              onChange={(e) => {
+                const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                if (words.length <= 50) set('synopsis')(e)
+              }}
               placeholder="Brief description of your film (max 50 words)..."
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
+            <div className="flex justify-end mt-1 text-xs text-slate-400">
+              {form.synopsis.trim() ? form.synopsis.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+            </div>
           </div>
 
           <div className="sm:col-span-2">
@@ -362,7 +368,6 @@ export default function ShortFilmForm() {
           />
         </Section>
 
-        {/* ── Additional Info ── */}
         <div>
           <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
             Additional Information
@@ -370,10 +375,16 @@ export default function ShortFilmForm() {
           <textarea
             rows={2}
             value={form.additionalInfo}
-            onChange={set('additionalInfo')}
-            placeholder="Any other details you'd like to share..."
+            onChange={(e) => {
+              const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+              if (words.length <= 50) set('additionalInfo')(e)
+            }}
+            placeholder="Any other details you'd like to share... (Max 50 words)"
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
           />
+          <div className="flex justify-end mt-1 text-xs text-slate-400">
+            {form.additionalInfo.trim() ? form.additionalInfo.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+          </div>
         </div>
 
         {/* ── Declaration ── */}

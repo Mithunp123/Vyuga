@@ -388,7 +388,7 @@ export default function InnovationUnifiedForm() {
             <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must be affiliated with a College/Institution</span>
+                <span>Must be affiliated with a College</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
@@ -483,16 +483,21 @@ export default function InnovationUnifiedForm() {
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
                   Brief Description <span className="text-red-500">*</span>
-                  <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
                 </label>
                 <textarea
                   required
                   rows={3}
                   value={form.ideaDescription}
-                  onChange={set('ideaDescription')}
+                  onChange={(e) => {
+                    const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                    if (words.length <= 50) set('ideaDescription')(e)
+                  }}
                   placeholder="Provide a concise overview of your idea or prototype in 50 words or less..."
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 />
+                <div className="flex justify-end mt-1 text-xs text-slate-400">
+                  {form.ideaDescription.trim() ? form.ideaDescription.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+                </div>
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -502,12 +507,18 @@ export default function InnovationUnifiedForm() {
                   required
                   rows={3}
                   value={form.painPoint}
-                  onChange={set('painPoint')}
+                  onChange={(e) => {
+                    const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                    if (words.length <= 50) set('painPoint')(e)
+                  }}
                   placeholder={isForSpeciallyAbled
-                    ? "What specific problem or challenge does your innovation address for specially abled individuals?"
-                    : "What specific challenge or barrier do you face that your solution addresses?"}
+                    ? "What specific problem or challenge does your innovation address for specially abled individuals? (Max 50 words)"
+                    : "What specific challenge or barrier do you face that your solution addresses? (Max 50 words)"}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 />
+                <div className="flex justify-end mt-1 text-xs text-slate-400">
+                  {form.painPoint.trim() ? form.painPoint.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+                </div>
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -517,12 +528,18 @@ export default function InnovationUnifiedForm() {
                   required
                   rows={4}
                   value={form.solution}
-                  onChange={set('solution')}
+                  onChange={(e) => {
+                    const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                    if (words.length <= 50) set('solution')(e)
+                  }}
                   placeholder={isForSpeciallyAbled
-                    ? "Explain how your innovation solves the problem. What technology, approach, or methodology do you use?"
-                    : "Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use?"}
+                    ? "Explain how your innovation solves the problem. What technology, approach, or methodology do you use? (Max 50 words)"
+                    : "Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use? (Max 50 words)"}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 />
+                <div className="flex justify-end mt-1 text-xs text-slate-400">
+                  {form.solution.trim() ? form.solution.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+                </div>
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -532,12 +549,18 @@ export default function InnovationUnifiedForm() {
                   required
                   rows={3}
                   value={form.usp}
-                  onChange={set('usp')}
+                  onChange={(e) => {
+                    const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                    if (words.length <= 50) set('usp')(e)
+                  }}
                   placeholder={isForSpeciallyAbled
-                    ? "What makes your solution unique? How is it different from existing solutions?"
-                    : "What makes your solution unique? How is it different from existing assistive technologies?"}
+                    ? "What makes your solution unique? How is it different from existing solutions? (Max 50 words)"
+                    : "What makes your solution unique? How is it different from existing assistive technologies? (Max 50 words)"}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
                 />
+                <div className="flex justify-end mt-1 text-xs text-slate-400">
+                  {form.usp.trim() ? form.usp.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+                </div>
               </div>
             </>
           )}
@@ -656,7 +679,7 @@ export default function InnovationUnifiedForm() {
               <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
                 <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
                   <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                    Prototype Link(Concept or Design flow) <span className="text-slate-400 font-normal text-sm font-sans">(Optional)</span>
+                    Prototype Link(Concept or Design flow) <span className="text-red-500">*</span>
                   </label>
                   <button 
                     type="button" 
@@ -695,6 +718,7 @@ export default function InnovationUnifiedForm() {
 
                 <input
                   type="url"
+                  required
                   placeholder="https://drive.google.com/..."
                   value={prototypeUrl}
                   onChange={(e) => setPrototypeUrl(e.target.value)}

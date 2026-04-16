@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Calendar, Trophy, Medal, Crown, Award } from 'lucide-react'
+import { Calendar, Trophy, Medal, Crown, Award, Instagram, Linkedin } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 
 import thinkImage from '../assets/images/think.png'
@@ -19,12 +19,12 @@ const EVENT_DATA = [
     image: thinkImage,
     details: [
       { label: 'Focus Sector', value: ['Assistive Technology'] },
-      { label: 'Eligibility', value: ['Open to specially abled innovators & college students', 'Team max 3 members', 'Innovator from any age group for PwD'] }
+
     ],
     timeline: [
-      { label: "Application Open", date: "14/04/2026" },
-      { label: "Application Close", date: "10/05/2026" },
-      { label: "1st Round Results", date: "20/05/2026" }
+      { label: "Application Open", date: "20/04/2026" },
+      { label: "Application Close", date: "25/05/2026" },
+      { date: "Result Updates will be announced on Social Media " }
     ],
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹ 2 Lakh" }
@@ -42,12 +42,12 @@ const EVENT_DATA = [
     description: "A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!",
     image: eventImage,
     details: [
-      { label: 'Eligibility & Selection', value: ['Schools/organizations nominate 1 team or individual', 'Team max 3 members', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
+      { label: 'Eligibility & Selection', value: ['Special Schools or Parents nominate 1 team or individual', 'Team max 3 members', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
     ],
     timeline: [
-      { label: "Application Open", date: "14/04/2026" },
-      { label: "Application Close", date: "20/05/2026" },
-      { label: "Finalist Announcement", date: "05/06/2026" }
+      { label: "Application Open", date: "20/04/2026" },
+      { label: "Application Close", date: "25/05/2026" },
+      { date: "Result Updates will be announced on Social Media " }
     ],
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹ 50,000" }
@@ -68,7 +68,6 @@ const EVENT_DATA = [
       {
         label: 'Duration',
         value: [
-          'Minimum: 1 minute',
           'Maximum: 3 minutes (strict limit)',
           'Titles + credits must be included within 3 minutes',
         ]
@@ -85,9 +84,10 @@ const EVENT_DATA = [
       {
         label: 'Participation',
         value: [
-          'Open to students, freelancers, and filmmakers',
+          'Open to All',
           'Individual or team participation allowed',
           'Max 1 entry per participant/team',
+          'Team max 3 members'
         ]
       },
       {
@@ -101,9 +101,9 @@ const EVENT_DATA = [
       },
     ],
     timeline: [
-      { label: "Application Open", date: "14/04/2026" },
-      { label: "Application Close", date: "20/05/2026" },
-      { label: "Finalist Announcement", date: "05/06/2026" }
+      { label: "Application Open", date: "20/04/2026" },
+      { label: "Application Close", date: "25/05/2026" },
+      { date: "Result Updates will be announced on Social Media " }
     ],
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹ 1 Lakh" }
@@ -298,11 +298,25 @@ export default function AttendRegister() {
                         <ul className="space-y-3 border-l-2 border-[#5BCB2B]/30 ml-2 pl-4">
                           {event.timeline.map((step, sIdx) => (
                             <li key={sIdx} className="relative">
-                              <div className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
-                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-600 font-bold mr-2">{step.label}</span>
-                                <span className={`font-black uppercase tracking-wide ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
-                              </div>
+                              <div className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ring-2 ${!step.label ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : /(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
+                              {!step.label ? (
+                                <div className="flex flex-col gap-1.5 text-xs">
+                                  <span className="text-slate-600 font-semibold">Results announced on Social Media</span>
+                                  <div className="flex items-center gap-2">
+                                    <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
+                                      <Instagram className="w-3.5 h-3.5" />
+                                    </a>
+                                    <a href="https://www.linkedin.com/company/nexyuga-innovations/" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
+                                      <Linkedin className="w-3.5 h-3.5" />
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex justify-between items-center text-xs">
+                                  <span className="text-slate-600 font-bold mr-2">{step.label}</span>
+                                  <span className={`font-black uppercase tracking-wide ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
+                                </div>
+                              )}
                             </li>
                           ))}
                         </ul>
@@ -374,11 +388,25 @@ export default function AttendRegister() {
                         <ul className="space-y-4 border-l-2 border-[#5BCB2B]/30 ml-2 pl-4">
                           {event.timeline.map((step, sIdx) => (
                             <li key={sIdx} className="relative">
-                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ${/(open)/i.test(step.label) ? 'bg-[#5BCB2B] border border-white ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
-                                <span className={`font-black uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
-                              </div>
+                              <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ${!step.label ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : /(open)/i.test(step.label) ? 'bg-[#5BCB2B] border border-white ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
+                              {!step.label ? (
+                                <div className="flex flex-col gap-1.5 text-sm">
+                                  <span className="text-slate-600 font-semibold">Results announced on Social Media</span>
+                                  <div className="flex items-center gap-2">
+                                    <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
+                                      <Instagram className="w-4 h-4" />
+                                    </a>
+                                    <a href="https://www.linkedin.com/company/nexyuga-innovations/" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
+                                      <Linkedin className="w-4 h-4" />
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex justify-between items-center text-sm">
+                                  <span className="text-slate-600 font-bold whitespace-nowrap mr-2">{step.label}</span>
+                                  <span className={`font-black uppercase tracking-wide px-1 ${/(open)/i.test(step.label) ? 'text-[#5BCB2B]' : 'text-slate-800'}`}>{step.date}</span>
+                                </div>
+                              )}
                             </li>
                           ))}
                         </ul>

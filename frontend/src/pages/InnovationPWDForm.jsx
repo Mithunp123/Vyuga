@@ -168,16 +168,21 @@ export default function InnovationPWDForm() {
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
               Brief Description <span className="text-red-500">*</span>
-              <span className="text-slate-400 font-normal text-xs ml-1">(Max 50 words)</span>
             </label>
             <textarea
               required
               rows={3}
               value={form.ideaDescription}
-              onChange={set('ideaDescription')}
+              onChange={(e) => {
+                const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                if (words.length <= 50) set('ideaDescription')(e)
+              }}
               placeholder="Provide a concise overview of your assistive technology solution in 50 words or less..."
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
+            <div className="flex justify-end mt-1 text-xs text-slate-400">
+              {form.ideaDescription.trim() ? form.ideaDescription.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+            </div>
           </div>
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -187,10 +192,16 @@ export default function InnovationPWDForm() {
               required
               rows={3}
               value={form.painPoint}
-              onChange={set('painPoint')}
-              placeholder="What specific challenge or barrier do you face that your solution addresses?"
+              onChange={(e) => {
+                const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                if (words.length <= 50) set('painPoint')(e)
+              }}
+              placeholder="What specific challenge or barrier do you face that your solution addresses? (Max 50 words)"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
+            <div className="flex justify-end mt-1 text-xs text-slate-400">
+              {form.painPoint.trim() ? form.painPoint.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+            </div>
           </div>
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -200,10 +211,16 @@ export default function InnovationPWDForm() {
               required
               rows={4}
               value={form.solution}
-              onChange={set('solution')}
-              placeholder="Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use?"
+              onChange={(e) => {
+                const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                if (words.length <= 50) set('solution')(e)
+              }}
+              placeholder="Explain how your assistive technology solution works and addresses the problem. What technology, approach, or methodology do you use? (Max 50 words)"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
+            <div className="flex justify-end mt-1 text-xs text-slate-400">
+              {form.solution.trim() ? form.solution.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+            </div>
           </div>
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
@@ -213,10 +230,16 @@ export default function InnovationPWDForm() {
               required
               rows={3}
               value={form.usp}
-              onChange={set('usp')}
-              placeholder="What makes your solution unique? How is it different from existing assistive technologies?"
+              onChange={(e) => {
+                const words = e.target.value.trim() ? e.target.value.trim().split(/\s+/) : []
+                if (words.length <= 50) set('usp')(e)
+              }}
+              placeholder="What makes your solution unique? How is it different from existing assistive technologies? (Max 50 words)"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
+            <div className="flex justify-end mt-1 text-xs text-slate-400">
+              {form.usp.trim() ? form.usp.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
+            </div>
           </div>
         </Section>
 
@@ -294,10 +317,11 @@ export default function InnovationPWDForm() {
           
           <div className="mt-4">
             <label className="mb-2 block text-sm font-medium text-slate-600">
-              Prototype URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
+              Prototype URL <span className="text-red-500">*</span>
             </label>
             <input
               type="url"
+              required
               placeholder="https://github.com/yourproject or https://yourapp.com"
               value={prototypeUrl}
               onChange={(e) => setPrototypeUrl(e.target.value)}

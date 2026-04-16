@@ -916,7 +916,7 @@ export default function About() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.3 }}
                   >
-                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-right">
+                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
                       SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
                       <br /><br />
                       The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.

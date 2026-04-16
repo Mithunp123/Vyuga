@@ -839,10 +839,8 @@ export default function TalentStudentNomination() {
 
         {/* Video Upload Options */}
 
-
-        {/* Video Upload */}
+        {/* Video Upload - COMMENTED OUT
         <div>
-        
           <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
             Performance Video Upload <span className="text-slate-500 text-sm font-normal ml-2">(Option 1)</span>
           </h2>
@@ -853,27 +851,12 @@ export default function TalentStudentNomination() {
               {videoFile ? videoFile.name : 'Click to upload performance video'}
             </span>
             <span className="text-xs text-slate-400">MP4, MOV, AVI, WEBM — max 200 MB (~3 mins)</span>
-            <input
-              type="file"
-              accept="video/mp4,video/quicktime,video/x-msvideo,video/webm,video/x-matroska"
-              className="hidden"
-              onChange={(e) => setVideoFile(e.target.files[0] || null)}
-            />
+            <input type="file" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm,video/x-matroska" className="hidden" onChange={(e) => setVideoFile(e.target.files[0] || null)} />
           </label>
           {videoFile && (
             <div className="mt-2 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setVideoFile(null)}
-                className="text-xs text-red-500 hover:underline"
-              >
-                Remove video
-              </button>
-              {videoFile.size >= 5 * 1024 * 1024 && (
-                <span className="text-xs text-slate-400">
-                  {(videoFile.size / (1024 * 1024)).toFixed(1)} MB — will be compressed before upload
-                </span>
-              )}
+              <button type="button" onClick={() => setVideoFile(null)} className="text-xs text-red-500 hover:underline">Remove video</button>
+              {videoFile.size >= 5 * 1024 * 1024 && (<span className="text-xs text-slate-400">{(videoFile.size / (1024 * 1024)).toFixed(1)} MB — will be compressed before upload</span>)}
             </div>
           )}
           {compressProgress !== null && (
@@ -883,19 +866,17 @@ export default function TalentStudentNomination() {
                 <span className="text-xs text-slate-500">{compressProgress}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${compressProgress}%`, background: 'linear-gradient(90deg, #0197B2, #5BCB2B)' }}
-                />
+                <div className="h-full rounded-full transition-all duration-300" style={{ width: `${compressProgress}%`, background: 'linear-gradient(90deg, #0197B2, #5BCB2B)' }} />
               </div>
             </div>
           )}
-      
-          
+        END COMMENTED OUT */}
+
+        <div>
           <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
             <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
               <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                Performance Drive Link <span className="text-slate-500 text-sm font-normal">(Option 2)</span>
+                Performance Drive Link <span className="text-red-500">*</span>
               </label>
               <button 
                 type="button" 
