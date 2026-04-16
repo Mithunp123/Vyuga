@@ -58,10 +58,10 @@ const stats = [
     accent: 'text-brand-cyan'
   },
   {
-    value: '200',
+    value: '300',
     suffix: '+',
-    unit: 'Elites & Adaptive Innovators',
-    description: 'The audience, where partners, families, and friends come together to support inclusion',
+    unit: 'Participants',
+    description: 'A vibrant gathering of participants, where above 80% are specially abled individuals',
     image: hand,
     accent: 'text-brand-lime'
   },
@@ -69,7 +69,7 @@ const stats = [
     value: '1000',
     suffix: '+',
     unit: 'Attendees',
-    description: 'A vibrant gathering of participants, where above 80% are specially abled individuals',
+    description: 'The audience, where partners, families, and friends come together to support inclusion',
     image: child,
     accent: 'text-brand-cyan'
   },
@@ -107,7 +107,7 @@ const eventsList = [
   },
   {
     title: "Special Talent Utsav",
-    description: "A Special Talent Utsav where school specially abled  students showcase their talents across three categories: Grades 1–5, 6–8, and 9–12. Each category will recognize top performers with cash prizes.All participants will receive exciting prizes and appreciation.",
+    description: "A Special Talent Utsav where school specially abled  students showcase their talents. Each category will recognize top performers with cash prizes.All participants will receive exciting prizes and appreciation.",
     color: "!text-[#5BCB2B]",
     image: eventImage
   },
