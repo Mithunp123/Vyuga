@@ -738,7 +738,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [expandedRow, setExpandedRow] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const navigate = useNavigate()
 
   const token = sessionStorage.getItem('vyuga_admin_token')
@@ -810,13 +810,11 @@ export default function AdminDashboard() {
   const openEvent = (tabId) => {
     setActiveTab(tabId)
     setMobileOpen(false)
-    setSidebarOpen(false)
   }
 
   const goHome = () => {
     setActiveTab(null)
     setMobileOpen(false)
-    setSidebarOpen(false)
   }
 
   // Computed values for list view
