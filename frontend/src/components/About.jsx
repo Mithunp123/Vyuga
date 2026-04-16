@@ -718,7 +718,7 @@ export default function About() {
                 className="lg:col-span-2"
               >
                 <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
-                  Nexyuga Innovation is an impact-driven startup focused on creating inclusive solutions for differently-abled individuals. With a vision to make learning accessible to all, Nexyuga develops affordable assistive products that promote independence and confidence.
+                  Nexyuga Innovation is an impact-driven startup focused on creating inclusive solutions for differently-abled individuals. With a vision to make learning accessible to all, Nexyuga develops affordable assistive tech products that promote independence and confidence.
                   <br /><br />
                   One of its key innovations, Vithara, is an independent tactile and Braille learning book designed for visually impaired learners. It combines touch-based elements with Braille to enable interactive and self-paced learning.
                   <br /><br />
