@@ -301,7 +301,7 @@ export default function AttendRegister() {
                               <div className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ring-2 ${!step.label ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : /(open)/i.test(step.label) ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
                               {!step.label ? (
                                 <div className="flex flex-col gap-1.5 text-xs">
-                                  <span className="text-slate-600 font-semibold">Results announced on Social Media</span>
+                                  <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
                                   <div className="flex items-center gap-2">
                                     <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-3.5 h-3.5" />
@@ -391,7 +391,7 @@ export default function AttendRegister() {
                               <div className={`absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ${!step.label ? 'bg-[#5BCB2B] ring-[#5BCB2B]/20' : /(open)/i.test(step.label) ? 'bg-[#5BCB2B] border border-white ring-[#5BCB2B]/20' : 'bg-white border-2 border-[#5BCB2B] ring-[#5BCB2B]/10'}`} />
                               {!step.label ? (
                                 <div className="flex flex-col gap-1.5 text-sm">
-                                  <span className="text-slate-600 font-semibold">Results announced on Social Media</span>
+                                  <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
                                   <div className="flex items-center gap-2">
                                     <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-4 h-4" />
