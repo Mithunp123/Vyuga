@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Trash2, UserPlus, FileSignature, CheckCircle } from 'lucide-react'
+import { Trash2, UserPlus, FileSignature, CheckCircle, X } from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -24,6 +24,10 @@ export default function AdminJuryView({ token }) {
   const [allocCount, setAllocCount] = useState('')
   const [allocSuccess, setAllocSuccess] = useState('')
   const [allocError, setAllocError] = useState('')
+
+  // Modals state
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showAllocateModal, setShowAllocateModal] = useState(false)
 
   const TABS = [
     { id: 'innovation-college', label: 'Innovation (For Specially Abled)' },
@@ -86,6 +90,7 @@ export default function AdminJuryView({ token }) {
       setNewPhone('')
       setNewOrganization('')
       setNewDesignation('')
+      setShowCreateModal(false)
       fetchJuriesAndStats()
     } catch (err) {
       alert(err.message)
@@ -129,6 +134,7 @@ export default function AdminJuryView({ token }) {
       if (!res.ok) throw new Error(data.message || 'Allocation failed')
       setAllocSuccess(data.message)
       setAllocCount('')
+      setShowAllocateModal(false)
       fetchJuriesAndStats()
     } catch (err) {
       setAllocError(err.message)
@@ -172,20 +178,45 @@ export default function AdminJuryView({ token }) {
         )}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Create Jury Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div className="p-2.5 bg-cyan-50 rounded-xl">
-              <UserPlus className="h-5 w-5 text-cyan-500" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">Create Jury Account</h2>
-              <p className="text-sm text-slate-500">Provide login credentials for evaluators</p>
-            </div>
-          </div>
+      {/* Action Buttons */}
+      <div className="flex flex-wrap gap-4 items-center">
+        <button 
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+        >
+          <UserPlus className="h-5 w-5" />
+          Create Jury Account
+        </button>
+        <button 
+          onClick={() => setShowAllocateModal(true)}
+          className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-emerald-600 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+        >
+          <FileSignature className="h-5 w-5" />
+          Allocate Registrations
+        </button>
+      </div>
 
-          <form onSubmit={handleCreateJury} className="space-y-4">
+      {/* Create Jury Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-cyan-100/50 rounded-lg">
+                  <UserPlus className="h-5 w-5 text-cyan-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800 leading-tight">Create Jury Account</h2>
+                  <p className="text-xs text-slate-500">Provide login credentials for evaluators</p>
+                </div>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 max-h-[75vh] overflow-y-auto">
+              <form onSubmit={handleCreateJury} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Username</label>
               <input
@@ -257,25 +288,36 @@ export default function AdminJuryView({ token }) {
               type="submit"
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-lg focus:ring-4 focus:ring-slate-900/20"
             >
-              <UserPlus className="h-4 w-4" />
-              Create Jury
-            </button>
-          </form>
-        </div>
-
-        {/* Allocate Registrations Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div className="p-2.5 bg-emerald-50 rounded-xl">
-              <FileSignature className="h-5 w-5 text-emerald-500" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">Allocate Registrations</h2>
-              <p className="text-sm text-slate-500">Assign unassigned registrations to a jury</p>
+                <UserPlus className="h-5 w-5" />
+                Create Jury Account
+              </button>
+            </form>
             </div>
           </div>
+        </div>
+      )}
 
-          <form onSubmit={handleAllocate} className="space-y-4">
+      {/* Allocate Registrations Modal */}
+      {showAllocateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100/50 rounded-lg">
+                  <FileSignature className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800 leading-tight">Allocate Registrations</h2>
+                  <p className="text-xs text-slate-500">Assign unassigned registrations to a jury</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAllocateModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={handleAllocate} className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Select Jury</label>
               <select
@@ -332,12 +374,14 @@ export default function AdminJuryView({ token }) {
               disabled={!juries.length}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-emerald-600 hover:shadow-lg focus:ring-4 focus:ring-emerald-500/20 disabled:opacity-50"
             >
-              <FileSignature className="h-4 w-4" />
-              Allocate
-            </button>
-          </form>
+                <FileSignature className="h-5 w-5" />
+                Allocate Registrations
+              </button>
+            </form>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Juries List */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
