@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Trash2, UserPlus, FileSignature, CheckCircle, X } from 'lucide-react'
+import { Trash2, UserPlus, FileSignature, CheckCircle, X, Edit2 } from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -28,6 +28,7 @@ export default function AdminJuryView({ token }) {
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAllocateModal, setShowAllocateModal] = useState(false)
+  const [editingJuryId, setEditingJuryId] = useState(null)
 
   const TABS = [
     { id: 'innovation-college', label: 'Innovation (For Specially Abled)' },
@@ -90,11 +91,61 @@ export default function AdminJuryView({ token }) {
       setNewPhone('')
       setNewOrganization('')
       setNewDesignation('')
+      setNewDesignation('')
       setShowCreateModal(false)
       fetchJuriesAndStats()
     } catch (err) {
       alert(err.message)
     }
+  }
+
+  const handleEditJury = async (e) => {
+    e.preventDefault()
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/jury/${editingJuryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': token
+        },
+        body: JSON.stringify({ 
+          username: newUsername, 
+          password: newPassword,
+          name: newName,
+          phone: newPhone,
+          organization: newOrganization,
+          designation: newDesignation
+        })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed to update jury')
+      closeModal()
+      fetchJuriesAndStats()
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  const openEditModal = (j) => {
+    setEditingJuryId(j.id)
+    setNewUsername(j.username)
+    setNewPassword('')
+    setNewName(j.name || '')
+    setNewPhone(j.phone || '')
+    setNewOrganization(j.organization || '')
+    setNewDesignation(j.designation || '')
+    setShowCreateModal(true)
+  }
+
+  const closeModal = () => {
+    setEditingJuryId(null)
+    setNewUsername('')
+    setNewPassword('')
+    setNewName('')
+    setNewPhone('')
+    setNewOrganization('')
+    setNewDesignation('')
+    setShowCreateModal(false)
   }
 
   const handleDeleteJury = async (id) => {
@@ -181,7 +232,10 @@ export default function AdminJuryView({ token }) {
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 items-center">
         <button 
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setEditingJuryId(null)
+            setShowCreateModal(true)
+          }}
           className="flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5"
         >
           <UserPlus className="h-5 w-5" />
@@ -206,17 +260,21 @@ export default function AdminJuryView({ token }) {
                   <UserPlus className="h-5 w-5 text-cyan-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800 leading-tight">Create Jury Account</h2>
-                  <p className="text-xs text-slate-500">Provide login credentials for evaluators</p>
+                  <h2 className="text-lg font-bold text-slate-800 leading-tight">
+                    {editingJuryId ? 'Edit Jury Account' : 'Create Jury Account'}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {editingJuryId ? 'Update login credentials and profile' : 'Provide login credentials for evaluators'}
+                  </p>
                 </div>
               </div>
-              <button onClick={() => setShowCreateModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors">
+              <button onClick={closeModal} className="rounded-full p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
             
             <div className="p-6 max-h-[75vh] overflow-y-auto">
-              <form onSubmit={handleCreateJury} className="space-y-4">
+              <form onSubmit={editingJuryId ? handleEditJury : handleCreateJury} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Username</label>
               <input
@@ -229,14 +287,14 @@ export default function AdminJuryView({ token }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Password {editingJuryId && <span className="text-xs font-normal text-slate-400 font-medium">(Leave blank to keep current)</span>}</label>
               <input
                 type="text"
-                required
+                required={!editingJuryId}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition-colors focus:border-cyan-500"
-                placeholder="Secure password"
+                placeholder={editingJuryId ? "Enter new password or leave blank" : "Secure password"}
               />
             </div>
             <div>
@@ -289,7 +347,7 @@ export default function AdminJuryView({ token }) {
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-lg focus:ring-4 focus:ring-slate-900/20"
             >
                 <UserPlus className="h-5 w-5" />
-                Create Jury Account
+                {editingJuryId ? 'Save Changes' : 'Create Jury Account'}
               </button>
             </form>
             </div>
@@ -431,13 +489,22 @@ export default function AdminJuryView({ token }) {
                       )}
                     </td>
                     <td className="px-4 py-4 text-right">
-                      <button
-                        onClick={() => handleDeleteJury(j.id)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete Jury"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => openEditModal(j)}
+                          className="p-2 text-slate-400 hover:text-[#0197B2] hover:bg-cyan-50 rounded-lg transition-colors"
+                          title="Edit Jury"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteJury(j.id)}
+                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Jury"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

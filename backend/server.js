@@ -2279,7 +2279,7 @@ app.get('/api/admin/jury', requireAdmin, async (req, res) => {
   try {
     const { data: users, error } = await supabase
       .from('jury_users')
-      .select('id, username, created_at')
+      .select('id, username, name, phone, organization, designation, created_at')
       .order('created_at', { ascending: false })
       
     if (error) return res.status(500).json({ success: false, message: error.message })
@@ -2325,6 +2325,41 @@ app.post('/api/admin/jury', requireAdmin, async (req, res) => {
         organization: organization ? organization.trim() : null,
         designation: designation ? designation.trim() : null
       }])
+      .select('id, username, name, phone, organization, designation, created_at')
+      .single()
+      
+    if (error) return res.status(500).json({ success: false, message: error.message })
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// Update Jury
+app.put('/api/admin/jury/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { username, password, name, phone, organization, designation } = req.body
+    if (!username) return res.status(400).json({ success: false, message: 'Username is required' })
+    
+    // Prepare update payload
+    let payload = {
+        username: username.trim(),
+        name: name ? name.trim() : null,
+        phone: phone ? phone.trim() : null,
+        organization: organization ? organization.trim() : null,
+        designation: designation ? designation.trim() : null
+    }
+
+    // Only update password if provided
+    if (password && password.trim() !== '') {
+        payload.password = password
+    }
+
+    const { data, error } = await supabase
+      .from('jury_users')
+      .update(payload)
+      .eq('id', id)
       .select('id, username, name, phone, organization, designation, created_at')
       .single()
       
