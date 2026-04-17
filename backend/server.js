@@ -2413,14 +2413,22 @@ app.post('/api/jury/login', loginLimiter, async (req, res) => {
     
     const { data, error } = await supabase
       .from('jury_users')
-      .select('id, username, password')
+      .select('id, username, password, name, phone, organization, designation')
       .eq('username', username)
       .single()
       
     if (error || !data) return res.status(401).json({ success: false, message: 'Invalid credentials' })
     if (data.password !== password) return res.status(401).json({ success: false, message: 'Invalid credentials' })
     
-    res.json({ success: true, token: data.id, username: data.username })
+    res.json({ 
+      success: true, 
+      token: data.id, 
+      username: data.username,
+      name: data.name,
+      phone: data.phone,
+      organization: data.organization,
+      designation: data.designation
+    })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }

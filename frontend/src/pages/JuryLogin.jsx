@@ -28,6 +28,10 @@ export default function JuryLogin() {
 
       localStorage.setItem('juryToken', data.token)
       localStorage.setItem('juryUsername', data.username)
+      localStorage.setItem('juryName', data.name || '')
+      localStorage.setItem('juryPhone', data.phone || '')
+      localStorage.setItem('juryOrganization', data.organization || '')
+      localStorage.setItem('juryDesignation', data.designation || '')
       navigate('/jury-dashboard')
     } catch (err) {
       setError(err.message)

@@ -68,6 +68,7 @@ export default function AdminJuryView({ token }) {
         headers: {
           'Content-Type': 'application/json',
           'x-admin-token': token
+        },
         body: JSON.stringify({ 
           username: newUsername, 
           password: newPassword,

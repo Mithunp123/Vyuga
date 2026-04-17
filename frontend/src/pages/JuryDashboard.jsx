@@ -18,6 +18,9 @@ export default function JuryDashboard() {
   const navigate = useNavigate()
   const token = localStorage.getItem('juryToken')
   const username = localStorage.getItem('juryUsername')
+  const name = localStorage.getItem('juryName')
+  const designation = localStorage.getItem('juryDesignation')
+  const organization = localStorage.getItem('juryOrganization')
 
   useEffect(() => {
     if (!token) {
@@ -57,6 +60,10 @@ export default function JuryDashboard() {
   const handleLogout = () => {
     localStorage.removeItem('juryToken')
     localStorage.removeItem('juryUsername')
+    localStorage.removeItem('juryName')
+    localStorage.removeItem('juryPhone')
+    localStorage.removeItem('juryOrganization')
+    localStorage.removeItem('juryDesignation')
     navigate('/jury-login')
   }
 
@@ -176,8 +183,13 @@ export default function JuryDashboard() {
             <h1 className="text-lg font-bold text-slate-800">Jury Dashboard</h1>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">
-              <span className="font-semibold text-slate-800">{username}</span>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+              <span className="font-semibold text-slate-800">{name || username}</span>
+              {(designation || organization) && (
+                <span className="text-xs text-slate-500 border-l border-slate-300 pl-2 ml-1">
+                  {designation}{designation && organization ? ' @ ' : ''}{organization}
+                </span>
+              )}
             </div>
             <button
               onClick={handleLogout}
