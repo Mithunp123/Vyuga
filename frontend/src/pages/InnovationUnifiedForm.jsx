@@ -375,6 +375,14 @@ export default function InnovationUnifiedForm() {
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
                 <span>Solo or team (up to 3 members)</span>
               </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>Must have a valid UDID card</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>TRL 1-4</span>
+              </li>
             </ul>
           </div>
         )}
