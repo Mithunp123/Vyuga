@@ -2312,13 +2312,20 @@ app.get('/api/admin/jury', requireAdmin, async (req, res) => {
 // Create new Jury
 app.post('/api/admin/jury', requireAdmin, async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { username, password, name, phone, organization, designation } = req.body
     if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required' })
     
     const { data, error } = await supabase
       .from('jury_users')
-      .insert([{ username: username.trim(), password }])
-      .select('id, username, created_at')
+      .insert([{ 
+        username: username.trim(), 
+        password,
+        name: name ? name.trim() : null,
+        phone: phone ? phone.trim() : null,
+        organization: organization ? organization.trim() : null,
+        designation: designation ? designation.trim() : null
+      }])
+      .select('id, username, name, phone, organization, designation, created_at')
       .single()
       
     if (error) return res.status(500).json({ success: false, message: error.message })

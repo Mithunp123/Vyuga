@@ -10,6 +10,10 @@ export default function AdminJuryView({ token }) {
 
   const [newUsername, setNewUsername] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [newName, setNewName] = useState('')
+  const [newPhone, setNewPhone] = useState('')
+  const [newOrganization, setNewOrganization] = useState('')
+  const [newDesignation, setNewDesignation] = useState('')
 
   // Stats State
   const [stats, setStats] = useState({})
@@ -64,13 +68,23 @@ export default function AdminJuryView({ token }) {
         headers: {
           'Content-Type': 'application/json',
           'x-admin-token': token
-        },
-        body: JSON.stringify({ username: newUsername, password: newPassword })
+        body: JSON.stringify({ 
+          username: newUsername, 
+          password: newPassword,
+          name: newName,
+          phone: newPhone,
+          organization: newOrganization,
+          designation: newDesignation
+        })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Failed to create jury')
       setNewUsername('')
       setNewPassword('')
+      setNewName('')
+      setNewPhone('')
+      setNewOrganization('')
+      setNewDesignation('')
       fetchJuriesAndStats()
     } catch (err) {
       alert(err.message)
@@ -193,6 +207,51 @@ export default function AdminJuryView({ token }) {
                 placeholder="Secure password"
               />
             </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Name</label>
+              <input
+                type="text"
+                required
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition-colors focus:border-cyan-500"
+                placeholder="Jury's Full Name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+              <input
+                type="tel"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, ''))}
+                maxLength="10"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition-colors focus:border-cyan-500"
+                placeholder="10-digit mobile number"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Organization</label>
+              <input
+                type="text"
+                required
+                value={newOrganization}
+                onChange={(e) => setNewOrganization(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition-colors focus:border-cyan-500"
+                placeholder="E.g. XYZ Corp"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Designation</label>
+              <input
+                type="text"
+                required
+                value={newDesignation}
+                onChange={(e) => setNewDesignation(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition-colors focus:border-cyan-500"
+                placeholder="E.g. Senior Adjudicator"
+              />
+            </div>
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-lg focus:ring-4 focus:ring-slate-900/20"
@@ -294,7 +353,8 @@ export default function AdminJuryView({ token }) {
               <thead>
                 <tr className="border-b-2 border-slate-100">
                   <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Username</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Created</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Details</th>
                   <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase flex-1">Allocations</th>
                   <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Action</th>
                 </tr>
@@ -303,7 +363,12 @@ export default function AdminJuryView({ token }) {
                 {juries.map(j => (
                   <tr key={j.id} className="border-b border-slate-100 hover:bg-slate-50/50">
                     <td className="px-4 py-4 text-sm font-medium text-slate-700">{j.username}</td>
-                    <td className="px-4 py-4 text-sm text-slate-500 whitespace-nowrap">{new Date(j.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-4 text-sm font-semibold text-slate-800">{j.name || '—'}</td>
+                    <td className="px-4 py-4 text-xs text-slate-600">
+                      <div>{j.designation || '—'}</div>
+                      <div className="text-slate-400">{j.organization || '—'}</div>
+                      <div className="text-[#0197B2] font-medium mt-0.5">{j.phone || '—'}</div>
+                    </td>
                     <td className="px-4 py-4 text-sm text-slate-500">
                       {j.allocations && Object.keys(j.allocations).length > 0 ? (
                         <div className="flex flex-wrap gap-2">

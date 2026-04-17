@@ -3,6 +3,10 @@ CREATE TABLE IF NOT EXISTS jury_users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(200) NOT NULL,
+    name TEXT,
+    phone TEXT,
+    organization TEXT,
+    designation TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
