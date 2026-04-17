@@ -27,3 +27,4 @@ CREATE INDEX IF NOT EXISTS idx_talent_nom_org
 -- Run this if the table already exists:
 ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS performance_url TEXT;
 ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS grade_category TEXT;
+ALTER TABLE talent_nominations ADD COLUMN IF NOT EXISTS social_media_link TEXT;

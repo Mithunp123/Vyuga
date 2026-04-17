@@ -94,6 +94,7 @@ const EMPTY = {
   guardianPhone: '',
   guardianEmail: '',
   videoLink: '',
+  social: '',
   
   // Team members (when nominationType is 'team')
   teamMembers: [],
@@ -929,6 +930,25 @@ export default function TalentStudentNomination() {
                 Make sure the drive link is public (Anyone with the link). If your drive link is private and inaccessible, your Application will be cancelled.
               </p>
             </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+            <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
+              <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
+                Social Media Link <span className="text-slate-400 font-normal ml-1">(Optional)</span>
+              </label>
+            </div>
+            
+            <input
+              type="url"
+              placeholder="Instagram, YouTube, LinkedIn, etc."
+              value={form.social}
+              onChange={set('social')}
+              className="w-full mt-2 rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-4 focus:ring-[#0197B2]/10 focus:outline-none transition-all shadow-sm"
+            />
+            <p className="mt-2 text-xs text-slate-500">Provide a link to your social media profile where we can see more of your work.</p>
           </div>
         </div>
 

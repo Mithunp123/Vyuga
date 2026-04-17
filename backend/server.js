@@ -746,7 +746,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
   try {
     const {
       orgName, studentName, studentAge, disabilityType, disabilityTypeOther,
-      talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl,
+      talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl, social
     } = req.body
 
     // ── Payment Verification ─────────────────────────────
@@ -842,6 +842,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         video_link: videoLink ? videoLink.trim() : '',
         video_file_path: videoFileName,
         performance_url: performanceUrl ? performanceUrl.trim() : null,
+        social_media_link: social ? social.trim() : null,
         razorpay_order_id: req.body.razorpay_order_id,
         razorpay_payment_id: req.body.razorpay_payment_id,
         payment_status: 'paid'
@@ -909,7 +910,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       studentName, studentAge, disabilityType, disabilityTypeOther,
       talentCategory, talentCategoryOther, talentDescription, gradeCategory,
       guardianName, guardianPhone, guardianEmail,
-      videoLink, performanceUrl
+      videoLink, performanceUrl, social
     } = req.body
 
     // Parse orgDisabilityTypes if it's a JSON string
@@ -1102,6 +1103,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         video_link: videoLink ? sanitizeText(videoLink, 500) : null,
         video_file_path: videoFileName,
         performance_url: sanitizedPerformanceUrl,
+        social_media_link: social ? social.trim() : null,
         razorpay_order_id: req.body.razorpay_order_id,
         razorpay_payment_id: req.body.razorpay_payment_id,
         payment_status: 'paid'

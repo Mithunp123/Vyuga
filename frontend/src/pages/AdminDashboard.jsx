@@ -71,6 +71,7 @@ const COLUMNS = {
     { key: 'talent_category', label: 'Talent' },
     { key: 'contact_name',    label: 'Contact' },
     { key: 'contact_phone',   label: 'Phone' },
+    { key: 'social_media_link', label: 'Social',     fmt: (v) => v ? <a href={v} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a> : '—' },
     { key: 'payment_status',  label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
   ],
   cricket: [
@@ -456,6 +457,19 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
               </a>
             </div>
           )}
+          {row.social_media_link && (
+            <div className="mb-3">
+              <p className="text-xs text-slate-500 mb-2">Social Media Link:</p>
+              <a 
+                href={row.social_media_link} 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+              >
+                {row.social_media_link.length > 50 ? `${row.social_media_link.substring(0, 47)}...` : row.social_media_link} ↗
+              </a>
+            </div>
+          )}
         </div>
       )}
 
@@ -649,7 +663,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                     : Array.isArray(v)
                       ? v.map((m, i) => <span key={i} className="block">{String(m)}</span>)
                       : k.endsWith('_at') ? fmtDate(v) 
-                      : (k === 'prototype_url' || k === 'performance_url') && v.startsWith('http') ? (
+                      : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && v.startsWith('http') ? (
                         <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
                           {v} ↗
                         </a>
