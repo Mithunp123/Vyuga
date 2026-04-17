@@ -80,12 +80,12 @@ export default function Footer() {
             </motion.div>
 
             <div className="mt-7 flex items-center gap-4">
-              <SocialIcon label="LinkedIn" href="https://www.linkedin.com/company/nexyuga-innovations/">
+              <SocialIcon label="LinkedIn" href="https://www.linkedin.com/showcase/vyuga/posts/?feedView=all">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                   <path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.026-3.036-1.852-3.036-1.853 0-2.136 1.445-2.136 2.939v5.666H9.35V9h3.414v1.561h.046c.477-.9 1.637-1.852 3.37-1.852 3.601 0 4.267 2.37 4.267 5.455v6.288zM5.337 7.433A2.062 2.062 0 0 1 3.27 5.37a2.065 2.065 0 1 1 4.13 0c0 1.138-.924 2.063-2.063 2.063zM6.812 20.452H3.862V9h2.95v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.727v20.545C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.273V1.727C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
               </SocialIcon>
-              <SocialIcon label="Instagram" href="https://www.instagram.com/nexyuga_innovations">
+              <SocialIcon label="Instagram" href="https://www.instagram.com/vyuga_26/">
                 <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                   <path fill="currentColor" d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm9 2h-9A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm6.2-.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0Z" />
                 </svg>

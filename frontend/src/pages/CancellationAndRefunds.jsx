@@ -21,11 +21,11 @@ export default function CancellationAndRefunds() {
         <p className="text-sm text-slate-500 mb-8">Last updated: April 2026</p>
 
         <Section title="1. Refund Policy">
-          <p>All registration fees for VYUGA events are strictly non-refundable. Once a payment is made, it cannot be refunded under any standard circumstances.</p>
+          <p>All registration fees for VYUGA events are strictly non-refundable. Once a payment is made, no refund will be provided for any reason.</p>
         </Section>
 
         <Section title="2. Cancellation by Participant">
-          <p>If you have registered but are no longer able to attend the event, you may notify us of your cancellation. However, please note that no refunds of the fee will be issued for voluntary cancellations.</p>
+          <p>If you have registered but are no longer able to attend the event, please note that no refunds of the fee will be issued for voluntary cancellations.</p>
         </Section>
 
         <Section title="3. Event Cancellation">

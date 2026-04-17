@@ -77,7 +77,7 @@ const EVENT_DATA = [
         value: [
           'Provide one Google Drive link containing two video files:',
           'Video 1: Normal video with English subtitles.',
-          'Video 2: The same video but with Sign Language interpretation for the hearing impaired.',
+          'Video 2: The same video but with audio description for the visually impaired.',
           'Audio must be clear and noise-free in both videos.'
         ]
       },
