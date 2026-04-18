@@ -73,7 +73,7 @@ const EVENT_DATA = [
         value: [
           'Provide a single Google Drive link that includes:',
           'Format 1: Video with English subtitles',
-          'Format 2: Video with audio description suitable for visually challenged users',
+          'Format 2: video with audio description suitable for visually challenged users in english',
           'Audio must be clear and noise-free in both videos.'
         ]
       },

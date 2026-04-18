@@ -204,7 +204,7 @@ export default function SponsorsPage() {
                           <td key={tier.name} className={`p-3 sm:p-4 text-center ${tier.name !== 'SILVER' ? 'border-r' : ''} border-slate-100`}>
                             {tierBenefit.included ? (
                               <div className="flex flex-col items-center justify-center gap-1">
-                                <CheckCircle className={`w-4 h-4 ${tier.textColor}`} />
+                                <CheckCircle className="w-4 h-4 text-green-500" />
                                 {tierBenefit.note && (
                                   <span className="text-[9px] uppercase tracking-wider font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-sm">{tierBenefit.note}</span>
                                 )}
