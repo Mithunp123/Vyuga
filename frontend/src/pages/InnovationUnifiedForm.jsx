@@ -393,15 +393,19 @@ export default function InnovationUnifiedForm() {
             <ul className="space-y-2.5 text-[15px] font-medium text-slate-700">
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Open to college students</span>
+                <span>Open to college students across India</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Solution must help specially abled people</span>
+                <span>Sector: Assistive Technology</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Teams must have exactly 3 members</span>
+                <span>Each team must consist of 3 members</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
+                <span>The problem statement must be based on real ground work (interacting with specially abled individuals to identify actual problems)</span>
               </li>
             </ul>
           </div>
