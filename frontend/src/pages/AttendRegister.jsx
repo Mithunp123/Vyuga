@@ -75,9 +75,9 @@ const EVENT_DATA = [
       {
         label: 'Accessibility (Mandatory)',
         value: [
-          'Provide one Google Drive link containing two video files:',
-          'Video 1: Normal video with English subtitles.',
-          'Video 2: The same video but with audio description for the visually impaired.',
+          'Provide a single Google Drive link that includes:',
+          'Format 1: Video with English subtitles',
+          'Format 2: Video with audio description suitable for visually challenged users',
           'Audio must be clear and noise-free in both videos.'
         ]
       },
