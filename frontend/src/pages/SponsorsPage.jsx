@@ -10,7 +10,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const sponsorshipTiers = [
   {
     name: 'PLATINUM',
-    price: '₹ 10,00,000',
+    price: '₹ 5,00,000',
     color: 'from-yellow-400 to-yellow-600',
     textColor: 'text-yellow-600',
     bgColor: 'bg-yellow-50',
@@ -27,7 +27,7 @@ const sponsorshipTiers = [
   },
   {
     name: 'GOLD',
-    price: '₹ 5,00,000',
+    price: '₹ 3,00,000',
     color: 'from-amber-400 to-amber-600',
     textColor: 'text-amber-600',
     bgColor: 'bg-amber-50',
@@ -44,7 +44,7 @@ const sponsorshipTiers = [
   },
   {
     name: 'SILVER',
-    price: '₹ 3,00,000',
+    price: '₹ 1,00,000',
     color: 'from-gray-400 to-gray-600',
     textColor: 'text-gray-600',
     bgColor: 'bg-gray-50',
@@ -134,7 +134,7 @@ export default function SponsorsPage() {
       <Navbar />
 
       {/* Hero — compact */}
-      <section className="relative overflow-hidden pt-24 pb-8 sm:pt-28 sm:pb-10">
+      <section className="relative overflow-hidden pt-20 pb-4 sm:pt-24 sm:pb-6">
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[600px] rounded-full bg-brand-cyan/[0.06] blur-[120px]" />
         
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center">
@@ -143,30 +143,86 @@ export default function SponsorsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="font-hero text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            <span className="font-hero text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
               Sponsorship{' '}
             </span>
-            <span className="font-marker text-4xl gradient-text sm:text-5xl">
+            <span className="font-marker text-3xl gradient-text sm:text-4xl">
               {/*Benefits*/}
             </span>
           </motion.div>
         </div>
       </section>
 
-      {/* Sponsorship Benefits Table — commented out
+      {/* Sponsorship Benefits Table */}
       <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden rounded-2xl bg-white shadow-xl border border-slate-200"
+            className="overflow-hidden rounded-3xl bg-white shadow-2xl border border-slate-100"
           >
-            ... table content hidden ...
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[700px]">
+                <thead>
+                  <tr>
+                    <th className="w-1/3 p-4 sm:p-5 bg-slate-50 border-b border-r border-slate-100 align-bottom">
+                      <h3 className="text-lg font-bold text-slate-800">Sponsorship Benefits</h3>
+                      <p className="text-xs text-slate-500 mt-1">Compare our sponsorship tiers</p>
+                    </th>
+                    {sponsorshipTiers.map(tier => (
+                      <th key={tier.name} className={`w-[22%] p-4 border-b border-slate-100 text-center relative overflow-hidden ${tier.name !== 'SILVER' ? 'border-r' : ''}`}>
+                        <div className={`absolute inset-0 opacity-10 bg-gradient-to-b ${tier.color}`} />
+                        <div className="relative z-10">
+                          <h4 className={`text-base font-black tracking-widest ${tier.textColor} mb-1`}>{tier.name}</h4>
+                          <div className="text-xl font-bold text-slate-900 leading-tight">{tier.price}</div>
+                          <div className="mt-4">
+                            <button
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, sponsorType: tier.name }))
+                                setModalOpen(true)
+                              }}
+                              className={`w-full rounded-xl py-1.5 px-3 text-xs font-bold text-white shadow-sm transition-all hover:-translate-y-1 bg-gradient-to-r ${tier.color}`}
+                            >
+                              Select {tier.name}
+                            </button>
+                          </div>
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {sponsorshipTiers[0].benefits.map((benefit, bIdx) => (
+                    <tr key={bIdx} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-3 sm:px-4 sm:py-3 font-medium text-slate-700 border-r border-slate-100 text-xs">
+                        {benefit.name}
+                      </td>
+                      {sponsorshipTiers.map(tier => {
+                        const tierBenefit = tier.benefits[bIdx]
+                        return (
+                          <td key={tier.name} className={`p-3 sm:p-4 text-center ${tier.name !== 'SILVER' ? 'border-r' : ''} border-slate-100`}>
+                            {tierBenefit.included ? (
+                              <div className="flex flex-col items-center justify-center gap-1">
+                                <CheckCircle className={`w-4 h-4 ${tier.textColor}`} />
+                                {tierBenefit.note && (
+                                  <span className="text-[9px] uppercase tracking-wider font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-sm">{tierBenefit.note}</span>
+                                )}
+                              </div>
+                            ) : (
+                              <X className="w-4 h-4 text-slate-300 mx-auto" />
+                            )}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </motion.div>
         </div>
       </section>
-      */}
 
       <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mt-8 text-center">
