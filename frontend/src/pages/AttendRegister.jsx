@@ -316,10 +316,10 @@ export default function AttendRegister() {
                                   <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
                                   <div className="flex items-center gap-2 mt-1">
                                     <span className="italic text-slate-500">Follow us on</span>
-                                    <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
+                                    <a href="https://www.instagram.com/vyuga_26/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-3.5 h-3.5" />
                                     </a>
-                                    <a href="https://www.linkedin.com/company/nexyuga-innovations/" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
+                                    <a href="https://www.linkedin.com/showcase/vyuga/posts/?feedView=all" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
                                       <Linkedin className="w-3.5 h-3.5" />
                                     </a>
                                   </div>
@@ -391,10 +391,10 @@ export default function AttendRegister() {
                                   <span className="text-slate-600 font-semibold">Results Updates will be announced on Social Media</span>
                                   <div className="flex items-center gap-2 mt-1">
                                     <span className="italic text-slate-500">Follow us on</span>
-                                    <a href="https://www.instagram.com/vyuga_2026/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
+                                    <a href="https://www.instagram.com/vyuga_26/" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-50 border border-pink-200 text-pink-500 hover:bg-pink-500 hover:text-white transition-all">
                                       <Instagram className="w-4 h-4" />
                                     </a>
-                                    <a href="https://www.linkedin.com/company/nexyuga-innovations/" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
+                                    <a href="https://www.linkedin.com/showcase/vyuga/posts/?feedView=all" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
                                       <Linkedin className="w-4 h-4" />
                                     </a>
                                   </div>
