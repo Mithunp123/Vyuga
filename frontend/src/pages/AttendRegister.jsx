@@ -26,9 +26,7 @@ const EVENT_DATA = [
       { label: "Application Close", date: "25/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
-    prizes: [
-      { category: "Overall", genericText: "Prize up to ₹ 2 Lakh" }
-    ],
+
     isExpandable: true,
     tracks: [
       { link: '/register/innovation-college', label: 'College Teams', id: 'innovation-college' },
@@ -42,16 +40,14 @@ const EVENT_DATA = [
     description: "A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!",
     image: eventImage,
     details: [
-      { label: 'Eligibility & Selection', value: ['Special Schools or Parents nominate 1 team or individual', 'Team max 3 members', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
+      { label: 'Eligibility & Selection', value: ['Special Schools or Parents nominate 1 team or individual', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
     ],
     timeline: [
       { label: "Application Open", date: "20/04/2026" },
       { label: "Application Close", date: "25/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
-    prizes: [
-      { category: "Overall", genericText: "Prize up to ₹ 50,000" }
-    ],
+
     isExpandable: true,
     tracks: [
       { link: '/register/talent-student', label: 'School / Org', id: 'talent-student' },
@@ -105,9 +101,7 @@ const EVENT_DATA = [
       { label: "Application Close", date: "25/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
-    prizes: [
-      { category: "Overall", genericText: "Prize up to ₹ 1 Lakh" }
-    ],
+
     registerLink: '/register/shortfilm',
     buttonText: 'Register Now',
     formId: 'shortfilm',
@@ -122,9 +116,7 @@ const EVENT_DATA = [
   //     { label: 'Information', value: ['All participating teams receive cash prizes', 'Winner & Runner-up awarded trophies'] }
   //   ],
   //   timeline: [],
-  //   prizes: [
-  //     { category: "Overall", rewards: [{pos: "1st", val: "10000"}, {pos: "2nd", val: "5000"}] }
-  //   ],
+
   //   registerLink: '/register/cricket',
   //   buttonText: 'Enquiry Now',
   //   formId: 'cricket'
@@ -139,9 +131,7 @@ const EVENT_DATA = [
   //     { label: 'Information', value: ['Top performers receive trophies and cash prizes', 'All participants receive certificates'] }
   //   ],
   //   timeline: [],
-  //   prizes: [
-  //     { category: "Overall", rewards: [{pos: "1st", val: "3000"}, {pos: "2nd", val: "2000"}] }
-  //   ],
+
   //   registerLink: '/register/chess',
   //   buttonText: 'Register will open soon',
   //   disabled: true,
@@ -149,12 +139,7 @@ const EVENT_DATA = [
   // }
 ];
 
-// Prize accent colors per event index
-const PRIZE_ACCENTS = [
-  { bg: 'from-violet-600 to-indigo-500',  ring: 'ring-violet-300',  icon: 'text-yellow-300' },
-  { bg: 'from-rose-500 to-pink-400',      ring: 'ring-rose-300',    icon: 'text-yellow-200' },
-  { bg: 'from-amber-500 to-orange-400',   ring: 'ring-amber-300',   icon: 'text-white'      },
-]
+
 
 export default function AttendRegister() {
   const navigate = useNavigate()
@@ -191,12 +176,39 @@ export default function AttendRegister() {
       subtitleClass="text-slate-900"
     >
       <div className="flex flex-col gap-0 py-8 sm:py-12 max-w-6xl mx-auto px-4">
+        {/* Banner Card for Prizes */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-orange-400 p-6 md:p-8 shadow-xl mb-8 md:mb-12 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6"
+        >
+          {/* Background effects */}
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
+          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full ring-[20px] ring-amber-300 opacity-20 pointer-events-none" />
+          <div className="absolute -left-8 -bottom-8 w-24 h-24 rounded-full bg-white/20 blur-2xl pointer-events-none" />
+          
+          <div className="flex -space-x-2 md:space-x-0 relative z-10 shrink-0">
+            <Trophy className="w-12 h-12 text-yellow-200 drop-shadow-md z-30" />
+            <Medal className="w-10 h-10 text-yellow-100 drop-shadow-md z-20 md:-ml-2 mt-2" />
+            <Award className="w-8 h-8 text-white drop-shadow-md z-10 md:-ml-2 mt-4" />
+          </div>
+          
+          <div className="relative z-10 text-white text-center md:text-left">
+            <h3 className="text-2xl md:text-3xl font-black tracking-tight drop-shadow-md mb-1">
+              Attractive Cash Prizes, Gifts & Trophies
+            </h3>
+            <p className="text-white/90 text-sm md:text-base font-medium max-w-xl">
+              Participate and stand a chance to win amazing rewards across all events at VYUGA!
+            </p>
+          </div>
+        </motion.div>
+
         {EVENT_DATA.map((event, idx) => {
           const isInnovationMain = event.id === 'innovation'
           const initiallyClosed = isInnovationMain ? isBothInnovationClosed : isFormClosed(event.formId)
           const closed = initiallyClosed || event.disabled
           const isShortFilm = event.id === 'shortfilm'
-          const accent = PRIZE_ACCENTS[idx % PRIZE_ACCENTS.length]
 
           return (
             <motion.section
@@ -286,8 +298,8 @@ export default function AttendRegister() {
                     })}
                   </div>
 
-                  {/* Timeline + Prize row */}
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Timeline row */}
+                  <div className="flex flex-col gap-4">
                     {/* Timeline */}
                     {event.timeline && event.timeline.length > 0 && (
                       <div className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden">
@@ -321,22 +333,6 @@ export default function AttendRegister() {
                             </li>
                           ))}
                         </ul>
-                      </div>
-                    )}
-
-                    {/* Prize Card */}
-                    {event.prizes && event.prizes.length > 0 && (
-                      <div className={`relative rounded-2xl bg-gradient-to-br ${accent.bg} p-5 overflow-hidden flex flex-col justify-center items-center text-center`}>
-                        {/* Background glow */}
-                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-                        <Trophy className={`w-8 h-8 ${accent.icon} drop-shadow-lg mb-2 relative z-10`} />
-                        <p className="text-white/70 uppercase text-[10px] tracking-widest font-bold mb-1 relative z-10">Prize Pool</p>
-                        {event.prizes.map((pg, pIdx) => (
-                          <p key={pIdx} className="text-white font-black text-2xl sm:text-3xl tracking-tight drop-shadow relative z-10">
-                            {pg.genericText || pg.rewards?.map(r => `₹${r.val}`).join(' / ')}
-                          </p>
-                        ))}
-                        <div className={`absolute -bottom-4 -right-4 w-24 h-24 rounded-full ${accent.ring} ring-[20px] opacity-20`} />
                       </div>
                     )}
                   </div>
@@ -415,35 +411,7 @@ export default function AttendRegister() {
                       </div>
                     )}
 
-                    {/* ── Attractive Prize Card ── */}
-                    {event.prizes && event.prizes.length > 0 && (
-                      <div className={`relative rounded-3xl bg-gradient-to-br ${accent.bg} p-6 overflow-hidden flex flex-col justify-center items-center text-center shadow-xl`}>
-                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-                        <Trophy className={`w-10 h-10 ${accent.icon} drop-shadow-lg mb-3 relative z-10`} />
-                        <p className="text-white/70 uppercase text-[10px] tracking-widest font-bold mb-1.5 relative z-10">Prize Pool</p>
-                        {event.prizes.map((pg, pIdx) => (
-                          pg.genericText ? (
-                            <p key={pIdx} className="text-white font-black text-2xl sm:text-3xl tracking-tight drop-shadow relative z-10">
-                              {pg.genericText}
-                            </p>
-                          ) : (
-                            <div key={pIdx} className="flex gap-3 flex-wrap justify-center relative z-10">
-                              {pg.rewards?.map((r, rIdx) => (
-                                <div key={rIdx} className="flex flex-col items-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
-                                  {r.pos === '1st' && <Crown className="w-4 h-4 text-yellow-300 mb-0.5" />}
-                                  {r.pos === '2nd' && <Medal className="w-4 h-4 text-slate-200 mb-0.5" />}
-                                  {r.pos === '3rd' && <Award className="w-4 h-4 text-amber-300 mb-0.5" />}
-                                  <span className="text-white/70 text-[10px] font-bold uppercase">{r.pos}</span>
-                                  <span className="text-white font-black text-lg">₹{r.val}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )
-                        ))}
-                        <div className={`absolute -bottom-6 -right-6 w-32 h-32 rounded-full ${accent.ring} ring-[28px] opacity-20`} />
-                        <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-white/10" />
-                      </div>
-                    )}
+
                   </div>
                 </div>
               )}
