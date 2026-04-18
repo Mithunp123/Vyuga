@@ -365,15 +365,11 @@ export default function InnovationUnifiedForm() {
 
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Not a registered startup or entity</span>
+                <span>Participant must be a specially abled individual</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Must be a specially abled individual</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>Solo or team (up to 3 members)</span>
+                <span>Participation can be individual or as a team (maximum 3 members)</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
@@ -381,7 +377,7 @@ export default function InnovationUnifiedForm() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0197B2]/20 text-[10px] text-[#0197B2]">✓</span>
-                <span>TRL 1-4</span>
+                <span>Innovations should be in TRL levels 1–4</span>
               </li>
             </ul>
           </div>
