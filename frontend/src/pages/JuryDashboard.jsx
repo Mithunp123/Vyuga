@@ -355,7 +355,7 @@ export default function JuryDashboard() {
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Submission Details</h3>
                     
                     {/* Explicit Media & Links section */}
-                    {(selectedReg.registration.prototype_url || selectedReg.registration.performance_url || selectedReg.registration.film_url || selectedReg.registration.video_file_path || selectedReg.registration.prototype_image_path || selectedReg.registration.udid_card_path) && (
+                    {(selectedReg.registration.prototype_url || selectedReg.registration.performance_url || selectedReg.registration.film_url || selectedReg.registration.video_file_path || selectedReg.registration.prototype_image_path || selectedReg.registration.udid_card_path || selectedReg.registration.ppt_file_path) && (
                       <div className="rounded-xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-4 space-y-3 mb-4">
                         <h4 className="text-[10px] uppercase font-bold text-[#0197B2] mb-2 tracking-widest">Important Media Links</h4>
                         <div className="flex flex-col gap-2">
@@ -366,12 +366,13 @@ export default function JuryDashboard() {
                           ].map(link => 
                             link.val && (
                               <a key={link.label} href={link.val.startsWith('http') ? link.val : `https://${link.val}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#0197B2] w-fit px-4 py-2 rounded-lg hover:bg-[#017a94] transition-colors">
-                                {link.label} ↗
+                                {link.label}
                               </a>
                             )
                           )}
 
                           {[
+                            { label: 'Presentation File',     val: selectedReg.registration.ppt_file_path },
                             { label: 'Video File',            val: selectedReg.registration.video_file_path },
                             { label: 'Prototype Image',       val: selectedReg.registration.prototype_image_path },
                             { label: 'Disability Cert (UID)', val: selectedReg.registration.udid_card_path }
@@ -382,7 +383,7 @@ export default function JuryDashboard() {
                             
                             return (
                               <a key={file.label} href={hrefAttr} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 w-fit px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors">
-                                {isExternalUrl ? 'Open' : 'View'} {file.label} ↗
+                                {isExternalUrl ? 'Open' : 'View'} {file.label}
                               </a>
                             )
                           })}
@@ -395,7 +396,7 @@ export default function JuryDashboard() {
                          // Hide all payment related fields, internal fields, and anything we already distinctively render
                          if (k.toLowerCase().includes('payment') || k.toLowerCase().includes('transaction') || k.toLowerCase().includes('amount') || k.toLowerCase().includes('order_id')) return null
                          if (['id', 'created_at', 'updated_at', 'status', 'admin_note', 'email_sent'].includes(k)) return null
-                         if (['prototype_url', 'performance_url', 'film_url', 'video_file_path', 'prototype_image_path', 'udid_card_path'].includes(k)) return null
+                         if (['prototype_url', 'performance_url', 'film_url', 'video_file_path', 'prototype_image_path', 'udid_card_path', 'ppt_file_path'].includes(k)) return null
 
                          // Hide contact info for Blind Jury mode
                          if (k.toLowerCase().includes('email') || k.toLowerCase().includes('phone') || k.toLowerCase().includes('contact')) return null
@@ -409,9 +410,9 @@ export default function JuryDashboard() {
                            <div key={k}>
                              <span className="block text-[10px] uppercase font-bold text-slate-400 mb-0.5">{k.replace(/_/g, ' ')}</span>
                              {isLink ? (
-                               <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] font-semibold text-sm hover:underline break-all">Open Link ↗</a>
+                               <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] font-semibold text-sm hover:underline break-all">Open Link</a>
                              ) : isFile ? (
-                               <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noreferrer" className="text-[#0197B2] font-semibold text-sm hover:underline break-all">View File ↗</a>
+                               <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noreferrer" className="text-[#0197B2] font-semibold text-sm hover:underline break-all">View File</a>
                              ) : (
                                <span className="text-sm font-medium text-slate-800">{String(v)}</span>
                              )}

@@ -77,6 +77,13 @@ app.use('/uploads', (req, res, next) => {
   next()
 }, express.static(UPLOAD_DIR))
 
+// Serve assets folder matching uploads pattern
+app.use('/assets', (req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  next()
+}, express.static(path.join(__dirname, 'assets')))
+
 // ── Rate limiters ─────────────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
@@ -110,10 +117,11 @@ const errorReportLimiter = rateLimit({
 const memStorage = multer.memoryStorage()
 const ALLOWED_IMAGE_EXT = /\.(png|jpe?g|webp)$/i
 const ALLOWED_DOC_EXT = /\.(pdf|png|jpe?g|webp)$/i
+const ALLOWED_PPT_EXT = /\.(pdf|ppt|pptx)$/i
 
 const innovationUpload = multer({
   storage: memStorage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 }, // increased to 10MB to accommodate PPTs
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'prototypeImage') {
       if (!ALLOWED_IMAGE_EXT.test(file.originalname)) {
@@ -130,6 +138,14 @@ const innovationUpload = multer({
       const safeMime = /^(image\/(png|jpe?g|webp)|application\/pdf)$/i
       if (!safeMime.test(file.mimetype)) {
         return cb(new Error('Invalid file type for UDID card'))
+      }
+    } else if (file.fieldname === 'pptFile') {
+      if (!ALLOWED_PPT_EXT.test(file.originalname)) {
+        return cb(new Error('Only PPT, PPTX or PDF files are allowed for the presentation'))
+      }
+      const safeMime = /^(application\/pdf|application\/vnd\.ms-powerpoint|application\/vnd\.openxmlformats-officedocument\.presentationml\.presentation)$/i
+      if (!safeMime.test(file.mimetype)) {
+        return cb(new Error('Invalid file type for the presentation'))
       }
     }
     cb(null, true)
@@ -360,7 +376,7 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
 
 // ── 1. Innovation Fest – College Category ─────────────────────────────────────
 // POST /api/innovation-college
-app.post('/api/innovation-college', registrationLimiter, innovationUpload.single('prototypeImage'), async (req, res) => {
+app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'pptFile', maxCount: 1 }]), async (req, res) => {
   try {
     const {
       teamName, collegeName, theme, ideaTitle, ideaDescription,
@@ -373,9 +389,6 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
 
     // ── Payment Verification ─────────────────────────────
     if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      if (req.file) {
-        try { fs.unlinkSync(req.file.path) } catch(e) {}
-      }
       return res.status(400).json({ success: false, message: 'Payment verification failed' })
     }
 
@@ -406,8 +419,10 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     // ── Magic byte check for image ───────────────────────
-    if (req.file && !isValidImageBuffer(req.file.buffer)) {
-      return res.status(400).json({ success: false, message: 'Uploaded file is not a valid image' })
+    if (req.files && req.files['prototypeImage']) {
+      if (!isValidImageBuffer(req.files['prototypeImage'][0].buffer)) {
+        return res.status(400).json({ success: false, message: 'Uploaded file is not a valid image' })
+      }
     }
 
     // ── Sanitize all text fields ─────────────────────────
@@ -429,14 +444,25 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
     if (member2Name) members.push({ name: sanitizeText(member2Name, 100), email: (member2Email || '').trim().toLowerCase(), phone: (member2Phone || '').trim() })
     if (member3Name) members.push({ name: sanitizeText(member3Name, 100), email: (member3Email || '').trim().toLowerCase(), phone: (member3Phone || '').trim() })
 
-    // Save prototype image locally
+    // Save prototype image && ppt
     let protoImagePath = null
-    if (req.file) {
+    if (req.files && req.files['prototypeImage']) {
+      const file = req.files['prototypeImage'][0]
       const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
-      const ext = path.extname(sanitizeFilename(req.file.originalname))
+      const ext = path.extname(sanitizeFilename(file.originalname))
       const filename = `${phone}_${Date.now()}${ext}`
-      fs.writeFileSync(path.join(UPLOAD_DIR, filename), req.file.buffer)
-      protoImagePath = filename  // store filename only, not full path
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), file.buffer)
+      protoImagePath = filename
+    }
+
+    let pptFilePath = null
+    if (req.files && req.files['pptFile']) {
+      const file = req.files['pptFile'][0]
+      const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
+      const ext = path.extname(sanitizeFilename(file.originalname))
+      const filename = `${phone}_ppt_${Date.now()}${ext}`
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), file.buffer)
+      pptFilePath = filename
     }
 
     const { data, error } = await supabase
@@ -455,6 +481,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
         leader_phone: sM1Phone,
         members,
         prototype_image_path: protoImagePath,
+        ppt_file_path: pptFilePath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
         razorpay_order_id: req.body.razorpay_order_id,
         razorpay_payment_id: req.body.razorpay_payment_id,
@@ -496,7 +523,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.single
 
 // ── 2. Innovation Fest – PWD Category ────────────────────────────────────────
 // POST /api/innovation-pwd
-app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'udidCard', maxCount: 1 }]), async (req, res) => {
+app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'udidCard', maxCount: 1 }, { name: 'pptFile', maxCount: 1 }]), async (req, res) => {
   try {
     const {
       participationType, ideaTitle, ideaDescription,
@@ -599,6 +626,16 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       udidCardPath = `ID/${filename}`
     }
 
+    let pptFilePath = null
+    if (req.files && req.files['pptFile']) {
+      const file = req.files['pptFile'][0]
+      const phone = sM1Phone.replace(/\D/g, '').slice(0, 15)
+      const ext = path.extname(sanitizeFilename(file.originalname))
+      const filename = `${phone}_ppt_${Date.now()}${ext}`
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), file.buffer)
+      pptFilePath = filename
+    }
+
     const { data, error } = await supabase
       .from('innovation_pwd_registrations')
       .insert([{
@@ -614,6 +651,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         disability_type: sDisability,
         members,
         prototype_image_path: protoImagePath,
+        ppt_file_path: pptFilePath,
         udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
         razorpay_order_id: req.body.razorpay_order_id,

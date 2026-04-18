@@ -350,6 +350,10 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
   // Strip any leading path components — DB should store just filename now
   const mediaFilename = mediaPath ? mediaPath.replace(/^.*[\\\/]/, '') : null
   const mediaUrl = mediaFilename ? `${API_BASE}/uploads/${mediaFilename}` : null
+  
+  const pptPath = row.ppt_file_path
+  const pptFilename = pptPath ? pptPath.replace(/^.*[\\\/]/, '') : null
+  const pptUrl = pptFilename ? `${API_BASE}/uploads/${pptFilename}` : null
 
   const save = async () => {
     setSaving(true)
@@ -420,7 +424,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
           )}
           <a href={mediaUrl} target="_blank" rel="noreferrer"
             className="inline-block mt-3 text-xs font-semibold underline" style={{ color: '#0197B2' }}>
-            Open in new tab ↗
+            Open in new tab
           </a>
         </div>
       )}
@@ -440,7 +444,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                {row.prototype_url.length > 50 ? `${row.prototype_url.substring(0, 47)}...` : row.prototype_url} ↗
+                {row.prototype_url.length > 50 ? `${row.prototype_url.substring(0, 47)}...` : row.prototype_url}
               </a>
             </div>
           )}
@@ -453,7 +457,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                {row.performance_url.length > 50 ? `${row.performance_url.substring(0, 47)}...` : row.performance_url} ↗
+                {row.performance_url.length > 50 ? `${row.performance_url.substring(0, 47)}...` : row.performance_url}
               </a>
             </div>
           )}
@@ -466,10 +470,27 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
-                {row.social_media_link.length > 50 ? `${row.social_media_link.substring(0, 47)}...` : row.social_media_link} ↗
+                {row.social_media_link.length > 50 ? `${row.social_media_link.substring(0, 47)}...` : row.social_media_link}
               </a>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── PPT Presentation ── */}
+      {pptUrl && (
+        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
+            Presentation File
+          </p>
+          <a
+            href={pptUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-[#0197B2] to-[#5BCB2B] px-4 py-2 rounded-lg hover:shadow-lg transition-all"
+          >
+            View / Download Presentation
+          </a>
         </div>
       )}
 
@@ -665,7 +686,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                       : k.endsWith('_at') ? fmtDate(v) 
                       : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && v.startsWith('http') ? (
                         <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
-                          {v} ↗
+                          {v}
                         </a>
                       )
                       : String(v)

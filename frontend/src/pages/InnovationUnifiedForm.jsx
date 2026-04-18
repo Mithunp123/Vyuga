@@ -65,6 +65,7 @@ export default function InnovationUnifiedForm() {
   const [declared, setDeclared] = useState(false)
   const [protoFile, setProtoFile] = useState(null)
   const [udidFile, setUdidFile] = useState(null)
+  const [pptFile, setPptFile] = useState(null)
   const [prototypeUrl, setPrototypeUrl] = useState('')
   const [showDriveInfo, setShowDriveInfo] = useState(false)
   const [isClosed, setIsClosed] = useState(false)
@@ -211,6 +212,7 @@ export default function InnovationUnifiedForm() {
 
     // if (protoFile) fd.append('prototypeImage', protoFile)
     if (udidFile) fd.append('udidCard', udidFile)
+    if (pptFile) fd.append('pptFile', pptFile)
     if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
     return fd
   }
@@ -358,6 +360,19 @@ export default function InnovationUnifiedForm() {
         transition={{ duration: 0.5 }}
         className="max-w-2xl space-y-8 relative"
       >
+        <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display text-base font-bold text-slate-800">Presentation Template</h3>
+            <p className="text-sm text-slate-600 mt-1">Please use this official template to prepare your presentation.</p>
+          </div>
+          <a 
+            href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`} 
+            download 
+            className="flex-shrink-0 inline-flex items-center gap-2 rounded-xl bg-[#0197B2] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-[#01788e] hover:shadow-lg"
+          >
+            Download
+          </a>
+        </div>
         {isBySpeciallyAbled && (
           <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
             <h3 className="mb-4 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">Eligibility Criteria</h3>
@@ -681,10 +696,53 @@ export default function InnovationUnifiedForm() {
               )}
               */}
               
+              {/* Presentation Upload */}
+              <div className="mt-4">
+                <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2 flex justify-between items-center">
+                  <span>Upload Presentation <span className="text-red-500">*</span></span>
+                  <a 
+                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`} 
+                    download 
+                    className="text-xs font-bold text-[#0197B2] hover:underline"
+                  >
+                    Download Template
+                  </a>
+                </h2>
+                <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-[#0197B2]/50 hover:bg-slate-100">
+                  <span className="text-sm font-medium text-slate-600">
+                    {pptFile ? pptFile.name : 'Click to upload your presentation file'}
+                  </span>
+                  <span className="text-xs text-slate-400">PDF, PPT, or PPTX — max 10 MB</span>
+                  <input
+                    type="file"
+                    required
+                    accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                    className="hidden"
+                    onChange={(e) => setPptFile(e.target.files[0] || null)}
+                  />
+                </label>
+                {pptFile && (
+                  <button
+                    type="button"
+                    onClick={() => setPptFile(null)}
+                    className="mt-2 text-xs text-red-500 hover:underline"
+                  >
+                    Remove presentation
+                  </button>
+                )}
+                <div className="mt-2 flex items-start gap-2 rounded-lg bg-orange-50 p-3 border border-orange-200 shadow-sm">
+                  <AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <p className="text-xs font-medium text-orange-700 leading-relaxed">
+                    <strong className="font-bold uppercase tracking-wider text-[10px] mr-1 opacity-90 text-orange-800 block mb-0.5">Note:</strong> 
+                    Your presentation must strictly follow the provided template format.
+                  </p>
+                </div>
+              </div>
+
               <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
                 <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
                   <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                    Prototype Link(Concept or Design flow) <span className="text-red-500">*</span>
+                    Prototype Link(Concept or Design flow) <span className="text-slate-400 font-normal text-xs">(Optional)</span>
                   </label>
                   <button 
                     type="button" 
@@ -723,13 +781,12 @@ export default function InnovationUnifiedForm() {
 
                 <input
                   type="url"
-                  required
                   placeholder="https://drive.google.com/..."
                   value={prototypeUrl}
                   onChange={(e) => setPrototypeUrl(e.target.value)}
                   className="w-full mt-2 rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-4 focus:ring-[#0197B2]/10 focus:outline-none transition-all shadow-sm"
                 />
-                
+                {/*
                 <div className="mt-4 flex items-start gap-3 rounded-xl bg-red-50 p-4 border border-red-200 shadow-sm">
                   <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
                   <p className="text-[13px] font-medium text-red-700 leading-relaxed">
@@ -737,6 +794,7 @@ export default function InnovationUnifiedForm() {
                     Make sure the drive link is public (Anyone with the link). If your drive link is private and inaccessible, your Application will be cancelled.
                   </p>
                 </div>
+                */}
               </div>
             </div>
           </>
