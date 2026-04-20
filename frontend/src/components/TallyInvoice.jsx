@@ -31,11 +31,12 @@ export default function TallyInvoice({
             </div>
             
             <div className="tally-company-info">
-              <h1>NEXYUGA INNOVATIONS PVT LTD</h1>
-              <p>Vellore, Tamil Nadu - 632009</p>
-              <p>GSTIN: 33PLACEHOLDER123</p>
+              <h1 style={{ color: '#0197B2' }}>NEXYUGA INNOVATIONS PRIVATE LIMITED</h1>
+              <p>K.S.Rangasamy College of Technology, Tiruchengode</p>
+              <p>Tamil Nadu – 637215</p>
+              <p>GSTIN: 33AAACN0000C1ZZ</p>
               <p>SAC Code: 999291</p>
-              <p>Email: vyuga@nexyugainnovations.com</p>
+              <p>Ph: 04288-274374 | vyuga@nexyugainnovations.com</p>
             </div>
           </div>
           
@@ -50,7 +51,7 @@ export default function TallyInvoice({
         {/* Parties Section */}
         <div className="tally-parties">
           <div className="tally-party-box">
-            <h3>Bill To (Buyer)</h3>
+            <h3 style={{ color: '#5BCB2B' }}>BILLED TO</h3>
             <p style={{ fontSize: '16px', color: '#0f172a', fontWeight: 'bold' }}>{payerName}</p>
             <p>{payerEmail}</p>
             <p>{payerPhone}</p>

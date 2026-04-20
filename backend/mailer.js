@@ -441,22 +441,21 @@ async function generateInvoicePdf(invoiceData) {
               {
                 width: '50%',
                 stack: [
-                  { text: 'FROM (Seller)', style: 'sectionHeader' },
-                  { text: 'NEXYUGA INNOVATIONS PRIVATE LIMITED', bold: true, fontSize: 9 },
-                  { text: 'Vellore, Tamil Nadu – 632009', style: 'label', margin: [0, 2, 0, 0] },
-                  { text: 'GSTIN: 33AAACN0000C1ZZ', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'NEXYUGA INNOVATIONS PRIVATE LIMITED', bold: true, fontSize: 10, color: TEAL },
+                  { text: 'K.S.Rangasamy College of Technology, Tiruchengode', style: 'label', margin: [0, 3, 0, 0] },
+                  { text: 'Tamil Nadu – 637215', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'GSTIN: U85499TN2025PTC184403', style: 'label', margin: [0, 2, 0, 0] },
                   { text: 'SAC Code: 999291', style: 'label', margin: [0, 2, 0, 0] },
-                  { text: 'Email: vyuga@nexyugainnovations.com', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'Ph: 04288-274374 | vyuga@nexyugainnovations.com', style: 'label', margin: [0, 2, 0, 0] },
                 ]
               },
               {
                 width: '50%',
                 stack: [
-                  { text: 'BILL TO (Buyer)', style: 'sectionHeader' },
-                  { text: payerName || '—', bold: true, fontSize: 9 },
+                  { text: 'BILLED TO', bold: true, fontSize: 10, color: GREEN },
+                  { text: payerName || '—', bold: true, fontSize: 9, margin: [0, 3, 0, 0] },
                   { text: payerEmail || '—', style: 'label', margin: [0, 2, 0, 0] },
-                  { text: payerPhone ? `Phone: ${payerPhone}` : '', style: 'label', margin: [0, 2, 0, 0] },
-                  { text: 'GSTIN: Unregistered', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: payerPhone ? `Ph: ${payerPhone}` : '', style: 'label', margin: [0, 2, 0, 0] },
                   { text: 'Place of Supply: Tamil Nadu (33)', style: 'label', margin: [0, 2, 0, 0] },
                 ]
               }

@@ -142,6 +142,7 @@ export default function AdminPaymentsView({ token }) {
                 <th className="px-4 py-3 font-semibold w-28">Base Amt</th>
                 <th className="px-4 py-3 font-semibold w-24">GST (18%)</th>
                 <th className="px-4 py-3 font-semibold w-28">Total</th>
+                <th className="px-4 py-3 font-semibold w-28">Invoice No</th>
                 <th className="px-4 py-3 font-semibold">Razorpay ID</th>
                 <th className="px-4 py-3 font-semibold w-24">Status</th>
                 <th className="px-4 py-3 font-semibold w-32">Date</th>
@@ -149,7 +150,7 @@ export default function AdminPaymentsView({ token }) {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {list.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-500">No matching payments found.</td></tr>
+                <tr><td colSpan={10} className="px-4 py-8 text-center text-slate-500">No matching payments found.</td></tr>
               ) : list.map((p, i) => {
                 const gstAmt   = parseInt(p.gst_amount || 0, 10)
                 const total    = parseInt(p.amount || 0, 10)
@@ -165,6 +166,9 @@ export default function AdminPaymentsView({ token }) {
                     <td className="px-4 py-3 text-slate-700">₹{(baseAmt / 100).toFixed(2)}</td>
                     <td className="px-4 py-3 font-medium text-[#0197B2]">₹{(gstAmt / 100).toFixed(2)}</td>
                     <td className="px-4 py-3 font-bold text-green-600">₹{(total / 100).toFixed(2)}</td>
+                    <td className="px-4 py-3 text-xs font-mono text-slate-600">
+                      {p.invoice_number || '—'}
+                    </td>
                     <td className="px-4 py-3 text-xs text-slate-500 font-mono bg-slate-100 rounded px-2 py-1 mx-4 my-2 inline-block">
                       {p.razorpay_payment_id || '—'}
                     </td>

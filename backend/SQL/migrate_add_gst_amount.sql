@@ -8,3 +8,6 @@ UPDATE payments
 SET gst_amount = ROUND(amount * 18.0 / 118.0),
     base_amount = amount - ROUND(amount * 18.0 / 118.0)
 WHERE gst_amount = 0 AND amount > 0;
+
+-- Add invoice_number column
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(50);

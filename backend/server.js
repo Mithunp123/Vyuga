@@ -356,6 +356,7 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
     };
     
     const order = await razorpay.orders.create(options);
+    const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
     
     const { data: payRecord, error } = await supabase.from('payments').insert([{
       razorpay_order_id: order.id,
@@ -366,6 +367,7 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
       payer_name: sanitizeText(name, 100),
       payer_email: email ? email.trim().toLowerCase() : null,
       payer_phone: phone ? phone.trim() : null,
+      invoice_number: invoiceNumber,
       status: 'created'
     }]).select().single();
     
@@ -512,7 +514,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
 
     // Fetch payment record for invoice
     supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
       .eq('razorpay_order_id', req.body.razorpay_order_id)
       .maybeSingle()
       .then(({ data: payRec }) => {
@@ -522,7 +524,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
             eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
             gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
             totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
           })
         }
       })
@@ -700,7 +702,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
 
     // Fetch payment record for invoice
     supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
       .eq('razorpay_order_id', req.body.razorpay_order_id)
       .maybeSingle()
       .then(({ data: payRec }) => {
@@ -710,7 +712,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
             eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
             gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
             totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
           })
         }
       })
@@ -1085,7 +1087,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       return res.status(400).json({ success: false, errors })
     }
 
-    console.log('✅ Validation passed')
+    console.log('Validation passed')
 
     // Validate and sanitize URLs if provided
     const sanitizedPerformanceUrl = performanceUrl && performanceUrl.trim() ? 
@@ -1114,7 +1116,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     if (req.file) {
       try {
         videoFilePath = await compressVideoWithFFmpeg(req.file.path)
-        console.log('✅ Video compression completed:', path.basename(videoFilePath))
+        console.log('Video compression completed:', path.basename(videoFilePath))
         // Note: compressVideoWithFFmpeg already handles cleanup of original file
       } catch (e) {
         console.error('❌ Video compression failed:', e.message)
@@ -1204,7 +1206,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
 
     // Fetch payment record for invoice
     supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
       .eq('razorpay_order_id', req.body.razorpay_order_id)
       .maybeSingle()
       .then(({ data: payRec }) => {
@@ -1214,12 +1216,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
             eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
             gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
             totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
           })
         }
       })
 
-    console.log('✅ Database insertion successful')
+    console.log('Database insertion successful')
 
     // Send confirmation emails
     console.log('📧 Sending confirmation emails...')
@@ -1243,13 +1245,13 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
           paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
         })
       }
-      console.log('✅ Emails sent successfully')
+      console.log('Emails sent successfully')
     } catch (emailErr) {
       console.log('⚠️ Email error (non-critical):', emailErr.message)
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }
 
-    console.log('✅ Form submission completed successfully')
+    console.log('Form submission completed successfully')
     res.status(201).json({ success: true, data })
   } catch (err) {
     console.log('❌ Unexpected error:', err.message)
@@ -1350,7 +1352,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
 
     // Fetch payment record for invoice
     supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
       .eq('razorpay_order_id', req.body.razorpay_order_id)
       .maybeSingle()
       .then(({ data: payRec }) => {
@@ -1360,7 +1362,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
             eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
             gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
             totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
           })
         }
       })
@@ -1375,7 +1377,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
         html: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
             <div style="background:linear-gradient(135deg,#0197B2,#5BCB2B);padding:28px;text-align:center">
-              <h1 style="color:#fff;margin:0;font-size:22px">🎬 Short Film Submission Received</h1>
+              <h1 style="color:#fff;margin:0;font-size:22px">Short Film Submission Received</h1>
             </div>
             <div style="padding:24px">
               <p>Dear <strong>${sanitizeText(contactName, 100)}</strong>,</p>
@@ -1386,8 +1388,8 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
                 <tr><td style="padding:6px 0;color:#64748b">Duration</td><td style="padding:6px 0">${duration} min</td></tr>
                 <tr><td style="padding:6px 0;color:#64748b">Participation</td><td style="padding:6px 0">${partType}</td></tr>
                 <tr><td style="padding:6px 0;color:#64748b">Director</td><td style="padding:6px 0">${sanitizeText(directorName, 100)}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Subtitles</td><td style="padding:6px 0">✅ Confirmed</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Audio Description</td><td style="padding:6px 0">✅ Confirmed</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Subtitles</td><td style="padding:6px 0">Confirmed</td></tr>
+                <tr><td style="padding:6px 0;color:#64748b">Audio Description</td><td style="padding:6px 0">Confirmed</td></tr>
               </table>
               <p style="color:#64748b;font-size:13px">Our team will review your submission and get back to you. If you have any questions, please contact the organizers.</p>
               <p style="margin-top:24px">Warm regards,<br/><strong>VYUGA Team</strong></p>
@@ -1729,7 +1731,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
         html: adminEmailHtml
       })
 
-      console.log('✅ Admin notification email sent successfully')
+      console.log('Admin notification email sent successfully')
     } catch (emailError) {
       console.error('❌ Failed to send admin notification:', emailError)
       // Don't fail the request if email fails
@@ -1795,13 +1797,13 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
         html: confirmationEmailHtml
       })
 
-      console.log('✅ User confirmation email sent successfully')
+      console.log('User confirmation email sent successfully')
     } catch (emailError) {
       console.error('❌ Failed to send user confirmation:', emailError)
       // Don't fail the request if email fails
     }
 
-    console.log('✅ Accommodation request processed successfully')
+    console.log('Accommodation request processed successfully')
     res.status(201).json({
       success: true,
       message: 'Accommodation request submitted successfully',
