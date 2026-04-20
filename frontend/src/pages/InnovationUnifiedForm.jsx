@@ -84,29 +84,40 @@ export default function InnovationUnifiedForm() {
   }, [location.pathname])
 
   useEffect(() => {
-    fetchEventFee('innovation-pwd').then(result => {
-      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
-    }).catch(console.error);
-    
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
-      .then(res => res.json())
-      .then(json => {
-        if (json.success) {
-          const formId = location.pathname.includes('innovation-college') ? 'innovation-college' :
-                         location.pathname.includes('innovation-pwd') ? 'innovation-pwd' : null
-          if (formId) {
-            const setting = json.data.find(s => s.id === formId)
-            if (setting) {
-              if (setting.is_open === false) setIsClosed(true)
-              if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
-                setFee(setting.registration_fee_paise / 100)
-              }
-            }
-          }
+    // Determine the relevant formId based on selected strategy
+    let formId = null;
+    if (form.innovationType === 'for_specially_abled') {
+      formId = 'innovation-college';
+    } else if (form.innovationType === 'by_specially_abled') {
+      formId = 'innovation-pwd';
+    } else {
+      // Not selected yet, fallback to route-based if present
+      if (location.pathname.includes('innovation-college')) formId = 'innovation-college';
+      if (location.pathname.includes('innovation-pwd')) formId = 'innovation-pwd';
+    }
+
+    setFee(null);
+    setGstFee(null);
+    setIsClosed(false);
+
+    if (formId) {
+      fetchEventFee(formId).then(result => {
+        if (result) { 
+          setFee(result.baseFee); 
+          setGstFee(result.gstFee); 
         }
-      })
-      .catch(console.error)
-  }, [location.pathname])
+      }).catch(console.error);
+
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
+        .then(res => res.json())
+        .then(json => {
+          if (json.success) {
+            const setting = json.data.find(s => s.id === formId)
+            if (setting && setting.is_open === false) setIsClosed(true)
+          }
+        }).catch(console.error);
+    }
+  }, [form.innovationType, location.pathname])
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
 
@@ -354,6 +365,9 @@ export default function InnovationUnifiedForm() {
         isOpen={showPaymentWarning}
         onProceed={executeSubmit}
         onCancel={() => setShowPaymentWarning(false)}
+        fee={fee}
+        gstFee={gstFee}
+        totalFee={(fee || 0) + (gstFee || 0)}
       />
       
       <SubmitLoader visible={loading} />
@@ -825,7 +839,7 @@ export default function InnovationUnifiedForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)} )` : 'Register Form'}
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} + GST` : 'Submit Registration'}
           </button>
         </div>
       </motion.form>

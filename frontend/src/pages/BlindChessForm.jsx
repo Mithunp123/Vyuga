@@ -156,6 +156,9 @@ export default function BlindChessForm() {
         isOpen={showPaymentWarning}
         onProceed={executeSubmit}
         onCancel={() => setShowPaymentWarning(false)}
+        fee={fee}
+        gstFee={gstFee}
+        totalFee={(fee || 0) + (gstFee || 0)}
       />
       <SubmitLoader visible={loading} />
       <motion.form
@@ -316,7 +319,7 @@ export default function BlindChessForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Submitting...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)} )` : 'Register Now'}
+            {loading ? 'Submitting...' : fee ? `Pay ₹${fee} + GST` : 'Register Now'}
           </button>
         </div>
       </motion.form>

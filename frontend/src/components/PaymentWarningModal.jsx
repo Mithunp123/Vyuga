@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle } from 'lucide-react'
 
-export default function PaymentWarningModal({ isOpen, onProceed, onCancel }) {
+export default function PaymentWarningModal({ isOpen, onProceed, onCancel, fee, gstFee, totalFee }) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -19,12 +19,30 @@ export default function PaymentWarningModal({ isOpen, onProceed, onCancel }) {
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-8 text-center shadow-2xl"
           >
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
-              <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+              <AlertTriangle className="h-8 w-8 text-[#0197B2]" />
             </div>
-            <h3 className="mb-2 font-display text-xl font-bold text-slate-900">Payment Processing</h3>
-            <p className="mb-6 text-sm text-slate-500">
-              Please do not refresh or close this tab while the payment is processing. After a successful payment, please wait for the page to redirect back to our site.
+            <h3 className="mb-2 font-display text-xl font-bold text-slate-900">Payment Summary</h3>
+            
+            {fee && (
+              <div className="mb-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-left">
+                <div className="flex justify-between text-sm text-slate-600 mb-2">
+                  <span>Base Amount</span>
+                  <span className="font-medium">₹{fee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-slate-600 mb-3 border-b border-slate-200 pb-3">
+                  <span>GST (18%)</span>
+                  <span className="font-medium">₹{gstFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-base font-bold text-slate-900">
+                  <span>Total Amount</span>
+                  <span className="text-[#0197B2]">₹{totalFee.toFixed(2)}</span>
+                </div>
+              </div>
+            )}
+
+            <p className="mb-6 text-xs text-slate-500">
+              Please do not refresh or close this tab while the payment is processing.
             </p>
             <div className="flex flex-col gap-3">
               <button
