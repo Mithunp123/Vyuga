@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
-import { handlePaymentProcess } from '../paymentHandler.js'
+import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -70,6 +70,7 @@ export default function InnovationUnifiedForm() {
   const [showDriveInfo, setShowDriveInfo] = useState(false)
   const [isClosed, setIsClosed] = useState(false)
   const [fee, setFee] = useState(null)
+  const [gstFee, setGstFee] = useState(null)
   const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   // Auto-detect innovation type based on route
@@ -83,6 +84,10 @@ export default function InnovationUnifiedForm() {
   }, [location.pathname])
 
   useEffect(() => {
+    fetchEventFee('innovation-pwd').then(result => {
+      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
+    }).catch(console.error);
+    
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
@@ -820,7 +825,7 @@ export default function InnovationUnifiedForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Register` : 'Register Form'}
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)} )` : 'Register Form'}
           </button>
         </div>
       </motion.form>

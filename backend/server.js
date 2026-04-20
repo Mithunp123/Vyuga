@@ -21,6 +21,7 @@ const {
   sendCricketConfirmation,
   sendChessConfirmation,
   sendStatusUpdateEmail,
+  sendGSTInvoiceEmail,
   transporter,
 } = require('./mailer')
 
@@ -331,8 +332,8 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
   try {
     const { eventType, name, email, phone } = req.body;
     
-    // Look up per-event fee from form_settings, fall back to env var
-    let amount = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
+    // Look up per-event BASE fee from form_settings, fall back to env var
+    let baseFee = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
     if (eventType) {
       const { data: setting } = await supabase
         .from('form_settings')
@@ -340,12 +341,16 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
         .eq('id', eventType)
         .maybeSingle();
       if (setting && setting.registration_fee_paise != null) {
-        amount = setting.registration_fee_paise;
+        baseFee = setting.registration_fee_paise;
       }
     }
+
+    // GST @ 18% exclusive – added ON TOP of the base registration fee
+    const gstAmount   = Math.round(baseFee * 18 / 100);
+    const totalAmount = baseFee + gstAmount;
     
     const options = {
-      amount,
+      amount: totalAmount,
       currency: 'INR',
       receipt: `rcpt_${Date.now()}`
     };
@@ -355,7 +360,9 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
     const { data: payRecord, error } = await supabase.from('payments').insert([{
       razorpay_order_id: order.id,
       event_type: eventType,
-      amount: amount,
+      amount: totalAmount,
+      base_amount: baseFee,
+      gst_amount: gstAmount,
       payer_name: sanitizeText(name, 100),
       payer_email: email ? email.trim().toLowerCase() : null,
       payer_phone: phone ? phone.trim() : null,
@@ -367,7 +374,7 @@ app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
       throw error;
     }
     
-    res.json({ success: true, orderId: order.id, amount, currency: 'INR', keyId: process.env.RAZORPAY_KEY_ID });
+    res.json({ success: true, orderId: order.id, amount: totalAmount, baseAmount: baseFee, gstAmount, currency: 'INR', keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/payment/create-order', method: 'POST', errorType: 'server_error', message: err.message, req });
     res.status(500).json({ success: false, message: 'Failed to create payment order' });
@@ -502,6 +509,23 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       razorpay_signature: req.body.razorpay_signature,
       registration_id: data.id
     }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+
+    // Fetch payment record for invoice
+    supabase.from('payments')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .eq('razorpay_order_id', req.body.razorpay_order_id)
+      .maybeSingle()
+      .then(({ data: payRec }) => {
+        if (payRec && payRec.payer_email) {
+          sendGSTInvoiceEmail({
+            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
+            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
+            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
+            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+          })
+        }
+      })
 
     try {
       sendInnovationCollegeConfirmation({
@@ -673,6 +697,23 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       razorpay_signature: req.body.razorpay_signature,
       registration_id: data.id
     }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+
+    // Fetch payment record for invoice
+    supabase.from('payments')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .eq('razorpay_order_id', req.body.razorpay_order_id)
+      .maybeSingle()
+      .then(({ data: payRec }) => {
+        if (payRec && payRec.payer_email) {
+          sendGSTInvoiceEmail({
+            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
+            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
+            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
+            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+          })
+        }
+      })
 
     try {
       sendInnovationPwdConfirmation({
@@ -1161,6 +1202,23 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       registration_id: data ? data[0]?.id : null
     }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
 
+    // Fetch payment record for invoice
+    supabase.from('payments')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .eq('razorpay_order_id', req.body.razorpay_order_id)
+      .maybeSingle()
+      .then(({ data: payRec }) => {
+        if (payRec && payRec.payer_email) {
+          sendGSTInvoiceEmail({
+            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
+            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
+            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
+            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+          })
+        }
+      })
+
     console.log('✅ Database insertion successful')
 
     // Send confirmation emails
@@ -1289,6 +1347,23 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       razorpay_signature:  req.body.razorpay_signature,
       registration_id: data.id
     }).eq('razorpay_order_id', req.body.razorpay_order_id).then()
+
+    // Fetch payment record for invoice
+    supabase.from('payments')
+      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type')
+      .eq('razorpay_order_id', req.body.razorpay_order_id)
+      .maybeSingle()
+      .then(({ data: payRec }) => {
+        if (payRec && payRec.payer_email) {
+          sendGSTInvoiceEmail({
+            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
+            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
+            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
+            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
+            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString()
+          })
+        }
+      })
 
     // Send confirmation email to registrant
     try {
@@ -2069,7 +2144,7 @@ app.get('/api/admin/payments', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('payments')
-      .select('id, event_type, amount, payer_name, payer_email, payer_phone, status, created_at, razorpay_payment_id')
+      .select('id, event_type, amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, status, created_at, razorpay_payment_id')
       .order('created_at', { ascending: false })
     if (error) {
       await logError({ source: 'admin', endpoint: '/api/admin/payments', method: 'GET', errorType: 'db_error', message: error.message, req })

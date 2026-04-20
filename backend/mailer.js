@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer')
 const path = require('path')
+const fs = require('fs')
+const pdfmake = require('pdfmake')
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -311,6 +313,355 @@ async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
   await sendMail(to, `Registration ${s.label} – VYUGA 2026`, html)
 }
 
+// ── Number to words (Indian system) ──────────────────────────────────────────
+function numberToWords(num) {
+  const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+    'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen']
+  const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety']
+  if (!num || isNaN(num)) return 'Zero'
+  const n = Math.round(num)
+  if (n === 0) return 'Zero'
+  const s = ('000000000' + String(n)).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/)
+  if (!s) return 'Zero'
+  let str = ''
+  str += s[1] != 0 ? (a[Number(s[1])] || b[s[1][0]] + ' ' + a[s[1][1]]) + ' Crore ' : ''
+  str += s[2] != 0 ? (a[Number(s[2])] || b[s[2][0]] + ' ' + a[s[2][1]]) + ' Lakh ' : ''
+  str += s[3] != 0 ? (a[Number(s[3])] || b[s[3][0]] + ' ' + a[s[3][1]]) + ' Thousand ' : ''
+  str += s[4] != 0 ? (a[Number(s[4])] || b[s[4][0]] + ' ' + a[s[4][1]]) + ' Hundred ' : ''
+  str += s[5] != 0 ? ((str !== '') ? 'and ' : '') + (a[Number(s[5])] || b[s[5][0]] + ' ' + a[s[5][1]]) : ''
+  return str.trim()
+}
+
+// ── GST Invoice PDF Generator ─────────────────────────────────────────────────
+const EVENT_LABEL_MAP = {
+  'innovation-college': 'Inclusive Innovation Fest – For Specially Abled (College)',
+  'innovation-pwd':     'Inclusive Innovation Fest – By Specially Abled',
+  'shortfilm':          'Short Film Contest',
+  'cricket':            'Blind Cricket Tournament',
+  'specialtalent':      'Special Talent Utsav',
+  'talent-combined':    'Special Talent Utsav – Nominations',
+  'chess':              'Blind Chess Competition',
+}
+
+async function generateInvoicePdf(invoiceData) {
+      const {
+        invoiceNumber, invoiceDate, payerName, payerEmail, payerPhone,
+        eventType, baseAmount, gstAmount, totalAmount, razorpayPaymentId
+      } = invoiceData
+
+      const base      = baseAmount / 100        // ₹ value
+      const gst       = gstAmount / 100
+      const total     = totalAmount / 100
+      const cgst      = gst / 2
+      const sgst      = gst / 2
+      const cgstRate  = 9
+      const sgstRate  = 9
+      const eventName = EVENT_LABEL_MAP[eventType] || eventType
+      const totalWords = numberToWords(Math.round(total)) + ' Rupees Only'
+      const fmt = (n) => n.toFixed(2)
+
+      // Embed logo as base64
+      let logoDataUri = null
+      try {
+        const logoBuffer = fs.readFileSync(LOGO_PATH)
+        logoDataUri = 'data:image/png;base64,' + logoBuffer.toString('base64')
+      } catch (_) { /* logo file missing – skip */ }
+
+      // pdfmake v3 – register fonts once then use promise-based getBuffer()
+      pdfmake.addFonts({
+        Roboto: {
+          normal:      path.join(__dirname, 'node_modules/pdfmake/fonts/Roboto/Roboto-Regular.ttf'),
+          bold:        path.join(__dirname, 'node_modules/pdfmake/fonts/Roboto/Roboto-Medium.ttf'),
+          italics:     path.join(__dirname, 'node_modules/pdfmake/fonts/Roboto/Roboto-Italic.ttf'),
+          bolditalics: path.join(__dirname, 'node_modules/pdfmake/fonts/Roboto/Roboto-MediumItalic.ttf'),
+        }
+      })
+      pdfmake.setUrlAccessPolicy(() => false)
+
+      // Brand colours
+      const TEAL   = '#0197B2'
+      const GREEN  = '#5BCB2B'
+      const DARK   = '#0f172a'
+      const GREY   = '#64748b'
+      const BORDER = '#e2e8f0'
+      const LIGHT  = '#f8fafc'
+
+      const headerContent = logoDataUri
+        ? [
+            { image: logoDataUri, width: 60, margin: [0, 0, 0, 4] },
+            { text: 'NEXYUGA INNOVATIONS PRIVATE LIMITED', style: 'companyName' },
+          ]
+        : [{ text: 'NEXYUGA INNOVATIONS PRIVATE LIMITED', style: 'companyName' }]
+
+      const docDefinition = {
+        pageSize: 'A4',
+        pageMargins: [40, 40, 40, 60],
+        defaultStyle: { font: 'Roboto', fontSize: 9, color: DARK },
+        styles: {
+          companyName:    { fontSize: 14, bold: true, color: '#ffffff', margin: [0, 0, 0, 2] },
+          invoiceTitle:   { fontSize: 20, bold: true, color: '#ffffff', alignment: 'right' },
+          sectionHeader:  { fontSize: 8, bold: true, color: TEAL, margin: [0, 10, 0, 4], textTransform: 'uppercase' },
+          tableHeader:    { fontSize: 8, bold: true, color: '#ffffff', fillColor: TEAL },
+          label:          { fontSize: 8, color: GREY },
+          value:          { fontSize: 9, bold: true },
+          totalRow:       { fontSize: 10, bold: true },
+          footerText:     { fontSize: 8, color: GREY, italics: true },
+        },
+        content: [
+          // ── Header Band ──────────────────────────────────────────────────
+          {
+            table: {
+              widths: ['*', 'auto'],
+              body: [[
+                {
+                  stack: headerContent,
+                  fillColor: TEAL,
+                  border: [false, false, false, false],
+                  margin: [12, 12, 0, 12]
+                },
+                {
+                  stack: [
+                    { text: 'TAX INVOICE', style: 'invoiceTitle' },
+                    { text: `Invoice No: ${invoiceNumber}`, fontSize: 8, color: '#e2e8f0', alignment: 'right' },
+                    { text: `Date: ${new Date(invoiceDate).toLocaleDateString('en-IN')}`, fontSize: 8, color: '#e2e8f0', alignment: 'right' },
+                  ],
+                  fillColor: TEAL,
+                  border: [false, false, false, false],
+                  margin: [0, 12, 12, 12]
+                }
+              ]]
+            },
+            layout: 'noBorders'
+          },
+
+          // ── Company & Buyer Info ──────────────────────────────────────────
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: GREEN }], margin: [0, 8, 0, 8] },
+          {
+            columns: [
+              {
+                width: '50%',
+                stack: [
+                  { text: 'FROM (Seller)', style: 'sectionHeader' },
+                  { text: 'NEXYUGA INNOVATIONS PRIVATE LIMITED', bold: true, fontSize: 9 },
+                  { text: 'Vellore, Tamil Nadu – 632009', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'GSTIN: 33AAACN0000C1ZZ', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'SAC Code: 999291', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'Email: vyuga@nexyugainnovations.com', style: 'label', margin: [0, 2, 0, 0] },
+                ]
+              },
+              {
+                width: '50%',
+                stack: [
+                  { text: 'BILL TO (Buyer)', style: 'sectionHeader' },
+                  { text: payerName || '—', bold: true, fontSize: 9 },
+                  { text: payerEmail || '—', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: payerPhone ? `Phone: ${payerPhone}` : '', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'GSTIN: Unregistered', style: 'label', margin: [0, 2, 0, 0] },
+                  { text: 'Place of Supply: Tamil Nadu (33)', style: 'label', margin: [0, 2, 0, 0] },
+                ]
+              }
+            ]
+          },
+
+          // ── Items Table ───────────────────────────────────────────────────
+          { text: 'PARTICULARS', style: 'sectionHeader', margin: [0, 12, 0, 0] },
+          {
+            table: {
+              headerRows: 1,
+              widths: [20, '*', 50, 50, 50, 50, 50, 60],
+              body: [
+                // Header
+                [
+                  { text: 'S.No', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Description of Service', style: 'tableHeader' },
+                  { text: 'SAC', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Taxable Value (₹)', style: 'tableHeader', alignment: 'right' },
+                  { text: 'CGST 9% (₹)', style: 'tableHeader', alignment: 'right' },
+                  { text: 'SGST 9% (₹)', style: 'tableHeader', alignment: 'right' },
+                  { text: 'IGST (₹)', style: 'tableHeader', alignment: 'right' },
+                  { text: 'Total (₹)', style: 'tableHeader', alignment: 'right' },
+                ],
+                // Data row
+                [
+                  { text: '1', alignment: 'center' },
+                  { text: `Event Registration Fee\n${eventName}\nVYUGA – Ability Carnival 2026`, fontSize: 8 },
+                  { text: '999291', alignment: 'center', fontSize: 8 },
+                  { text: fmt(base), alignment: 'right' },
+                  { text: fmt(cgst), alignment: 'right' },
+                  { text: fmt(sgst), alignment: 'right' },
+                  { text: '–', alignment: 'right' },
+                  { text: fmt(total), bold: true, alignment: 'right' },
+                ],
+                // Totals
+                [
+                  { text: '', border: [false, false, false, false] },
+                  { text: 'TOTAL', bold: true, alignment: 'right', border: [false, false, false, false] },
+                  { text: '', border: [false, false, false, false] },
+                  { text: fmt(base), bold: true, alignment: 'right', fillColor: LIGHT },
+                  { text: fmt(cgst), bold: true, alignment: 'right', fillColor: LIGHT },
+                  { text: fmt(sgst), bold: true, alignment: 'right', fillColor: LIGHT },
+                  { text: '–', bold: true, alignment: 'right', fillColor: LIGHT },
+                  { text: fmt(total), bold: true, alignment: 'right', color: TEAL, fillColor: LIGHT },
+                ],
+              ]
+            },
+            layout: {
+              hLineWidth: (i, node) => (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 0.5,
+              vLineWidth: () => 0.5,
+              hLineColor: () => BORDER,
+              vLineColor: () => BORDER,
+              paddingLeft:   () => 6,
+              paddingRight:  () => 6,
+              paddingTop:    () => 5,
+              paddingBottom: () => 5,
+            }
+          },
+
+          // ── Amount in words & GST summary ────────────────────────────────
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: BORDER }], margin: [0, 8, 0, 8] },
+          {
+            columns: [
+              {
+                width: '60%',
+                stack: [
+                  { text: 'Amount Chargeable (in words)', style: 'sectionHeader', margin: [0, 0, 0, 2] },
+                  { text: `INR ${totalWords.toUpperCase()}`, bold: true, fontSize: 9, color: TEAL },
+                ]
+              },
+              {
+                width: '40%',
+                table: {
+                  widths: ['*', 70],
+                  body: [
+                    [{ text: 'Base Amount:', style: 'label' }, { text: `₹ ${fmt(base)}`, alignment: 'right', style: 'value' }],
+                    [{ text: `CGST @ ${cgstRate}%:`, style: 'label' }, { text: `₹ ${fmt(cgst)}`, alignment: 'right', style: 'value' }],
+                    [{ text: `SGST @ ${sgstRate}%:`, style: 'label' }, { text: `₹ ${fmt(sgst)}`, alignment: 'right', style: 'value' }],
+                    [
+                      { text: 'TOTAL:', bold: true, fontSize: 10, color: DARK },
+                      { text: `₹ ${fmt(total)}`, alignment: 'right', bold: true, fontSize: 10, color: TEAL }
+                    ],
+                  ]
+                },
+                layout: 'noBorders'
+              }
+            ]
+          },
+
+          // ── Payment Reference ─────────────────────────────────────────────
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: BORDER }], margin: [0, 8, 0, 8] },
+          {
+            table: {
+              widths: ['*', '*'],
+              body: [[
+                { text: `Payment Reference: ${razorpayPaymentId || 'N/A'}`, style: 'label' },
+                { text: `Payment Mode: Online (Razorpay)`, style: 'label', alignment: 'right' }
+              ]]
+            },
+            layout: 'noBorders'
+          },
+
+          // ── Declaration & Signature ────────────────────────────────────────
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: BORDER }], margin: [0, 12, 0, 8] },
+          {
+            columns: [
+              {
+                width: '60%',
+                stack: [
+                  { text: 'Declaration', bold: true, fontSize: 8, decoration: 'underline', margin: [0, 0, 0, 4] },
+                  { text: 'We declare that this invoice shows the actual price of the services described and that all particulars are true and correct. Tax is payable under the Reverse Charge Mechanism: No.', style: 'footerText' },
+                ]
+              },
+              {
+                width: '40%',
+                alignment: 'right',
+                stack: [
+                  { text: 'For NEXYUGA INNOVATIONS PRIVATE LIMITED', bold: true, fontSize: 8, alignment: 'right' },
+                  { text: '\n\n\n', fontSize: 8 },
+                  { text: 'Authorized Signatory', style: 'footerText', alignment: 'right' },
+                ]
+              }
+            ]
+          },
+        ],
+        footer: (currentPage, pageCount) => ({
+          margin: [40, 0, 40, 0],
+          columns: [
+            { text: `© 2026 VYUGA – Ability Carnival | vyuga.nexyuga.in`, style: 'footerText' },
+            { text: `Page ${currentPage} of ${pageCount}`, style: 'footerText', alignment: 'right' }
+          ]
+        })
+      }
+
+      // pdfmake v3 uses a Promise-based getBuffer()
+      const pdfDoc = pdfmake.createPdf(docDefinition)
+      const buffer = await pdfDoc.getBuffer()
+      return buffer
+}
+
+// ── Send GST Invoice Email ─────────────────────────────────────────────────────
+async function sendGSTInvoiceEmail({ payerName, payerEmail, payerPhone, eventType, baseAmount, gstAmount, totalAmount, razorpayOrderId, razorpayPaymentId, invoiceDate }) {
+  try {
+    const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`
+    const eventLabel = EVENT_LABEL_MAP[eventType] || eventType
+    const base  = baseAmount / 100
+    const total = totalAmount / 100
+    const gst   = gstAmount / 100
+    const fmt   = (n) => n.toFixed(2)
+
+    // Build the invoice PDF buffer
+    const pdfBuffer = await generateInvoicePdf({
+      invoiceNumber,
+      invoiceDate: invoiceDate || new Date().toISOString(),
+      payerName, payerEmail, payerPhone,
+      eventType, baseAmount, gstAmount, totalAmount,
+      razorpayPaymentId
+    })
+
+    const html = shell(`GST Tax Invoice – ${eventLabel}`, `
+      <div style="border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #bbf7d0;background:#f0fdf4;">
+        <p style="margin:0;font-size:20px;font-weight:800;color:#16a34a;">✅ Payment Successful</p>
+        <p style="margin:6px 0 0;font-size:14px;color:#475569;">Your registration for <strong>${eventLabel}</strong> is confirmed.</p>
+      </div>
+      ${section('Invoice Details', [
+        row('Invoice No.', invoiceNumber),
+        row('Date', new Date(invoiceDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })),
+        row('Payment Ref.', razorpayPaymentId || razorpayOrderId),
+      ].join(''))}
+      ${section('Payment Breakdown', [
+        row('Base Registration Fee', `₹ ${fmt(base)}`),
+        row('CGST @ 9%', `₹ ${fmt(gst / 2)}`),
+        row('SGST @ 9%', `₹ ${fmt(gst / 2)}`),
+        row('Total Amount Paid', `<span style="font-size:16px;font-weight:800;color:#0197B2;">₹ ${fmt(total)}</span>`),
+      ].join(''))}
+      <p style="font-size:13px;color:#475569;margin-top:16px;">
+        📎 Please find your <strong>GST Tax Invoice</strong> attached as a PDF for your records.
+      </p>
+    `)
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
+      to: payerEmail,
+      subject: `GST Tax Invoice – VYUGA (${invoiceNumber})`,
+      html,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: LOGO_PATH,
+          cid: 'vyuga-logo',
+        },
+        {
+          filename: `VYUGA_Invoice_${invoiceNumber}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        }
+      ]
+    })
+    console.log(`[mailer] GST invoice sent to ${payerEmail}`)
+  } catch (err) {
+    console.error('[mailer] Failed to send GST invoice:', err.message)
+  }
+}
+
 module.exports = {
   sendInnovationCollegeConfirmation,
   sendInnovationPwdConfirmation,
@@ -319,6 +670,7 @@ module.exports = {
   sendCricketConfirmation,
   sendChessConfirmation,
   sendStatusUpdateEmail,
+  sendGSTInvoiceEmail,
   sendMail,
   transporter,
 }

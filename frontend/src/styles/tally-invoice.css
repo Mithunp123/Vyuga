@@ -1,0 +1,256 @@
+.tally-invoice-container {
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  color: #1e293b;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  border-top: 8px solid #0197B2;
+}
+
+.tally-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.tally-logo-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.tally-logo-box {
+  background: linear-gradient(135deg, #0197B2, #5BCB2B);
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 6px rgba(1, 151, 178, 0.2);
+}
+
+.tally-logo-img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
+.tally-company-info h1 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.tally-company-info p {
+  margin: 3px 0;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.tally-invoice-details {
+  text-align: right;
+  background: #f8fafc;
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.tally-invoice-details h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  color: #0197B2;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tally-invoice-details p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.tally-invoice-details span {
+  color: #0f172a;
+}
+
+.tally-parties {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+}
+
+.tally-party-box {
+  flex: 0 0 50%;
+  background: #f8fafc;
+  padding: 20px 24px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #5BCB2B;
+}
+
+.tally-party-box h3 {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.tally-party-box p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.tally-table-container {
+  margin-bottom: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.tally-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tally-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tally-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #1e293b;
+  vertical-align: top;
+}
+
+.tally-table tr:last-child td {
+  border-bottom: none;
+}
+
+.tally-table .num-col {
+  text-align: right;
+}
+
+.tally-total-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.tally-totals {
+  width: 320px;
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.tally-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.tally-total-row:last-of-type {
+  margin-bottom: 0;
+}
+
+.tally-total-row.grand-total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px dashed #cbd5e0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0197B2;
+}
+
+.tally-declaration {
+  margin-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+}
+
+.tally-declaration h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tally-declaration p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.tally-footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.tally-footer p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Print optimizations */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .tally-invoice-wrapper {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  
+  .tally-invoice-container {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .tally-logo-box {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  .tally-table th {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}

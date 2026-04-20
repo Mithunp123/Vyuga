@@ -6,6 +6,7 @@ import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
+import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
 
 const THEMES = [
   'Assistive Technology',
@@ -30,6 +31,10 @@ export default function InnovationCollegeForm() {
   const [isClosed, setIsClosed] = useState(false)
 
   useEffect(() => {
+    fetchEventFee('innovation-college').then(result => {
+      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
+    }).catch(console.error)
+    // Check if form is open
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
@@ -48,6 +53,7 @@ export default function InnovationCollegeForm() {
   const [pptFile, setPptFile] = useState(null)
   const [prototypeUrl, setPrototypeUrl] = useState('')
   const [fee, setFee] = useState(null)
+  const [gstFee, setGstFee] = useState(null)
   const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -73,17 +79,28 @@ export default function InnovationCollegeForm() {
     setLoading(true)
     setError('')
     try {
+      // If fee, run Razorpay payment first
+      let paymentData = null
+      if (fee) {
+        const userInfo = {
+          name: form.member1Name,
+          email: form.member1Email,
+          phone: form.member1Phone,
+          eventType: 'innovation-college',
+        }
+        paymentData = await handlePaymentProcess(userInfo)
+      }
+
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
       if (protoFile) fd.append('prototypeImage', protoFile)
       if (pptFile) fd.append('pptFile', pptFile)
       if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
-      
-      // Assume a backend fix will add Razorpay fields to /api/innovation-college
-      // if fee is true, we should have razorpay payment data. Wait:
-      // In InnovationCollegeForm currently there's no Razorpay handlePaymentProcess used because previously no fee was attached to it logic. 
-      // User says "move to payment page". So if fee exists, this should probably use handlePaymentProcess too.
-      // But let's just make it submit for now since it was like that before. Oh wait! I'll just keep it exactly as it was.
+      if (paymentData) {
+        fd.append('razorpay_payment_id', paymentData.razorpay_payment_id)
+        fd.append('razorpay_order_id', paymentData.razorpay_order_id)
+        fd.append('razorpay_signature', paymentData.razorpay_signature)
+      }
       
       await postFormData('/api/innovation-college', fd)
       setSubmitted(true)
@@ -361,7 +378,7 @@ export default function InnovationCollegeForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Submitting…' : fee ? `Pay ₹${fee} & Submit Registration` : 'Submit Registration'}
+            {loading ? 'Submitting…' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)}) & Submit` : 'Submit Registration'}
           </button>
         </div>
       </motion.form>

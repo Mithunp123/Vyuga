@@ -16,18 +16,21 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
     // 2. Open Razorpay Checkout
     return new Promise((resolve, reject) => {
       const options = {
-        key: data.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-        amount: data.amount, // Amount is in currency subunits. Default currency is INR.
+        key: data.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: data.amount, // total including GST, in paise
         currency: data.currency,
         name: 'VYUGA Event Registration',
-        description: 'Registration Fee',
-        order_id: data.orderId, // This is a sample Order ID. Pass the `id` obtained in the response of create-order.
+        description: `Registration Fee (incl. 18% GST)`,
+        order_id: data.orderId,
         handler: function (response) {
-          // Success callback
           const paymentResult = {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
+            // Pass GST info back to caller
+            baseAmount: data.baseAmount,
+            gstAmount: data.gstAmount,
+            totalAmount: data.amount,
           };
           if (paymentDataCallback) paymentDataCallback(paymentResult);
           resolve(paymentResult);
@@ -36,6 +39,10 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
           name: userInfo.name,
           email: userInfo.email,
           contact: userInfo.phone
+        },
+        notes: {
+          base_amount: data.baseAmount,
+          gst_amount: data.gstAmount,
         },
         theme: {
           color: '#0197B2'
@@ -50,7 +57,6 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
       const rzp1 = new window.Razorpay(options);
       rzp1.on('payment.failed', function (response) {
         console.warn('Payment failed attempt:', response.error.description);
-        // Do not reject() here. Razorpay modal remains open and allows the user to retry.
       });
       rzp1.open();
     });
@@ -59,3 +65,28 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
     throw err;
   }
 };
+
+/**
+ * Fetch the registration fee breakdown for a given event type.
+ * Returns { baseFee, gstFee, totalFee } in Rupees (not paise).
+ */
+export const fetchEventFee = async (eventType) => {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const res = await fetch(`${apiUrl}/api/form-settings`);
+    const json = await res.json();
+    if (!json.success) return null;
+    const setting = json.data.find(s => s.id === eventType);
+    if (!setting || setting.registration_fee_paise == null) return null;
+    const basePaise = setting.registration_fee_paise;
+    const gstPaise  = Math.round(basePaise * 18 / 100);
+    return {
+      baseFee:  basePaise  / 100,
+      gstFee:   gstPaise   / 100,
+      totalFee: (basePaise + gstPaise) / 100,
+    };
+  } catch {
+    return null;
+  }
+};
+

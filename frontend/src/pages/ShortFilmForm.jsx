@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
-import { handlePaymentProcess } from '../paymentHandler.js'
+import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -42,6 +42,7 @@ export default function ShortFilmForm() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [fee, setFee] = useState(null)
+  const [gstFee, setGstFee] = useState(null)
   const [showPaymentWarning, setShowPaymentWarning] = useState(false)
 
   const setCheck = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.checked }))
@@ -57,17 +58,19 @@ export default function ShortFilmForm() {
   }
 
   useEffect(() => {
+    fetchEventFee('shortfilm').then(result => {
+      if (result) {
+        setFee(result.baseFee)
+        setGstFee(result.gstFee)
+      }
+    }).catch(console.error)
+    // Also check form open/closed
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
         if (json.success) {
           const setting = json.data.find(s => s.id === 'shortfilm')
-          if (setting) {
-            if (setting.is_open === false) setIsClosed(true)
-            if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
-              setFee(setting.registration_fee_paise / 100)
-            }
-          }
+          if (setting && setting.is_open === false) setIsClosed(true)
         }
       })
       .catch(console.error)
@@ -408,7 +411,7 @@ export default function ShortFilmForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Film` : 'Submit Film'}
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee).toFixed(2)})` : 'Submit Film'}
           </button>
         </div>
       </motion.form>

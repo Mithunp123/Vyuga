@@ -48,8 +48,13 @@ export default function BlindChessForm() {
   const [form, setForm] = useState(EMPTY)
   const [isClosed, setIsClosed] = useState(false)
   const [fee, setFee] = useState(null)
+  const [gstFee, setGstFee] = useState(null)
 
   useEffect(() => {
+    fetchEventFee('chess').then(result => {
+      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
+    }).catch(console.error);
+    
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
@@ -311,7 +316,7 @@ export default function BlindChessForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Submitting...' : fee ? `Pay ₹${fee} & Register` : 'Register Now'}
+            {loading ? 'Submitting...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)} )` : 'Register Now'}
           </button>
         </div>
       </motion.form>

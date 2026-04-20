@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
-import { handlePaymentProcess } from '../paymentHandler.js'
+import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -40,11 +40,16 @@ export default function CricketTeamForm() {
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
   const [fee, setFee] = useState(null)
+  const [gstFee, setGstFee] = useState(null)
   const [showPaymentWarning, setShowPaymentWarning] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    fetchEventFee('cricket').then(result => {
+      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
+    }).catch(console.error);
+    
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
@@ -286,7 +291,7 @@ export default function CricketTeamForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee} & Submit Interest` : 'Submit Interest'}
+            {loading ? 'Processing...' : fee ? `Pay ₹${fee} + ₹${gstFee} GST (Total ₹${(fee + gstFee)?.toFixed(2)} )` : 'Submit Interest'}
           </button>
         </div>
       </motion.form>
