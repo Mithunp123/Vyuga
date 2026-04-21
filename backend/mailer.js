@@ -618,7 +618,7 @@ async function sendGSTInvoiceEmail({ payerName, payerEmail, payerPhone, eventTyp
 
     const html = shell(`GST Tax Invoice – ${eventLabel}`, `
       <div style="border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #bbf7d0;background:#f0fdf4;">
-        <p style="margin:0;font-size:20px;font-weight:800;color:#16a34a;">✅ Payment Successful</p>
+        <p style="margin:0;font-size:20px;font-weight:800;color:#16a34a;">Payment Successful</p>
         <p style="margin:6px 0 0;font-size:14px;color:#475569;">Your registration for <strong>${eventLabel}</strong> is confirmed.</p>
       </div>
       ${section('Invoice Details', [
