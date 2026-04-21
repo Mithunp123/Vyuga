@@ -394,7 +394,7 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
     email_notify: 0,
     currency: "INR",
     expire_by: expireBy,
-    callback_url: `${process.env.CLIENT_ORIGIN || "http://localhost:5173"}/payment-success`,
+    callback_url: `${process.env.FRONTEND_URL || process.env.CLIENT_ORIGIN || "http://localhost:5173"}/payment-success`,
     callback_method: "get",
   };
 
