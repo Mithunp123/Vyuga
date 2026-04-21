@@ -91,13 +91,6 @@ export default function CricketTeamForm() {
     setError('')
 
     try {
-      const userInfo = {
-        name: form.captainName || form.contactName,
-        email: form.contactEmail,
-        phone: form.contactPhone,
-        eventType: 'cricket',
-      }
-
       let tournamentExperience = {
         hasPlayedBefore: form.hasPlayedBefore === 'yes'
       }
@@ -112,11 +105,11 @@ export default function CricketTeamForm() {
       }
 
       const res = await postJSON('/api/cricket', submitData)
-        if (res.invoice_link) {
-          window.location.href = res.invoice_link;
-        } else {
-          setSubmitted(true)
-        }
+      if (res.invoice_link) {
+        window.location.href = res.invoice_link
+      } else {
+        setSubmitted(true)
+      }
     } catch (err) {
       setError(err.message)
     } finally {

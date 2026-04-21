@@ -27,6 +27,7 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
+            receiptId: data.receipt_id,
             // Pass GST info back to caller
             baseAmount: data.baseAmount,
             gstAmount: data.gstAmount,
@@ -43,6 +44,7 @@ export const handlePaymentProcess = async (userInfo, paymentDataCallback) => {
         notes: {
           base_amount: data.baseAmount,
           gst_amount: data.gstAmount,
+          receipt_id: data.receipt_id,
         },
         theme: {
           color: '#0197B2'

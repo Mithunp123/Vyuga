@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
@@ -7,6 +7,8 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [status, setStatus] = useState('checking') // 'checking' | 'success' | 'pending'
+  const verifyRequestedRef = useRef(false)
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
   // Razorpay sends these query params on callback
   const invoiceId   = searchParams.get('razorpay_invoice_id')
@@ -14,14 +16,40 @@ export default function PaymentSuccess() {
   const invoiceStatus = searchParams.get('razorpay_invoice_status') // 'paid' or 'partially_paid'
 
   useEffect(() => {
-    // If Razorpay marked invoice as paid, show success immediately
-    if (invoiceStatus === 'paid' || paymentId) {
-      setStatus('success')
-    } else {
-      // Could be cancelled or still processing
-      setStatus('pending')
+    async function verifyPayment() {
+      // If Razorpay marked invoice as paid, show success immediately
+      if (invoiceStatus === 'paid' || paymentId) {
+        setStatus('success')
+        
+        // Call backend to ensure DB is updated and emails are sent immediately
+        // (This acts as a solid fallback if the webhook is delayed or blocked)
+        if (invoiceId && !verifyRequestedRef.current) {
+          verifyRequestedRef.current = true
+          try {
+            const verifyRes = await fetch(`${API_BASE}/api/payment/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_invoice_id: invoiceId,
+                razorpay_payment_id: paymentId
+              })
+            })
+            if (!verifyRes.ok) {
+              const msg = await verifyRes.text()
+              console.error('Payment verify API failed:', verifyRes.status, msg)
+            }
+          } catch (error) {
+            console.error('Failed to send verification to server:', error)
+          }
+        }
+      } else {
+        // Could be cancelled or still processing
+        setStatus('pending')
+      }
     }
-  }, [invoiceStatus, paymentId])
+    
+    verifyPayment()
+  }, [invoiceStatus, paymentId, invoiceId])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 flex items-center justify-center px-4 py-16">
@@ -84,10 +112,10 @@ export default function PaymentSuccess() {
                   Back to Home
                 </button>
                 <button
-                  onClick={() => navigate('/register/innovation')}
+                  onClick={() => window.open('https://mail.google.com/mail/u/0/#inbox', '_blank', 'noopener,noreferrer')}
                   className="rounded-full border-2 border-slate-200 px-8 py-3 font-bold text-slate-600 hover:border-[#0197B2] hover:text-[#0197B2] transition-all"
                 >
-                  Register Another
+                  Open Mail
                 </button>
               </div>
             </>

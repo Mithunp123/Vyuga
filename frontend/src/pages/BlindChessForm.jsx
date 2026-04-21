@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
+import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -119,8 +120,12 @@ export default function BlindChessForm() {
     setLoading(true)
     setError('')
     try {
-      await postJSON('/api/chess', form)
-      setSubmitted(true)
+      const res = await postJSON('/api/chess', form)
+      if (res.invoice_link) {
+        window.location.href = res.invoice_link
+      } else {
+        setSubmitted(true)
+      }
     } catch (err) {
       setError(err.message)
     } finally {

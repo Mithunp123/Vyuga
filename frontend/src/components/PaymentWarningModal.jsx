@@ -2,6 +2,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle } from 'lucide-react'
 
 export default function PaymentWarningModal({ isOpen, onProceed, onCancel, fee, gstFee, totalFee }) {
+  const baseAmount = Number.isFinite(Number(fee)) ? Number(fee) : 0
+  const gstAmount = Number.isFinite(Number(gstFee)) ? Number(gstFee) : 0
+  const finalAmount = Number.isFinite(Number(totalFee)) ? Number(totalFee) : baseAmount + gstAmount
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -24,19 +28,19 @@ export default function PaymentWarningModal({ isOpen, onProceed, onCancel, fee, 
             </div>
             <h3 className="mb-2 font-display text-xl font-bold text-slate-900">Payment Summary</h3>
             
-            {fee && (
+            {(baseAmount > 0 || gstAmount > 0 || finalAmount > 0) && (
               <div className="mb-6 rounded-xl border border-slate-100 bg-slate-50 p-4 text-left">
                 <div className="flex justify-between text-sm text-slate-600 mb-2">
                   <span>Base Amount</span>
-                  <span className="font-medium">₹{fee.toFixed(2)}</span>
+                  <span className="font-medium">₹{baseAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-slate-600 mb-3 border-b border-slate-200 pb-3">
                   <span>GST (18%)</span>
-                  <span className="font-medium">₹{gstFee.toFixed(2)}</span>
+                  <span className="font-medium">₹{gstAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold text-slate-900">
                   <span>Total Amount</span>
-                  <span className="text-[#0197B2]">₹{totalFee.toFixed(2)}</span>
+                  <span className="text-[#0197B2]">₹{finalAmount.toFixed(2)}</span>
                 </div>
               </div>
             )}

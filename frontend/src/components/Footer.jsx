@@ -25,7 +25,7 @@ function ScrollWhiteText({ children, className = '', as = 'span' }) {
   const color = useTransform(scrollYProgress, [0, 0.8], ['rgba(255,255,255,0.15)', 'rgba(255,255,255,0.9)'])
   const Tag = motion[as] || motion.span
   return (
-    <Tag ref={ref} style={{ color }} className={className}>
+    <Tag ref={ref} style={{ color, position: 'relative', display: 'inline-block' }} className={className}>
       {children}
     </Tag>
   )

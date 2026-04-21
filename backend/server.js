@@ -20,8 +20,8 @@ const {
   sendTalentStudentConfirmation,
   sendCricketConfirmation,
   sendChessConfirmation,
+  sendShortFilmConfirmation,
   sendStatusUpdateEmail,
-  sendGSTInvoiceEmail,
   transporter,
 } = require('./mailer')
 
@@ -39,6 +39,23 @@ function verifyRazorpaySignature(orderId, paymentId, signature) {
     .update(orderId + '|' + paymentId)
     .digest('hex');
   return generated === signature;
+}
+
+function normalizeGradeCategory(raw) {
+  const input = String(raw || '').trim()
+  if (!input) return null
+
+  // Handle values like 1-5, 1–5 and even mojibake variants by extracting numeric ranges.
+  const nums = (input.match(/\d+/g) || []).map(Number)
+  if (nums.length >= 2) {
+    const range = `${nums[0]}-${nums[1]}`
+    if (['1-5', '6-8', '9-12'].includes(range)) return range
+  }
+
+  const normalized = input.replace(/[–—−]/g, '-').replace(/\s+/g, '')
+  if (['1-5', '6-8', '9-12'].includes(normalized)) return normalized
+
+  return null
 }
 
 const app = express()
@@ -346,28 +363,32 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
 
   const EVENT_NAME_MAP = {
     'innovation-college': 'Inclusive Innovation Fest For Specially Abled (College)',
-    'innovation-pwd':     'Inclusive Innovation Fest By Specially Abled',
-    'talent-org':         'Special Talent Utsav  Organization Registration',
-    'talent-student':     'Special Talent Utsav Student Nomination',
-    'talent-combined':    'Special Talent Utsav Nomination',
-    'short-film':         'Short Film Competition',
-    'cricket':            'Blind Cricket Tournament',
-    'chess':              'Blind Chess Competition',
+    'innovation-pwd': 'Inclusive Innovation Fest By Specially Abled',
+    'talent-org': 'Special Talent Utsav  Organization Registration',
+    'talent-student': 'Special Talent Utsav Student Nomination',
+    'talent-combined': 'Special Talent Utsav Nomination',
+    'shortfilm': 'Short Film Competition',
+    'short-film': 'Short Film Competition',
+    'cricket': 'Blind Cricket Tournament',
+    'chess': 'Blind Chess Competition',
   };
   const eventLabel = EVENT_NAME_MAP[eventType] || 'Event Registration';
+  const receiptId = `rcpt_${eventType || 'event'}_${Date.now()}`.slice(0, 40);
 
   const expireBy = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60; // 7 days from now
 
   const options = {
     type: "invoice",
     description: "VYUGA Event Registration",
+    receipt: receiptId,
     customer: {
       name: sanitizeText(name, 100) || 'Customer',
       email: email ? email.trim().toLowerCase() : undefined,
       contact: phone ? phone.trim() : undefined,
     },
     line_items: [
-      { name: `${eventLabel} (incl. 18% GST)`, amount: totalAmount, currency: "INR", quantity: 1 }
+      { name: `${eventLabel} - Event Fee`, amount: baseFee, currency: "INR", quantity: 1 },
+      { name: `${eventLabel} - GST (18%)`, amount: gstAmount, currency: "INR", quantity: 1 }
     ],
     sms_notify: 0,
     email_notify: 0,
@@ -381,166 +402,577 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
   const invoice = await razorpay.invoices.create(options);
   console.log('[Razorpay] Invoice created:', invoice.id, '| short_url:', invoice.short_url);
   const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
+  const invoiceRef = invoice.id || invoice.order_id;
 
-  return { invoice, totalAmount, baseFee, gstAmount, invoiceNumber };
+  return { invoice, invoiceRef, receiptId: invoice.receipt || receiptId, totalAmount, baseFee, gstAmount, invoiceNumber };
+}
+
+// Create Razorpay order for client-side checkout flow
+app.post('/api/payment/create-order', async (req, res) => {
+  try {
+    const { name, email, phone, eventType } = req.body || {}
+    if (!name || !email || !phone || !eventType) {
+      return res.status(400).json({ success: false, message: 'name, email, phone and eventType are required' })
+    }
+
+    const normalizedEventType = eventType === 'specialtalent' ? 'talent-combined' : eventType
+    let baseAmount = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10)
+
+    const { data: setting } = await supabase
+      .from('form_settings')
+      .select('registration_fee_paise')
+      .eq('id', normalizedEventType)
+      .maybeSingle()
+
+    if (setting && setting.registration_fee_paise != null) {
+      baseAmount = parseInt(setting.registration_fee_paise, 10)
+    }
+
+    const gstAmount = Math.round(baseAmount * 18 / 100)
+    const totalAmount = baseAmount + gstAmount
+    const receiptId = `rcpt_${normalizedEventType}_${Date.now()}`.slice(0, 40)
+
+    const order = await razorpay.orders.create({
+      amount: totalAmount,
+      currency: 'INR',
+      receipt: receiptId,
+      notes: {
+        event_type: normalizedEventType,
+        payer_name: sanitizeText(name, 100),
+        payer_email: String(email).trim().toLowerCase(),
+        payer_phone: String(phone).trim(),
+        base_amount: String(baseAmount),
+        gst_amount: String(gstAmount),
+      },
+    })
+
+    const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`
+    await supabase.from('payments').insert([{
+      razorpay_order_id: order.id,
+      event_type: normalizedEventType,
+      amount: totalAmount,
+      base_amount: baseAmount,
+      gst_amount: gstAmount,
+      payer_name: sanitizeText(name, 100),
+      payer_email: String(email).trim().toLowerCase(),
+      payer_phone: String(phone).trim(),
+      receipt_id: receiptId,
+      invoice_number: invoiceNumber,
+      status: 'created',
+      registration_id: null,
+    }])
+
+    return res.json({
+      success: true,
+      keyId: process.env.RAZORPAY_KEY_ID,
+      orderId: order.id,
+      amount: totalAmount,
+      currency: 'INR',
+      baseAmount,
+      gstAmount,
+      receipt_id: receiptId,
+    })
+  } catch (err) {
+    await logError({ source: 'user', endpoint: '/api/payment/create-order', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    return res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+async function processSuccessfulPayment({ payment, orderId, paymentId, source }) {
+  console.log(`[${source}] processSuccessfulPayment invoked:`, {
+    paymentId: payment?.id,
+    eventType: payment?.event_type,
+    registrationId: payment?.registration_id,
+    orderId,
+    razorpayPaymentId: paymentId,
+    payerEmail: payment?.payer_email,
+    status: payment?.status,
+  })
+
+  if (!payment || !payment.registration_id) {
+    console.log(`[${source}] processSuccessfulPayment skipped - missing payment or registration_id`)
+    return
+  }
+
+  const tableMap = {
+    'innovation-college': 'innovation_college_registrations',
+    'innovation-pwd': 'innovation_pwd_registrations',
+    'talent-org': 'talent_organizations',
+    'talent-student': 'talent_nominations',
+    'talent-combined': 'talent_nominations',
+    'shortfilm': 'shortfilm_registrations',
+    'short-film': 'shortfilm_registrations',
+    'cricket': 'cricket_team_registrations',
+    'chess': 'blind_chess_registrations'
+  }
+
+  const table = tableMap[payment.event_type]
+  console.log(`[${source}] resolved registration table:`, table || 'none')
+  if (table) {
+    await supabase.from(table).update({ payment_status: 'paid' }).eq('id', payment.registration_id)
+    console.log(`[${source}] Registration marked paid in`, table)
+  }
+
+  try {
+    if (!table) return
+    const { data: reg } = await supabase.from(table).select('*').eq('id', payment.registration_id).single()
+    if (!reg) return
+
+    const et = payment.event_type
+    const paymentDetails = {
+      paymentStatus: 'Paid',
+      razorpayOrderId: orderId,
+      razorpayPaymentId: paymentId,
+    }
+
+    if (et === 'innovation-college') {
+      await sendInnovationCollegeConfirmation({
+        teamName: reg.team_name, collegeName: reg.college_name, theme: reg.theme,
+        ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
+        member1Name: reg.leader_name || reg.name, member1Email: reg.leader_email || reg.email, member1Phone: reg.leader_phone || reg.phone,
+        member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
+        member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
+        ...paymentDetails,
+      })
+    } else if (et === 'innovation-pwd') {
+      await sendInnovationPwdConfirmation({
+        participationType: reg.participation_type,
+        ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
+        member1Name: reg.name, member1Email: reg.email, member1Phone: reg.phone,
+        member1DisabilityType: reg.disability_type,
+        member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
+        member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
+        ...paymentDetails,
+      })
+    } else if (et === 'talent-org') {
+      await sendTalentOrgConfirmation({
+        orgName: reg.org_name, orgType: reg.org_type, orgFocus: reg.org_focus,
+        disabilityTypes: reg.disability_types ? JSON.parse(reg.disability_types) : [],
+        address: reg.address, studentCount: reg.student_count,
+        contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
+        ...paymentDetails,
+      })
+    } else if (et === 'talent-student' || et === 'talent-combined') {
+      await sendTalentStudentConfirmation({
+        orgName: reg.org_name, studentName: reg.student_name, studentAge: reg.student_age,
+        disabilityType: reg.disability_type, talentCategory: reg.talent_category,
+        talentDescription: reg.talent_desc,
+        guardianName: reg.guardian_name, guardianPhone: reg.guardian_phone,
+        guardianEmail: reg.guardian_email, videoLink: reg.video_link || reg.performance_url,
+        orgContactEmail: reg.contact_email || null,
+        orgContactName: reg.contact_name || null,
+        payerEmail: payment.payer_email || null,
+        ...paymentDetails,
+      })
+    } else if (et === 'cricket') {
+      await sendCricketConfirmation({
+        teamName: reg.team_name, city: reg.city, state: reg.state,
+        playerCount: reg.player_count, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
+        additionalInfo: reg.additional_info,
+        contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
+        ...paymentDetails,
+      })
+    } else if (et === 'chess') {
+      await sendChessConfirmation({
+        participantName: reg.participant_name, email: reg.email, phone: reg.phone,
+        age: reg.age, city: reg.city, state: reg.state,
+        disabilityType: reg.disability_type, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
+        experienceLevel: reg.experience_level, additionalInfo: reg.additional_info,
+      })
+    } else if (et === 'shortfilm' || et === 'short-film') {
+      await sendShortFilmConfirmation({
+        filmTitle: reg.film_title,
+        filmLanguage: reg.film_language,
+        duration: reg.duration,
+        genre: reg.genre,
+        participationType: reg.participation_type,
+        directorName: reg.director_name,
+        filmUrl: reg.film_url,
+        contactName: reg.contact_name,
+        contactEmail: reg.contact_email,
+        contactPhone: reg.contact_phone,
+        ...paymentDetails,
+      })
+    }
+
+    console.log(`[${source}] Confirmation email sent for ${et}`)
+  } catch (confErr) {
+    console.error(`[${source}] Failed to send confirmation email:`, confErr.message)
+  }
+}
+
+async function findPaymentByRazorpayRefs({ invoiceId, orderId, receiptId }) {
+  const orderCandidates = [invoiceId, orderId].filter(Boolean)
+
+  for (const candidate of orderCandidates) {
+    const { data } = await supabase
+      .from('payments')
+      .select('*')
+      .eq('razorpay_order_id', candidate)
+      .maybeSingle()
+
+    if (data) {
+      return { payment: data, matchKey: 'razorpay_order_id', matchValue: candidate }
+    }
+  }
+
+  if (receiptId) {
+    const { data } = await supabase
+      .from('payments')
+      .select('*')
+      .eq('receipt_id', receiptId)
+      .maybeSingle()
+
+    if (data) {
+      return { payment: data, matchKey: 'receipt_id', matchValue: receiptId }
+    }
+  }
+
+  return { payment: null, matchKey: null, matchValue: null }
+}
+
+async function findRegistrationByRazorpayRefs({ invoiceId, orderId }) {
+  const candidates = [invoiceId, orderId].filter(Boolean)
+  if (!candidates.length) return null
+
+  const sources = [
+    {
+      eventType: 'innovation-pwd',
+      table: 'innovation_pwd_registrations',
+      select: 'id, razorpay_order_id, name, email, phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.name, payerEmail: row.email, payerPhone: row.phone })
+    },
+    {
+      eventType: 'innovation-college',
+      table: 'innovation_college_registrations',
+      select: 'id, razorpay_order_id, leader_name, leader_email, leader_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.leader_name, payerEmail: row.leader_email, payerPhone: row.leader_phone })
+    },
+    {
+      eventType: 'talent-org',
+      table: 'talent_organizations',
+      select: 'id, razorpay_order_id, contact_name, contact_email, contact_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.contact_name, payerEmail: row.contact_email, payerPhone: row.contact_phone })
+    },
+    {
+      eventType: 'talent-combined',
+      table: 'talent_nominations',
+      select: 'id, razorpay_order_id, contact_name, contact_email, contact_phone, guardian_name, guardian_email, guardian_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.contact_name || row.guardian_name, payerEmail: row.contact_email || row.guardian_email, payerPhone: row.contact_phone || row.guardian_phone })
+    },
+    {
+      eventType: 'shortfilm',
+      table: 'shortfilm_registrations',
+      select: 'id, razorpay_order_id, contact_name, contact_email, contact_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.contact_name, payerEmail: row.contact_email, payerPhone: row.contact_phone })
+    },
+    {
+      eventType: 'short-film',
+      table: 'shortfilm_registrations',
+      select: 'id, razorpay_order_id, contact_name, contact_email, contact_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.contact_name, payerEmail: row.contact_email, payerPhone: row.contact_phone })
+    },
+    {
+      eventType: 'cricket',
+      table: 'cricket_team_registrations',
+      select: 'id, razorpay_order_id, contact_name, contact_email, contact_phone',
+      map: (row) => ({ registrationId: row.id, matchedOrderId: row.razorpay_order_id, payerName: row.contact_name, payerEmail: row.contact_email, payerPhone: row.contact_phone })
+    },
+  ]
+
+  for (const source of sources) {
+    const { data } = await supabase
+      .from(source.table)
+      .select(source.select)
+      .in('razorpay_order_id', candidates)
+      .maybeSingle()
+
+    if (data) return { eventType: source.eventType, ...source.map(data) }
+  }
+
+  return null
 }
 
 // Ã¢â€â‚¬Ã¢â€â‚¬ Razorpay Webhook Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), async (req, res) => {
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
   const signature = req.headers['x-razorpay-signature'];
-  
+
   if (!secret || !signature) return res.status(400).send('Missing signature or secret');
 
   try {
     const expectedSignature = crypto.createHmac('sha256', secret)
       .update(req.body)
       .digest('hex');
-      
+
     if (expectedSignature !== signature) {
       return res.status(400).send('Invalid signature');
     }
 
     const payload = JSON.parse(req.body.toString());
     console.log('[webhook] Event received:', payload.event);
-    
+
     if (payload.event === 'invoice.paid') {
       const invoice = payload.payload.invoice.entity;
-      const orderId = invoice.order_id;
-      const paymentId = invoice.payment_id;
-      
-      // Update payment record to paid
-      const { data: payment } = await supabase.from('payments').update({
+      const invoiceRef = invoice.id || invoice.order_id;
+      const orderId = invoice.order_id || null;
+      const paymentId = invoice.payment_id || payload?.payload?.payment?.entity?.id || null;
+      const receiptId = invoice.receipt || null;
+
+      const { payment: existingPayment, matchKey, matchValue } = await findPaymentByRazorpayRefs({
+        invoiceId: invoice.id,
+        orderId,
+        receiptId,
+      })
+
+      if (!existingPayment) {
+        console.error('[webhook] Payment record not found for invoice:', {
+          invoiceId: invoice.id,
+          orderId,
+          receiptId,
+        })
+        return res.json({ status: 'ok' })
+      }
+
+      if (existingPayment.status === 'paid') {
+        console.log('[webhook] Payment already marked paid, skipping duplicate processing:', {
+          paymentId: existingPayment.id,
+          invoiceId: invoice.id,
+        })
+        return res.json({ status: 'ok' })
+      }
+
+      // Update payment record to paid (idempotent: only if still in created state)
+      const { data: payment, error: paymentUpdateError } = await supabase.from('payments').update({
         status: 'paid',
         razorpay_payment_id: paymentId,
-        payment_method: paymentId ? 'razorpay' : null,
-      }).eq('razorpay_order_id', orderId).select().single();
-      
-      console.log('[webhook] Payment record updated:', payment?.id, '| event_type:', payment?.event_type);
-      
-      if (payment && payment.registration_id) {
-        const tableMap = {
-          'innovation-college': 'innovation_college_registrations',
-          'innovation-pwd':     'innovation_pwd_registrations',
-          'talent-org':         'talent_organizations',
-          'talent-student':     'talent_nominations',
-          'talent-combined':    'talent_nominations',
-          'short-film':         'shortfilm_registrations',
-          'cricket':            'cricket_team_registrations',
-          'chess':              'blind_chess_registrations'
-        };
-        const table = tableMap[payment.event_type];
-        if (table) {
-          await supabase.from(table).update({ payment_status: 'paid' }).eq('id', payment.registration_id);
-          console.log('[webhook] Registration marked paid in', table);
-        }
+        razorpay_signature: signature,
+        receipt_id: receiptId,
+      }).eq(matchKey, matchValue).eq('status', 'created').select().maybeSingle();
 
-        // ── Send GST invoice email ──────────────────────────────────────────
-        try {
-          await sendGSTInvoiceEmail({
-            payerName:        payment.payer_name,
-            payerEmail:       payment.payer_email,
-            payerPhone:       payment.payer_phone,
-            eventType:        payment.event_type,
-            baseAmount:       payment.base_amount,
-            gstAmount:        payment.gst_amount,
-            totalAmount:      payment.amount,
-            razorpayOrderId:  orderId,
-            razorpayPaymentId: paymentId,
-            invoiceDate:      new Date().toISOString(),
-            invoiceNumber:    payment.invoice_number,
-          });
-          console.log(`[webhook] GST invoice email sent to ${payment.payer_email}`);
-        } catch (emailErr) {
-          console.error('[webhook] Failed to send GST invoice email:', emailErr.message);
-        }
-
-        // ── Send event-specific confirmation email ──────────────────────────
-        try {
-          if (table) {
-            const { data: reg } = await supabase.from(table).select('*').eq('id', payment.registration_id).single();
-            if (reg) {
-              const et = payment.event_type;
-              const paymentDetails = {
-                paymentStatus: 'Paid',
-                razorpayOrderId: orderId,
-                razorpayPaymentId: paymentId,
-              };
-
-              if (et === 'innovation-college') {
-                await sendInnovationCollegeConfirmation({
-                  teamName: reg.team_name, collegeName: reg.college_name, theme: reg.theme,
-                  ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
-                  member1Name: reg.name, member1Email: reg.email, member1Phone: reg.phone,
-                  member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
-                  member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
-                  ...paymentDetails,
-                });
-
-              } else if (et === 'innovation-pwd') {
-                await sendInnovationPwdConfirmation({
-                  participationType: reg.participation_type,
-                  ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
-                  member1Name: reg.name, member1Email: reg.email, member1Phone: reg.phone,
-                  member1DisabilityType: reg.disability_type,
-                  member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
-                  member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
-                  ...paymentDetails,
-                });
-
-              } else if (et === 'talent-org') {
-                await sendTalentOrgConfirmation({
-                  orgName: reg.org_name, orgType: reg.org_type, orgFocus: reg.org_focus,
-                  disabilityTypes: reg.disability_types ? JSON.parse(reg.disability_types) : [],
-                  address: reg.address, studentCount: reg.student_count,
-                  contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
-                  ...paymentDetails,
-                });
-
-              } else if (et === 'talent-student' || et === 'talent-combined') {
-                await sendTalentStudentConfirmation({
-                  orgName: reg.org_name, studentName: reg.student_name, studentAge: reg.student_age,
-                  disabilityType: reg.disability_type, talentCategory: reg.talent_category,
-                  talentDescription: reg.talent_desc,
-                  guardianName: reg.guardian_name, guardianPhone: reg.guardian_phone,
-                  guardianEmail: reg.guardian_email, videoLink: reg.video_link,
-                  orgContactEmail: reg.contact_email || null,
-                  orgContactName: reg.contact_name || null,
-                  ...paymentDetails,
-                });
-
-              } else if (et === 'cricket') {
-                await sendCricketConfirmation({
-                  teamName: reg.team_name, city: reg.city, state: reg.state,
-                  playerCount: reg.player_count, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
-                  additionalInfo: reg.additional_info,
-                  contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
-                  ...paymentDetails,
-                });
-
-              } else if (et === 'chess') {
-                await sendChessConfirmation({
-                  participantName: reg.participant_name, email: reg.email, phone: reg.phone,
-                  age: reg.age, city: reg.city, state: reg.state,
-                  disabilityType: reg.disability_type, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
-                  experienceLevel: reg.experience_level, additionalInfo: reg.additional_info,
-                });
-              }
-              console.log(`[webhook] Confirmation email sent for ${et}`);
-            }
-          }
-        } catch (confErr) {
-          console.error('[webhook] Failed to send confirmation email:', confErr.message);
+      if (paymentUpdateError) {
+        console.error('[webhook] Failed to update payment record:', paymentUpdateError.message, '| invoice_ref:', invoiceRef);
+      }
+      if (!payment) {
+        const { data: latest } = await supabase.from('payments').select('*').eq(matchKey, matchValue).maybeSingle()
+        if (latest?.status === 'paid') {
+          console.log('[webhook] Payment already updated by another request, skipping duplicate confirmation')
+          return res.json({ status: 'ok' })
         }
       }
+
+      console.log('[webhook] Payment record updated:', payment?.id || 'not-found', '| event_type:', payment?.event_type || 'unknown', '| invoice_ref:', invoiceRef, '| matched_by:', `${matchKey}:${matchValue}`);
+
+      const effectiveOrderId = payment?.razorpay_order_id || existingPayment?.razorpay_order_id || orderId || invoiceRef
+      await processSuccessfulPayment({ payment: payment || existingPayment, orderId: effectiveOrderId, paymentId, source: 'webhook' })
     }
-    
+
     res.json({ status: 'ok' });
   } catch (err) {
     console.error('Webhook error:', err);
     res.status(500).send('Error handling webhook');
   }
 });
+
+app.post('/api/payment/verify', async (req, res) => {
+  const { razorpay_invoice_id: invoiceId, razorpay_payment_id: paymentIdFromClient } = req.body || {}
+  console.log('[verify] Incoming request:', {
+    invoiceId,
+    paymentIdFromClient,
+    userAgent: req.headers['user-agent'],
+    ip: req.ip,
+  })
+  if (!invoiceId) return res.status(400).json({ success: false, message: 'razorpay_invoice_id is required' })
+
+  try {
+    const invoice = await razorpay.invoices.fetch(invoiceId)
+    console.log('[verify] Razorpay invoice fetched:', {
+      id: invoice?.id,
+      status: invoice?.status,
+      orderId: invoice?.order_id,
+      paymentId: invoice?.payment_id,
+      amountPaid: invoice?.amount_paid,
+      receipt: invoice?.receipt,
+    })
+    if (!invoice) return res.status(404).json({ success: false, message: 'Invoice not found' })
+
+    const isPaid = invoice.status === 'paid' || Number(invoice.amount_paid || 0) > 0
+    if (!isPaid) {
+      return res.status(409).json({ success: false, message: 'Payment not completed yet', invoice_status: invoice.status })
+    }
+
+    const invoiceRef = invoice.id || invoice.order_id || invoiceId
+    const orderId = invoice.order_id || null
+    const paymentId = paymentIdFromClient || invoice.payment_id || null
+    const receiptId = invoice.receipt || null
+
+    let { payment: existing, matchKey, matchValue } = await findPaymentByRazorpayRefs({
+      invoiceId: invoice.id,
+      orderId,
+      receiptId,
+    })
+
+    console.log('[verify] Payment record lookup result:', {
+      found: Boolean(existing),
+      paymentId: existing?.id,
+      eventType: existing?.event_type,
+      registrationId: existing?.registration_id,
+      status: existing?.status,
+      payerEmail: existing?.payer_email,
+      matchKey,
+      matchValue,
+    })
+
+    let recoveredMissingRegistration = false
+    if (existing && !existing.registration_id) {
+      const fallbackReg = await findRegistrationByRazorpayRefs({ invoiceId: invoice.id, orderId })
+      console.log('[verify] Missing registration_id fallback lookup:', fallbackReg)
+
+      if (fallbackReg?.registrationId) {
+        const { data: patchedPayment, error: patchError } = await supabase
+          .from('payments')
+          .update({
+            registration_id: fallbackReg.registrationId,
+            event_type: existing.event_type || fallbackReg.eventType,
+          })
+          .eq('id', existing.id)
+          .select()
+          .maybeSingle()
+
+        if (patchError) {
+          console.error('[verify] Failed to patch missing registration_id:', patchError.message)
+        } else if (patchedPayment?.registration_id) {
+          existing = patchedPayment
+          matchKey = 'id'
+          matchValue = existing.id
+          recoveredMissingRegistration = true
+          console.log('[verify] Patched payment with registration_id:', {
+            paymentId: existing.id,
+            registrationId: existing.registration_id,
+            eventType: existing.event_type,
+          })
+        }
+      }
+    }
+
+    if (existing && existing.status === 'paid') {
+      if (recoveredMissingRegistration && existing.registration_id) {
+        const effectiveOrderId = existing.razorpay_order_id || orderId || invoiceRef
+        await processSuccessfulPayment({ payment: existing, orderId: effectiveOrderId, paymentId, source: 'verify' })
+        console.log('[verify] Recovered paid payment with registration_id and triggered confirmation flow')
+        return res.json({ success: true, message: 'Payment already verified; confirmation triggered' })
+      }
+
+      console.log('[verify] Payment already processed, skipping duplicate confirmation:', {
+        paymentId: existing.id,
+        invoiceId: invoice.id,
+      })
+      return res.json({ success: true, message: 'Payment already verified' })
+    }
+
+    if (!existing) {
+      const fallbackReg = await findRegistrationByRazorpayRefs({ invoiceId: invoice.id, orderId })
+      console.log('[verify] Registration fallback lookup:', fallbackReg)
+
+      if (!fallbackReg) {
+        return res.status(404).json({ success: false, message: 'Payment record not found for this invoice' })
+      }
+
+      const totalAmount = Number(invoice.amount || invoice.amount_paid || 0)
+      let baseAmount = Math.round(totalAmount * 100 / 118)
+      let gstAmount = totalAmount - baseAmount
+
+      if (Array.isArray(invoice.line_items) && invoice.line_items.length) {
+        let baseFromItems = 0
+        let gstFromItems = 0
+        invoice.line_items.forEach((item) => {
+          const amt = Number(item?.amount || 0)
+          if (/gst/i.test(String(item?.name || ''))) gstFromItems += amt
+          else baseFromItems += amt
+        })
+        if (baseFromItems + gstFromItems > 0) {
+          baseAmount = baseFromItems
+          gstAmount = gstFromItems
+        }
+      }
+
+      const paymentRow = {
+        razorpay_order_id: fallbackReg.matchedOrderId || orderId || invoiceRef,
+        razorpay_payment_id: paymentId,
+        event_type: fallbackReg.eventType,
+        amount: totalAmount,
+        base_amount: baseAmount,
+        gst_amount: gstAmount,
+        payer_name: fallbackReg.payerName || null,
+        payer_email: fallbackReg.payerEmail || null,
+        payer_phone: fallbackReg.payerPhone || null,
+        receipt_id: receiptId,
+        invoice_number: `VYG-${Date.now().toString().slice(-8)}`,
+        status: 'paid',
+        registration_id: fallbackReg.registrationId,
+      }
+
+      const { data: insertedPayment, error: insertedPaymentError } = await supabase
+        .from('payments')
+        .insert([paymentRow])
+        .select()
+        .maybeSingle()
+
+      if (insertedPaymentError) {
+        console.error('[verify] Failed to backfill payment row:', insertedPaymentError.message)
+        return res.status(500).json({ success: false, message: insertedPaymentError.message })
+      }
+
+      existing = insertedPayment || paymentRow
+      matchKey = 'razorpay_order_id'
+      matchValue = existing.razorpay_order_id
+      console.log('[verify] Backfilled payment row:', { id: existing?.id, eventType: existing?.event_type, registrationId: existing?.registration_id, orderId: existing?.razorpay_order_id })
+    }
+
+    const updatePayload = {
+      status: 'paid',
+      razorpay_payment_id: paymentId,
+      receipt_id: receiptId,
+      registration_id: existing?.registration_id || null,
+    }
+
+    const { data: payment, error: paymentUpdateError } = await supabase.from('payments').update(updatePayload)
+      .eq(matchKey, matchValue)
+      .eq('status', 'created')
+      .select()
+      .maybeSingle()
+
+    console.log('[verify] Payment update result:', {
+      error: paymentUpdateError?.message || null,
+      paymentId: payment?.id,
+      status: payment?.status,
+      registrationId: payment?.registration_id,
+      payerEmail: payment?.payer_email,
+    })
+
+    if (paymentUpdateError) {
+      return res.status(500).json({ success: false, message: paymentUpdateError.message })
+    }
+
+    if (!payment) {
+      const { data: latest } = await supabase.from('payments').select('*').eq(matchKey, matchValue).maybeSingle()
+      if (latest?.status === 'paid') {
+        console.log('[verify] Payment was already updated by another request, skipping duplicate confirmation')
+        return res.json({ success: true, message: 'Payment already verified' })
+      }
+      return res.status(409).json({ success: false, message: 'Unable to finalize payment update' })
+    }
+
+    const effectiveOrderId = payment?.razorpay_order_id || existing?.razorpay_order_id || orderId || invoiceRef
+    await processSuccessfulPayment({ payment: payment || existing, orderId: effectiveOrderId, paymentId, source: 'verify' })
+    console.log('[verify] Completed verify flow successfully')
+    return res.json({ success: true, message: 'Payment verified and emails triggered' })
+  } catch (err) {
+    console.error('[verify] verify flow failed:', { message: err?.message, stack: err?.stack })
+    await logError({ source: 'user', endpoint: '/api/payment/verify', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    return res.status(500).json({ success: false, message: err.message })
+  }
+})
 
 
 
@@ -664,7 +1096,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
         prototype_image_path: protoImagePath,
         ppt_file_path: pptFilePath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: invoiceInfo.invoice.order_id,
+        razorpay_order_id: invoiceInfo.invoiceRef,
         razorpay_payment_id: null,
         payment_status: 'pending'
       }])
@@ -677,48 +1109,28 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
     }
 
     // Insert payment record
-
-
-    supabase.from('payments').insert([{
-
-
-      razorpay_order_id: invoiceInfo.invoice.order_id,
-
-
+    const { error: paymentInsertErrorCollege } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
       event_type: 'innovation-college',
-
-
       amount: invoiceInfo.totalAmount,
-
-
       base_amount: invoiceInfo.baseFee,
-
-
       gst_amount: invoiceInfo.gstAmount,
-
-
       payer_name: member1Name,
-
-
       payer_email: member1Email,
-
-
       payer_phone: member1Phone,
-
-
+      receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
-
-
       status: 'created',
-
-
       registration_id: data.id
+    }])
 
-
-    }]).then();
+    if (paymentInsertErrorCollege) {
+      console.error('[innovation-college] Payment insert failed:', paymentInsertErrorCollege.message)
+      await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorCollege.message}`, req })
+    }
 
     // Confirmation email will be sent by webhook after payment is completed
-    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -779,7 +1191,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
     if (req.files && req.files['prototypeImage']) {
       const file = req.files['prototypeImage'][0]
       if (!isValidImageBuffer(file.buffer)) {
-         return res.status(400).json({ success: false, message: 'Uploaded prototype file is not a valid image' })
+        return res.status(400).json({ success: false, message: 'Uploaded prototype file is not a valid image' })
       }
     }
     // (Optional: Add buffer validation for UDID if strict check needed, skipping for PDF complexity)
@@ -794,7 +1206,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
     const sM1Name = sanitizeText(member1Name, 100)
     const sM1Email = member1Email.trim().toLowerCase()
     const sM1Phone = member1Phone.trim()
-    
+
     // Handle disability types as array
     let disabilityTypes = []
     if (Array.isArray(member1DisabilityType)) {
@@ -802,13 +1214,13 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
     } else if (typeof member1DisabilityType === 'string' && member1DisabilityType) {
       disabilityTypes = [member1DisabilityType]
     }
-    
-    const processedDisabilities = disabilityTypes.map(type => 
-      String(type).toLowerCase() === 'other' 
-        ? sanitizeText(member1DisabilityTypeOther, 100) 
+
+    const processedDisabilities = disabilityTypes.map(type =>
+      String(type).toLowerCase() === 'other'
+        ? sanitizeText(member1DisabilityTypeOther, 100)
         : sanitizeText(type, 100)
     ).filter(Boolean)
-    
+
     const sDisability = processedDisabilities.join(', ')
 
     const members = []
@@ -865,7 +1277,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         ppt_file_path: pptFilePath,
         udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: invoiceInfo.invoice.order_id,
+        razorpay_order_id: invoiceInfo.invoiceRef,
         razorpay_payment_id: null,
         payment_status: 'pending'
       }])
@@ -878,9 +1290,8 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
     }
 
     // Insert payment record
-
-    supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoice.order_id,
+    const { error: paymentInsertErrorPwd } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
       event_type: 'innovation-pwd',
       amount: invoiceInfo.totalAmount,
       base_amount: invoiceInfo.baseFee,
@@ -888,13 +1299,19 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       payer_name: member1Name,
       payer_email: member1Email,
       payer_phone: member1Phone,
+      receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
       status: 'created',
       registration_id: data.id
-    }]).then();
+    }])
+
+    if (paymentInsertErrorPwd) {
+      console.error('[innovation-pwd] Payment insert failed:', paymentInsertErrorPwd.message)
+      await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorPwd.message}`, req })
+    }
 
     // Confirmation email will be sent by webhook after payment is completed
-    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -973,7 +1390,7 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
         contact_name: sanitizeText(contactName, 100),
         contact_email: contactEmail.trim().toLowerCase(),
         contact_phone: contactPhone.trim(),
-        razorpay_order_id: invoiceInfo.invoice.order_id,
+        razorpay_order_id: invoiceInfo.invoiceRef,
         payment_status: 'pending',
       }])
       .select()
@@ -988,8 +1405,8 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
     }
 
     // Insert payment record
-    supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoice.order_id,
+    const { error: paymentInsertErrorTalentOrg } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
       event_type: 'talent-org',
       amount: invoiceInfo.totalAmount,
       base_amount: invoiceInfo.baseFee,
@@ -997,13 +1414,19 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       payer_name: contactName,
       payer_email: contactEmail,
       payer_phone: contactPhone,
+      receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
       status: 'created',
       registration_id: data.id
-    }]).then();
+    }])
+
+    if (paymentInsertErrorTalentOrg) {
+      console.error('[talent-org] Payment insert failed:', paymentInsertErrorTalentOrg.message)
+      await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorTalentOrg.message}`, req })
+    }
 
     // Confirmation email will be sent by webhook after payment is completed
-    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1018,11 +1441,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl, social
     } = req.body
 
-    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
-    }
+    const normalizedGradeCategory = normalizeGradeCategory(gradeCategory) || '1-5'
 
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
@@ -1031,7 +1450,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       { field: 'studentAge', check: isValidInt(studentAge, 1, 120), msg: 'must be a number 1Î“Ã‡Ã´120' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
-      { field: 'gradeCategory', check: gradeCategory && ['1Î“Ã‡Ã´5', '6Î“Ã‡Ã´8', '9Î“Ã‡Ã´12'].includes(gradeCategory), msg: 'must be 1Î“Ã‡Ã´5, 6Î“Ã‡Ã´8, or 9Î“Ã‡Ã´12' },
+      { field: 'gradeCategory', check: Boolean(normalizedGradeCategory), msg: 'must be 1-5, 6-8, or 9-12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'guardianName', check: guardianName && sanitizeText(guardianName, 100).length > 0, msg: 'required' },
       { field: 'guardianPhone', check: isValidPhone(guardianPhone), msg: 'must be exactly 10 digits' },
@@ -1058,13 +1477,13 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       } else if (typeof disabilityType === 'string' && disabilityType) {
         disabilityTypes = [disabilityType]
       }
-      
-      const processedDisabilities = disabilityTypes.map(type => 
-        String(type).toLowerCase() === 'other' 
-          ? sanitizeText(disabilityTypeOther, 100) 
+
+      const processedDisabilities = disabilityTypes.map(type =>
+        String(type).toLowerCase() === 'other'
+          ? sanitizeText(disabilityTypeOther, 100)
           : sanitizeText(type, 100)
       ).filter(Boolean)
-      
+
       return processedDisabilities.join(', ')
     })()
     const effectiveTalentCategory = String(talentCategory).toLowerCase() === 'other'
@@ -1103,12 +1522,11 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
         student_age: parseInt(studentAge, 10),
         disability_type: effectiveDisability,
         talent_category: effectiveTalentCategory,
-        grade_category: gradeCategory,
+        grade_category: normalizedGradeCategory,
         talent_desc: talentDescription ? sanitizeText(talentDescription, 2000) : null,
         guardian_name: sanitizeText(guardianName, 100),
         guardian_phone: guardianPhone.trim(),
         guardian_email: guardianEmail ? guardianEmail.trim().toLowerCase() : null,
-        video_link: videoLink ? videoLink.trim() : '',
         video_file_path: videoFileName,
         performance_url: performanceUrl ? performanceUrl.trim() : null,
         social_media_link: social ? social.trim() : null,
@@ -1166,21 +1584,23 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     console.log('Nomination type:', req.body.nominationType)
     console.log('orgDisabilityTypes received:', req.body.orgDisabilityTypes, 'Type:', typeof req.body.orgDisabilityTypes)
     console.log('orgDisabilityFocus received:', req.body.orgDisabilityFocus)
-    
+
     const {
       // Organization details
       orgName, orgAddress, orgCity, orgState, orgZip, orgSize, orgDisabilityFocus, orgDisabilityTypes,
       contactName, contactDesignation, contactPhone, contactEmail,
-      
+
       // Nomination details
       nominationType, teamSize, teamMembers,
-      
+
       // Student/team details
       studentName, studentAge, disabilityType, disabilityTypeOther,
       talentCategory, talentCategoryOther, talentDescription, gradeCategory,
       guardianName, guardianPhone, guardianEmail,
       videoLink, performanceUrl, social
     } = req.body
+
+    const normalizedGradeCategory = normalizeGradeCategory(gradeCategory) || '1-5'
 
     // Parse orgDisabilityTypes if it's a JSON string
     let parsedOrgDisabilityTypes = orgDisabilityTypes
@@ -1196,12 +1616,6 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     }
     console.log('Parsed orgDisabilityTypes:', parsedOrgDisabilityTypes)
 
-    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
-    }
-
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       // Organization validation
@@ -1214,16 +1628,19 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactPhone', check: contactPhone && /^\d{10}$/.test(contactPhone), msg: 'must be exactly 10 digits' },
       { field: 'contactEmail', check: contactEmail && isValidEmail(contactEmail), msg: 'invalid email' },
-      
+
       // Nomination validation
       { field: 'nominationType', check: nominationType && ['individual', 'team'].includes(nominationType), msg: 'must be individual or team' },
-      
+
       // Talent details (common)
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
-      { field: 'gradeCategory', check: gradeCategory && ['1Î“Ã‡Ã´5', '6Î“Ã‡Ã´8', '9Î“Ã‡Ã´12'].includes(gradeCategory), msg: 'must be 1Î“Ã‡Ã´5, 6Î“Ã‡Ã´8, or 9Î“Ã‡Ã´12' },
+      { field: 'gradeCategory', check: Boolean(normalizedGradeCategory), msg: 'must be 1-5, 6-8, or 9-12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
-      { field: 'videoFile', check: req.file || videoLink || performanceUrl, msg: 'video file, video link, or performance URL is required' }
+      { field: 'performanceUrl', check: performanceUrl && isValidURL(performanceUrl), msg: 'public Google Drive link is required' }
     ])
+    if (performanceUrl && !String(performanceUrl).includes('drive.google.com')) {
+      errors.push({ field: 'performanceUrl', msg: 'must be a Google Drive link' })
+    }
 
     // Individual nomination validation
     if (nominationType === 'individual') {
@@ -1242,12 +1659,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       try {
         const teamMembersData = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : teamMembers
         console.log('â‰¡Æ’Ã¶Ã¬ Debug - Raw team members data received:', JSON.stringify(teamMembersData, null, 2))
-        
+
         errors.push(...validate([
           { field: 'teamSize', check: teamSize && Number.isInteger(+teamSize) && +teamSize >= 2 && +teamSize <= 10, msg: 'team size must be 2-10 members' },
           { field: 'teamMembers', check: teamMembersData && Array.isArray(teamMembersData) && teamMembersData.length == +teamSize, msg: 'team members count must match team size' }
         ]))
-        
+
         // Validate each team member
         if (teamMembersData && Array.isArray(teamMembersData)) {
           teamMembersData.forEach((member, index) => {
@@ -1277,8 +1694,15 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
 
     console.log('Validation passed')
 
+    const invoiceInfo = await createRazorpayInvoice({
+      eventType: 'talent-combined',
+      name: contactName,
+      email: contactEmail,
+      phone: contactPhone,
+    })
+
     // Validate and sanitize URLs if provided
-    const sanitizedPerformanceUrl = performanceUrl && performanceUrl.trim() ? 
+    const sanitizedPerformanceUrl = performanceUrl && performanceUrl.trim() ?
       (isValidURL(performanceUrl.trim()) ? performanceUrl.trim() : null) : null
 
     // Process disability types (handle both arrays and single values)
@@ -1286,7 +1710,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     if (Array.isArray(disabilityType)) {
       processedDisabilityType = disabilityType.join(', ')
     }
-    
+
     // Add "Other" specification if needed
     if (disabilityType?.includes('Other') && disabilityTypeOther) {
       processedDisabilityType = processedDisabilityType.replace('Other', `Other: ${sanitizeText(disabilityTypeOther, 100)}`)
@@ -1312,7 +1736,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'upload_error', message: `ffmpeg compression error: ${e.message}`, req })
       }
     }
-    
+
     // Store only the filename (not the full path)
     const videoFileName = videoFilePath ? path.basename(videoFilePath) : null
 
@@ -1324,8 +1748,8 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         processedTeamMembers = teamMembersData.map(member => ({
           name: sanitizeText(member.name, 100),
           age: parseInt(member.age),
-          disabilityType: Array.isArray(member.disabilityType) ? 
-            member.disabilityType.join(', ') : 
+          disabilityType: Array.isArray(member.disabilityType) ?
+            member.disabilityType.join(', ') :
             sanitizeText(member.disabilityType, 200),
           disabilityTypeOther: member.disabilityTypeOther ? sanitizeText(member.disabilityTypeOther, 100) : null,
           guardianName: member.guardianName ? sanitizeText(member.guardianName, 100) : null,
@@ -1353,30 +1777,31 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         contact_designation: contactDesignation ? sanitizeText(contactDesignation, 100) : null,
         contact_phone: contactPhone,
         contact_email: contactEmail.toLowerCase(),
-        
+
         // Nomination details
         nomination_type: nominationType,
         team_size: nominationType === 'team' ? parseInt(teamSize) : 1,
         team_members: processedTeamMembers,
-        
+
         // Student/team leader details (for individual nominations)
         student_name: nominationType === 'individual' ? sanitizeText(studentName, 100) : 'Team Nomination',
         student_age: nominationType === 'individual' ? parseInt(studentAge) : null,
         disability_type: nominationType === 'individual' ? processedDisabilityType : 'Multiple (Team)',
         talent_category: processedTalentCategory,
-        grade_category: gradeCategory,
+        grade_category: normalizedGradeCategory,
         talent_desc: talentDescription ? sanitizeText(talentDescription, 500) : null,
         guardian_name: nominationType === 'individual' ? sanitizeText(guardianName, 100) : null,
         guardian_phone: nominationType === 'individual' ? guardianPhone : null,
         guardian_email: nominationType === 'individual' && guardianEmail ? guardianEmail.toLowerCase() : null,
-        video_link: videoLink ? sanitizeText(videoLink, 500) : null,
         video_file_path: videoFileName,
         performance_url: sanitizedPerformanceUrl,
         social_media_link: social ? social.trim() : null,
-        razorpay_order_id: req.body.razorpay_order_id,
-        razorpay_payment_id: req.body.razorpay_payment_id,
-        payment_status: 'paid'
+        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_payment_id: null,
+        payment_status: 'pending'
       }])
+      .select()
+      .single()
 
     if (error) {
       console.log('Î“Â¥Ã® Database error:', error.message)
@@ -1384,63 +1809,34 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Update payment record
-    supabase.from('payments').update({
-      status: 'paid',
-      razorpay_payment_id: req.body.razorpay_payment_id,
-      razorpay_signature: req.body.razorpay_signature,
-      registration_id: data ? data[0]?.id : null
-    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+    const { error: combinedPaymentInsertError } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
+      event_type: 'talent-combined',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: contactName,
+      payer_email: contactEmail,
+      payer_phone: contactPhone,
+      receipt_id: invoiceInfo.receiptId,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
+      registration_id: data?.id || null
+    }])
 
-    // Fetch payment record for invoice
-    supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
-      .eq('razorpay_order_id', req.body.razorpay_order_id)
-      .maybeSingle()
-      .then(({ data: payRec }) => {
-        if (payRec && payRec.payer_email) {
-          sendGSTInvoiceEmail({
-            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
-            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
-            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
-            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
-          })
-        }
-      })
-
-    console.log('Database insertion successful')
-
-    // Send confirmation emails
-    console.log('â‰¡Æ’Ã´Âº Sending confirmation emails...')
-    try {
-      if (nominationType === 'individual') {
-        sendTalentStudentConfirmation({
-          orgName, studentName, studentAge, disabilityType: processedDisabilityType,
-          talentCategory: processedTalentCategory, talentDescription,
-          guardianName, guardianPhone, guardianEmail, videoLink: null,
-          orgContactEmail: contactEmail,
-          orgContactName: contactName,
-          paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
-        })
-      } else {
-        // For team nominations, send email to organization contact
-        sendTalentStudentConfirmation({
-          orgName, studentName: `Team (${teamSize} members)`, studentAge: null, 
-          disabilityType: 'Multiple (Team)', talentCategory: processedTalentCategory, 
-          talentDescription, guardianName: null, guardianPhone: null, guardianEmail: null,
-          videoLink: null, orgContactEmail: contactEmail, orgContactName: contactName,
-          paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
-        })
-      }
-      console.log('Emails sent successfully')
-    } catch (emailErr) {
-      console.log('Î“ÃœÃ¡âˆ©â••Ã… Email error (non-critical):', emailErr.message)
-      await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    if (combinedPaymentInsertError) {
+      console.error('[talent-combined] Payment insert failed:', combinedPaymentInsertError.message)
+      await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${combinedPaymentInsertError.message}`, req })
     }
 
-    console.log('Form submission completed successfully')
-    res.status(201).json({ success: true, data })
+    console.log('Database insertion successful')
+    res.status(201).json({
+      success: true,
+      data,
+      invoice_link: invoiceInfo.invoice.short_url,
+      invoice_id: invoiceInfo.invoice.id,
+      receipt_id: invoiceInfo.receiptId,
+    })
   } catch (err) {
     console.log('Î“Â¥Ã® Unexpected error:', err.message)
     console.log('Stack trace:', err.stack)
@@ -1462,26 +1858,29 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
     } = req.body
 
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
-    }
-
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
-      { field: 'filmTitle',             check: filmTitle && sanitizeText(filmTitle, 200).length > 0,               msg: 'required, max 200 chars' },
-      { field: 'genre',                 check: genre && sanitizeText(genre, 100).length > 0,                       msg: 'required' },
-      { field: 'duration',              check: isValidInt(duration, 1, 3),                                         msg: 'must be 1Î“Ã‡Ã´3 minutes (strict event rule)' },
-      { field: 'synopsis',              check: synopsis && sanitizeText(synopsis, 2000).length > 0,                msg: 'required, max 2000 chars' },
-      { field: 'filmUrl',               check: filmUrl && isValidURL(filmUrl),                                     msg: 'must be a valid http/https URL' },
-      { field: 'participationType',     check: isValidEnum(participationType, ['individual', 'team']),             msg: 'must be individual or team' },
-      { field: 'hasSubtitles',          check: hasSubtitles === true || hasSubtitles === 'true',                   msg: 'subtitles/captions are mandatory for this event' },
-      { field: 'hasAudioDescription',   check: hasAudioDescription === true || hasAudioDescription === 'true',     msg: 'audio description is mandatory for this event' },
-      { field: 'directorName',          check: directorName && sanitizeText(directorName, 100).length > 0,         msg: 'required' },
-      { field: 'contactName',           check: contactName && sanitizeText(contactName, 100).length > 0,           msg: 'required' },
-      { field: 'contactEmail',          check: isValidEmail(contactEmail),                                         msg: 'invalid email' },
-      { field: 'contactPhone',          check: isValidPhone(contactPhone),                                         msg: 'must be exactly 10 digits' },
+      { field: 'filmTitle', check: filmTitle && sanitizeText(filmTitle, 200).length > 0, msg: 'required, max 200 chars' },
+      { field: 'genre', check: genre && sanitizeText(genre, 100).length > 0, msg: 'required' },
+      { field: 'duration', check: isValidInt(duration, 1, 3), msg: 'must be 1Î“Ã‡Ã´3 minutes (strict event rule)' },
+      { field: 'synopsis', check: synopsis && sanitizeText(synopsis, 2000).length > 0, msg: 'required, max 2000 chars' },
+      { field: 'filmUrl', check: filmUrl && isValidURL(filmUrl), msg: 'must be a valid http/https URL' },
+      { field: 'participationType', check: isValidEnum(participationType, ['individual', 'team']), msg: 'must be individual or team' },
+      { field: 'hasSubtitles', check: hasSubtitles === true || hasSubtitles === 'true', msg: 'subtitles/captions are mandatory for this event' },
+      { field: 'hasAudioDescription', check: hasAudioDescription === true || hasAudioDescription === 'true', msg: 'audio description is mandatory for this event' },
+      { field: 'directorName', check: directorName && sanitizeText(directorName, 100).length > 0, msg: 'required' },
+      { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
+      { field: 'contactEmail', check: isValidEmail(contactEmail), msg: 'invalid email' },
+      { field: 'contactPhone', check: isValidPhone(contactPhone), msg: 'must be exactly 10 digits' },
     ])
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
+
+    const invoiceInfo = await createRazorpayInvoice({
+      eventType: 'shortfilm',
+      name: contactName,
+      email: contactEmail,
+      phone: contactPhone,
+    })
 
     // Parse and validate team members (only for team participation)
     let parsedTeamMembers = null
@@ -1501,26 +1900,26 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
     const { data, error } = await supabase
       .from('shortfilm_registrations')
       .insert([{
-        film_title:             sanitizeText(filmTitle, 200),
-        genre:                  sanitizeText(genre, 100),
-        duration:               parseInt(duration, 10),
-        synopsis:               sanitizeText(synopsis, 2000),
-        film_url:               filmUrl.trim(),
-        film_language:          filmLanguage ? sanitizeText(filmLanguage, 100) : null,
-        participation_type:     participationType.trim(),
-        team_members:           parsedTeamMembers,
-        has_subtitles:          hasSubtitles === true || hasSubtitles === 'true',
-        has_audio_description:  hasAudioDescription === true || hasAudioDescription === 'true',
-        director_name:          sanitizeText(directorName, 100),
-        team_name:              teamName ? sanitizeText(teamName, 200) : null,
-        college_name:           collegeName ? sanitizeText(collegeName, 200) : null,
-        contact_name:           sanitizeText(contactName, 100),
-        contact_email:          contactEmail.trim().toLowerCase(),
-        contact_phone:          contactPhone.trim(),
-        additional_info:        additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
-        razorpay_order_id:      req.body.razorpay_order_id,
-        razorpay_payment_id:    req.body.razorpay_payment_id,
-        payment_status:         'paid'
+        film_title: sanitizeText(filmTitle, 200),
+        genre: sanitizeText(genre, 100),
+        duration: parseInt(duration, 10),
+        synopsis: sanitizeText(synopsis, 2000),
+        film_url: filmUrl.trim(),
+        film_language: filmLanguage ? sanitizeText(filmLanguage, 100) : null,
+        participation_type: participationType.trim(),
+        team_members: parsedTeamMembers,
+        has_subtitles: hasSubtitles === true || hasSubtitles === 'true',
+        has_audio_description: hasAudioDescription === true || hasAudioDescription === 'true',
+        director_name: sanitizeText(directorName, 100),
+        team_name: teamName ? sanitizeText(teamName, 200) : null,
+        college_name: collegeName ? sanitizeText(collegeName, 200) : null,
+        contact_name: sanitizeText(contactName, 100),
+        contact_email: contactEmail.trim().toLowerCase(),
+        contact_phone: contactPhone.trim(),
+        additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
+        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_payment_id: null,
+        payment_status: 'pending'
       }])
       .select()
       .single()
@@ -1530,67 +1929,33 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Update payment record
-    supabase.from('payments').update({
-      status: 'paid',
-      razorpay_payment_id: req.body.razorpay_payment_id,
-      razorpay_signature:  req.body.razorpay_signature,
+    const { error: shortfilmPaymentInsertError } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
+      event_type: 'shortfilm',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: contactName,
+      payer_email: contactEmail,
+      payer_phone: contactPhone,
+      receipt_id: invoiceInfo.receiptId,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
       registration_id: data.id
-    }).eq('razorpay_order_id', req.body.razorpay_order_id).then()
+    }])
 
-    // Fetch payment record for invoice
-    supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
-      .eq('razorpay_order_id', req.body.razorpay_order_id)
-      .maybeSingle()
-      .then(({ data: payRec }) => {
-        if (payRec && payRec.payer_email) {
-          sendGSTInvoiceEmail({
-            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
-            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
-            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
-            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
-          })
-        }
-      })
-
-    // Send confirmation email to registrant
-    try {
-      const partType = participationType === 'team' ? `Team (${teamName || 'N/A'})` : 'Individual'
-      const mailOptions = {
-        from: process.env.MAIL_FROM || process.env.MAIL_USER,
-        to: contactEmail.trim().toLowerCase(),
-        subject: `Short Film Submitted Î“Ã‡Ã´ VYUGA | ${filmTitle}`,
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-            <div style="background:linear-gradient(135deg,#0197B2,#5BCB2B);padding:28px;text-align:center">
-              <h1 style="color:#fff;margin:0;font-size:22px">Short Film Submission Received</h1>
-            </div>
-            <div style="padding:24px">
-              <p>Dear <strong>${sanitizeText(contactName, 100)}</strong>,</p>
-              <p>Thank you for submitting your short film to <strong>VYUGA Î“Ã‡Ã´ Short Film Contest</strong>!</p>
-              <table style="width:100%;border-collapse:collapse;margin:16px 0">
-                <tr><td style="padding:6px 0;color:#64748b;width:160px">Film Title</td><td style="padding:6px 0;font-weight:bold">${sanitizeText(filmTitle, 200)}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Genre</td><td style="padding:6px 0">${sanitizeText(genre, 100)}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Duration</td><td style="padding:6px 0">${duration} min</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Participation</td><td style="padding:6px 0">${partType}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Director</td><td style="padding:6px 0">${sanitizeText(directorName, 100)}</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Subtitles</td><td style="padding:6px 0">Confirmed</td></tr>
-                <tr><td style="padding:6px 0;color:#64748b">Audio Description</td><td style="padding:6px 0">Confirmed</td></tr>
-              </table>
-              <p style="color:#64748b;font-size:13px">Our team will review your submission and get back to you. If you have any questions, please contact the organizers.</p>
-              <p style="margin-top:24px">Warm regards,<br/><strong>VYUGA Team</strong></p>
-            </div>
-          </div>
-        `,
-      }
-      transporter.sendMail(mailOptions)
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    if (shortfilmPaymentInsertError) {
+      console.error('[shortfilm] Payment insert failed:', shortfilmPaymentInsertError.message)
+      await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${shortfilmPaymentInsertError.message}`, req })
     }
 
-    res.status(201).json({ success: true, data })
+    res.status(201).json({
+      success: true,
+      data,
+      invoice_link: invoiceInfo.invoice.short_url,
+      invoice_id: invoiceInfo.invoice.id,
+      receipt_id: invoiceInfo.receiptId,
+    })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1610,10 +1975,6 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
     } = req.body
 
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
-    }
-
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       { field: 'teamName', check: teamName && sanitizeText(teamName, 100).length > 0, msg: 'required, max 100 chars' },
@@ -1647,6 +2008,13 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
+    const invoiceInfo = await createRazorpayInvoice({
+      eventType: 'cricket',
+      name: contactName,
+      email: contactEmail,
+      phone: contactPhone,
+    })
+
     const { data, error } = await supabase
       .from('cricket_team_registrations')
       .insert([{
@@ -1660,9 +2028,9 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
         contact_name: sanitizeText(contactName, 100),
         contact_email: contactEmail.trim().toLowerCase(),
         contact_phone: contactPhone.trim(),
-        razorpay_order_id: req.body.razorpay_order_id,
-        razorpay_payment_id: req.body.razorpay_payment_id,
-        payment_status: 'paid'
+        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_payment_id: null,
+        payment_status: 'pending'
       }])
       .select()
       .single()
@@ -1672,19 +2040,33 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Update payment record
-    supabase.from('payments').update({
-      status: 'paid',
-      razorpay_payment_id: req.body.razorpay_payment_id,
-      razorpay_signature: req.body.razorpay_signature,
+    const { error: cricketPaymentInsertError } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
+      event_type: 'cricket',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: contactName,
+      payer_email: contactEmail,
+      payer_phone: contactPhone,
+      receipt_id: invoiceInfo.receiptId,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
       registration_id: data.id
-    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
-    try {
-      sendCricketConfirmation({ teamName, city, state, playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone, paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id })
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+    }])
+
+    if (cricketPaymentInsertError) {
+      console.error('[cricket] Payment insert failed:', cricketPaymentInsertError.message)
+      await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${cricketPaymentInsertError.message}`, req })
     }
-    res.status(201).json({ success: true, data })
+
+    res.status(201).json({
+      success: true,
+      data,
+      invoice_link: invoiceInfo.invoice.short_url,
+      invoice_id: invoiceInfo.invoice.id,
+      receipt_id: invoiceInfo.receiptId,
+    })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1723,6 +2105,13 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
+    const invoiceInfo = await createRazorpayInvoice({
+      eventType: 'chess',
+      name: participantName,
+      email,
+      phone,
+    })
+
     const effectiveDisability = (() => {
       let disabilityTypes = []
       if (Array.isArray(disabilityType)) {
@@ -1730,13 +2119,13 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       } else if (typeof disabilityType === 'string' && disabilityType) {
         disabilityTypes = [disabilityType]
       }
-      
-      const processedDisabilities = disabilityTypes.map(type => 
-        String(type).toLowerCase() === 'other' 
-          ? sanitizeText(disabilityTypeOther, 100) 
+
+      const processedDisabilities = disabilityTypes.map(type =>
+        String(type).toLowerCase() === 'other'
+          ? sanitizeText(disabilityTypeOther, 100)
           : sanitizeText(type, 100)
       ).filter(Boolean)
-      
+
       return processedDisabilities.join(', ')
     })()
     const effectiveExperience = String(experienceLevel).toLowerCase() === 'other'
@@ -1756,6 +2145,9 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
         has_played_before: hasPlayedBefore === 'yes',
         experience_level: effectiveExperience,
         additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
+        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_payment_id: null,
+        payment_status: 'pending',
       }])
       .select()
       .single()
@@ -1764,12 +2156,33 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
-    try {
-      sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType: effectiveDisability, hasPlayedBefore, experienceLevel: effectiveExperience, additionalInfo })
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
+
+    const { error: chessPaymentInsertError } = await supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoiceRef,
+      event_type: 'chess',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: participantName,
+      payer_email: email,
+      payer_phone: phone,
+      receipt_id: invoiceInfo.receiptId,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
+      registration_id: data.id
+    }])
+
+    if (chessPaymentInsertError) {
+      console.error('[chess] Payment insert failed:', chessPaymentInsertError.message)
+      await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${chessPaymentInsertError.message}`, req })
     }
-    res.status(201).json({ success: true, data })
+    res.status(201).json({
+      success: true,
+      data,
+      invoice_link: invoiceInfo.invoice.short_url,
+      invoice_id: invoiceInfo.invoice.id,
+      receipt_id: invoiceInfo.receiptId,
+    })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1850,10 +2263,10 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
 
     // Send notification email to admin
     try {
-      const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       })
 
       const adminEmailHtml = `
@@ -2022,10 +2435,10 @@ app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), asy
   try {
     const { data, error } = await supabase
       .from('sponsor_messages')
-      .insert([{ 
-        name, 
-        phone, 
-        email, 
+      .insert([{
+        name,
+        phone,
+        email,
         message,
         org_name: orgName,
         sponsor_type: sponsorType,
@@ -2073,7 +2486,7 @@ app.get('/api/form-settings', async (req, res) => {
     const { data, error } = await supabase
       .from('form_settings')
       .select('id, name, is_open, registration_fee_paise')
-      
+
     if (error) throw error
     res.json({ success: true, data })
   } catch (err) {
@@ -2453,7 +2866,7 @@ app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) =>
 
     const email = reg[meta.emailField]
     const name = reg[meta.nameField]
-    
+
     if (!email) {
       return res.status(400).json({ success: false, message: 'No email found for this registration' })
     }
@@ -2462,13 +2875,13 @@ app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) =>
     try {
       await sendStatusUpdateEmail({ to: email, name, event: meta.event, status: reg.status, adminNote: reg.admin_note })
       console.log(`[manual-status-update] Email sent to ${email}`)
-      
+
       // Update email_sent flag
       await supabase
         .from(meta.table)
         .update({ email_sent: true })
         .eq('id', id)
-        
+
     } catch (err) {
       await logError({ source: 'admin', endpoint: `/api/admin/trigger-email/${type}/${id}`, method: 'POST', errorType: 'email_error', message: err.message, stack: err.stack, req })
       return res.status(500).json({ success: false, message: 'Failed to send email' })
@@ -2506,7 +2919,7 @@ app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) =>
     for (const reg of records) {
       const email = reg[meta.emailField]
       const name = reg[meta.nameField]
-      
+
       if (!email) {
         failedCount++
         continue
@@ -2518,7 +2931,7 @@ app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) =>
           .from(meta.table)
           .update({ email_sent: true })
           .eq('id', reg.id)
-        
+
         sentCount++
       } catch (err) {
         console.error(`Failed to send bulk email to ${email}:`, err.message)
@@ -2539,14 +2952,14 @@ app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) =>
 app.get('/api/admin/jury/stats', requireAdmin, async (req, res) => {
   try {
     const stats = {}
-    
+
     // Get ALL existing assignments to count "allocated" easily
     const { data: assignments, error: existErr } = await supabase
       .from('jury_assignments')
       .select('event_type')
-      
+
     if (existErr) return res.status(500).json({ success: false, message: existErr.message })
-    
+
     // Group allocated counts
     const allocatedCounts = {}
     assignments.forEach(a => {
@@ -2558,7 +2971,7 @@ app.get('/api/admin/jury/stats', requireAdmin, async (req, res) => {
       const { count, error } = await supabase
         .from(meta.table)
         .select('*', { count: 'exact', head: true })
-        
+
       if (!error) {
         const allocated = allocatedCounts[evt] || 0
         const total = count || 0
@@ -2569,7 +2982,7 @@ app.get('/api/admin/jury/stats', requireAdmin, async (req, res) => {
         }
       }
     }
-    
+
     res.json({ success: true, data: stats })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -2584,7 +2997,7 @@ app.get('/api/admin/jury', requireAdmin, async (req, res) => {
       .from('jury_users')
       .select('id, username, name, phone, organization, designation, created_at')
       .order('created_at', { ascending: false })
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
 
     const { data: assignments, error: assignmentsErr } = await supabase
@@ -2617,11 +3030,11 @@ app.post('/api/admin/jury', requireAdmin, async (req, res) => {
   try {
     const { username, password, name, phone, organization, designation } = req.body
     if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required' })
-    
+
     const { data, error } = await supabase
       .from('jury_users')
-      .insert([{ 
-        username: username.trim(), 
+      .insert([{
+        username: username.trim(),
         password,
         name: name ? name.trim() : null,
         phone: phone ? phone.trim() : null,
@@ -2630,7 +3043,7 @@ app.post('/api/admin/jury', requireAdmin, async (req, res) => {
       }])
       .select('id, username, name, phone, organization, designation, created_at')
       .single()
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
     res.json({ success: true, data })
   } catch (err) {
@@ -2644,19 +3057,19 @@ app.put('/api/admin/jury/:id', requireAdmin, async (req, res) => {
     const { id } = req.params
     const { username, password, name, phone, organization, designation } = req.body
     if (!username) return res.status(400).json({ success: false, message: 'Username is required' })
-    
+
     // Prepare update payload
     let payload = {
-        username: username.trim(),
-        name: name ? name.trim() : null,
-        phone: phone ? phone.trim() : null,
-        organization: organization ? organization.trim() : null,
-        designation: designation ? designation.trim() : null
+      username: username.trim(),
+      name: name ? name.trim() : null,
+      phone: phone ? phone.trim() : null,
+      organization: organization ? organization.trim() : null,
+      designation: designation ? designation.trim() : null
     }
 
     // Only update password if provided
     if (password && password.trim() !== '') {
-        payload.password = password
+      payload.password = password
     }
 
     const { data, error } = await supabase
@@ -2665,7 +3078,7 @@ app.put('/api/admin/jury/:id', requireAdmin, async (req, res) => {
       .eq('id', id)
       .select('id, username, name, phone, organization, designation, created_at')
       .single()
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
     res.json({ success: true, data })
   } catch (err) {
@@ -2681,7 +3094,7 @@ app.delete('/api/admin/jury/:id', requireAdmin, async (req, res) => {
       .from('jury_users')
       .delete()
       .eq('id', id)
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
     res.json({ success: true, message: 'Jury deleted' })
   } catch (err) {
@@ -2694,48 +3107,48 @@ app.post('/api/admin/jury/allocate', requireAdmin, async (req, res) => {
   try {
     const { juryId, eventType, count } = req.body
     if (!juryId || !eventType || !count) return res.status(400).json({ success: false, message: 'Missing parameters' })
-    
+
     const meta = TABLE_MAP[eventType]
     if (!meta) return res.status(400).json({ success: false, message: 'Unknown event type' })
-      
+
     // Find registrations of this event type that are NOT in jury_assignments for this event
     const { data: unassigned, error: unassignedErr } = await supabase
       .from(meta.table)
       .select('id')
       .order('submitted_at', { ascending: true }) // Oldest first
-      
+
     if (unassignedErr) return res.status(500).json({ success: false, message: unassignedErr.message })
-    
+
     // Get ALL existing assignments for this event type across all juries to filter them out
     const { data: existingAssignments, error: existErr } = await supabase
       .from('jury_assignments')
       .select('registration_id')
       .eq('event_type', eventType)
-      
+
     if (existErr) return res.status(500).json({ success: false, message: existErr.message })
-    
+
     const assignedIds = new Set(existingAssignments.map(a => a.registration_id))
-    
+
     // Filter unassigned
     const availableToAssign = unassigned.filter(r => !assignedIds.has(r.id)).slice(0, parseInt(count, 10))
-    
+
     if (availableToAssign.length === 0) {
       return res.status(400).json({ success: false, message: 'No more unassigned registrations available for this event.' })
     }
-    
+
     // Insert into jury_assignments
     const inserts = availableToAssign.map(r => ({
       jury_id: juryId,
       event_type: eventType,
       registration_id: r.id
     }))
-    
+
     const { error: insertErr } = await supabase
       .from('jury_assignments')
       .insert(inserts)
-      
+
     if (insertErr) return res.status(500).json({ success: false, message: insertErr.message })
-    
+
     res.json({ success: true, message: `Successfully allocated ${inserts.length} registrations.`, count: inserts.length })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -2748,19 +3161,19 @@ app.post('/api/admin/jury/allocate', requireAdmin, async (req, res) => {
 app.post('/api/jury/login', loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body
-    
+
     const { data, error } = await supabase
       .from('jury_users')
       .select('id, username, password, name, phone, organization, designation')
       .eq('username', username)
       .single()
-      
+
     if (error || !data) return res.status(401).json({ success: false, message: 'Invalid credentials' })
     if (data.password !== password) return res.status(401).json({ success: false, message: 'Invalid credentials' })
-    
-    res.json({ 
-      success: true, 
-      token: data.id, 
+
+    res.json({
+      success: true,
+      token: data.id,
       username: data.username,
       name: data.name,
       phone: data.phone,
@@ -2785,46 +3198,46 @@ function requireJury(req, res, next) {
 app.get('/api/jury/registrations', requireJury, async (req, res) => {
   try {
     const juryId = req.juryId
-    
+
     const { data: assignments, error } = await supabase
       .from('jury_assignments')
       .select('registration_id, event_type')
       .eq('jury_id', juryId)
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
-    
+
     // Fetch the actual registration data for these IDs
     const results = []
-    
+
     // Group by event type to minimize queries
     const grouped = assignments.reduce((acc, curr) => {
       if (!acc[curr.event_type]) acc[curr.event_type] = []
       acc[curr.event_type].push(curr.registration_id)
       return acc
     }, {})
-    
+
     // Also fetch evaluations by this jury so we know which ones are evaluated
     const { data: evaluations, error: evalErr } = await supabase
       .from('jury_evaluations')
       .select('registration_id, score, comments')
       .eq('jury_id', juryId)
-      
+
     if (evalErr) return res.status(500).json({ success: false, message: evalErr.message })
-    
+
     const evaluationMap = {}
     evaluations.forEach(e => {
       evaluationMap[e.registration_id] = { score: e.score, comments: e.comments }
     })
-    
+
     for (const [eventType, ids] of Object.entries(grouped)) {
       const meta = TABLE_MAP[eventType]
       if (!meta) continue
-        
+
       const { data: recs, error: fetchErr } = await supabase
         .from(meta.table)
         .select('*')
         .in('id', ids)
-        
+
       if (!fetchErr && recs) {
         recs.forEach(r => {
           results.push({
@@ -2836,7 +3249,7 @@ app.get('/api/jury/registrations', requireJury, async (req, res) => {
         })
       }
     }
-    
+
     res.json({ success: true, data: results })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -2849,14 +3262,14 @@ app.patch('/api/jury/status/:type/:id', requireJury, async (req, res) => {
     const { type, id } = req.params
     const { status } = req.body
     const juryId = req.juryId
-    
+
     const meta = TABLE_MAP[type]
     if (!meta) return res.status(400).json({ success: false, message: 'Unknown event type' })
-    
+
     if (!['selected', 'rejected', 'pending', 'waitlist'].includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status' })
     }
-    
+
     // Check if jury is assigned to this reg
     const { data: assignment, error: assignErr } = await supabase
       .from('jury_assignments')
@@ -2865,19 +3278,19 @@ app.patch('/api/jury/status/:type/:id', requireJury, async (req, res) => {
       .eq('registration_id', id)
       .eq('event_type', type)
       .single()
-      
+
     if (assignErr || !assignment) {
       return res.status(403).json({ success: false, message: 'Not authorized for this registration' })
     }
-    
+
     // Update the registration status
     const { error: updateErr } = await supabase
       .from(meta.table)
       .update({ status })
       .eq('id', id)
-      
+
     if (updateErr) return res.status(500).json({ success: false, message: updateErr.message })
-    
+
     res.json({ success: true, status })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -2889,11 +3302,11 @@ app.post('/api/jury/evaluate', requireJury, async (req, res) => {
   try {
     const juryId = req.juryId
     const { eventType, registrationId, score, comments } = req.body
-    
+
     if (!eventType || !registrationId || score === undefined) {
       return res.status(400).json({ success: false, message: 'Missing parameters' })
     }
-    
+
     // Upsert the evaluation
     const { data, error } = await supabase
       .from('jury_evaluations')
@@ -2906,9 +3319,9 @@ app.post('/api/jury/evaluate', requireJury, async (req, res) => {
       }, { onConflict: 'jury_id, event_type, registration_id' })
       .select()
       .single()
-      
+
     if (error) return res.status(500).json({ success: false, message: error.message })
-    
+
     res.json({ success: true, message: 'Evaluation saved successfully', data })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -2947,8 +3360,8 @@ app.patch('/api/admin/form-settings/:id', requireAdmin, async (req, res) => {
       .single()
 
     if (error) {
-       await logError({ source: 'admin', endpoint: `/api/admin/form-settings/${id}`, method: 'PATCH', errorType: 'db_error', message: error.message, req })
-       return res.status(500).json({ success: false, message: error.message })
+      await logError({ source: 'admin', endpoint: `/api/admin/form-settings/${id}`, method: 'PATCH', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
     }
 
     res.json({ success: true, data })
@@ -2980,16 +3393,16 @@ app.get('/api/admin/error-logs', requireAdmin, async (req, res) => {
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Error Logs Middleware (Date-based Auth) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 const requireDevAuth = (req, res, next) => {
   const authHeader = req.headers['x-dev-auth']
-  
+
   // Get current date in IST (Indian Standard Time)
   const now = new Date()
   const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
   const ist = new Date(utc + (3600000 * 5.5))
-  
+
   const day = String(ist.getDate()).padStart(2, '0')
   const month = String(ist.getMonth() + 1).padStart(2, '0')
   const expectedPassword = `${day}${month}` // DDMM
-  
+
   if (authHeader === expectedPassword) {
     next()
   } else {
@@ -3004,15 +3417,15 @@ const requireDevAuth = (req, res, next) => {
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Login (Check Date Password) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/dev/login', (req, res) => {
   const { password } = req.body
-  
+
   const now = new Date()
   const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
   const ist = new Date(utc + (3600000 * 5.5))
-  
+
   const day = String(ist.getDate()).padStart(2, '0')
   const month = String(ist.getMonth() + 1).padStart(2, '0')
   const expectedPassword = `${day}${month}`
-  
+
   if (password === expectedPassword || password === process.env.ADMIN_TOKEN) {
     res.json({ success: true, token: password })
   } else {
@@ -3025,19 +3438,19 @@ app.get('/api/dev/error-logs', requireDevAuth, async (req, res) => {
   try {
     const { limit = 100, status } = req.query
     const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 100, 1), 500)
-    
+
     let query = supabase
       .from('error_logs')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(safeLimit)
-      
+
     if (status) {
       query = query.eq('status', status)
     }
-    
+
     const { data, error } = await query
-    
+
     if (error) throw error
     res.json({ success: true, data })
   } catch (err) {
@@ -3050,13 +3463,13 @@ app.put('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   try {
     const { id } = req.params
     const { status } = req.body
-    
+
     const { data, error } = await supabase
       .from('error_logs')
       .update({ status })
       .eq('id', id)
       .select()
-      
+
     if (error) throw error
     res.json({ success: true, data })
   } catch (err) {
@@ -3068,12 +3481,12 @@ app.put('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
 app.delete('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   try {
     const { id } = req.params
-    
+
     const { error } = await supabase
       .from('error_logs')
       .delete()
       .eq('id', id)
-      
+
     if (error) throw error
     res.json({ success: true, message: 'Deleted successfully' })
   } catch (err) {

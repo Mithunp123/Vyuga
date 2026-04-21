@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS payments (
   payer_name        TEXT,
   payer_email       TEXT,
   payer_phone       TEXT,
+  receipt_id        TEXT,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );

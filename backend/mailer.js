@@ -13,6 +13,15 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+console.log('[mailer] Transport configured:', {
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.SMTP_PORT || '465', 10),
+  secure: process.env.SMTP_SECURE !== 'false',
+  userConfigured: Boolean(process.env.SMTP_USER),
+  passConfigured: Boolean(process.env.SMTP_PASS),
+  from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
+})
+
 // Absolute path to the logo (copied into backend/assets/)
 const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png')
 
@@ -83,7 +92,8 @@ function section(heading, rows) {
 // ── Send helper ───────────────────────────────────────────────────────────────
 async function sendMail(to, subject, html) {
   try {
-    await transporter.sendMail({
+    console.log('[mailer] Sending email attempt:', { to, subject })
+    const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
       to,
       subject,
@@ -94,8 +104,24 @@ async function sendMail(to, subject, html) {
         cid: 'vyuga-logo',
       }],
     })
+    console.log('[mailer] Email sent:', {
+      to,
+      subject,
+      messageId: info?.messageId,
+      accepted: info?.accepted,
+      rejected: info?.rejected,
+      response: info?.response,
+    })
   } catch (err) {
-    console.error('[mailer] Failed to send email to', to, '–', err.message)
+    console.error('[mailer] Failed to send email:', {
+      to,
+      subject,
+      message: err?.message,
+      code: err?.code,
+      command: err?.command,
+      response: err?.response,
+      stack: err?.stack,
+    })
   }
 }
 
@@ -207,12 +233,18 @@ async function sendTalentStudentConfirmation(d) {
       📹 Your performance video has been received and will be reviewed by our team.
     </p>
   `)
-  // Send to guardian
-  if (d.guardianEmail) {
-    await sendMail(d.guardianEmail, 'Nomination Submitted – VYUGA Special Talent Utsav', html)
+  const isValidRecipient = (email) => typeof email === 'string' && email.includes('@')
+  const primaryRecipients = Array.from(new Set([
+    d.guardianEmail,
+    d.payerEmail,
+  ].filter(isValidRecipient)))
+
+  for (const email of primaryRecipients) {
+    await sendMail(email, 'Nomination Submitted – VYUGA Special Talent Utsav', html)
   }
+
   // Also notify the organization contact
-  if (d.orgContactEmail) {
+  if (isValidRecipient(d.orgContactEmail) && !primaryRecipients.includes(d.orgContactEmail)) {
     const orgHtml = shell('New Student Nominated – Special Talent Utsav', `
       <p style="font-size:14px;color:#1e293b;margin:0 0 20px;">
         A new student from your organization has been nominated for the Special Talent Utsav.
@@ -231,6 +263,15 @@ async function sendTalentStudentConfirmation(d) {
       ].join(''))}
     `)
     await sendMail(d.orgContactEmail, `New Nomination: ${d.studentName} – VYUGA Special Talent Utsav`, orgHtml)
+  }
+
+  if (!primaryRecipients.length && !isValidRecipient(d.orgContactEmail)) {
+    console.warn('[mailer] No valid recipient found for talent nomination confirmation', {
+      guardianEmail: d.guardianEmail,
+      orgContactEmail: d.orgContactEmail,
+      payerEmail: d.payerEmail,
+      studentName: d.studentName,
+    })
   }
 }
 
@@ -284,6 +325,35 @@ async function sendChessConfirmation(d) {
     </p>
   `)
   await sendMail(d.email, 'Registration Confirmed – VYUGA Blind Chess Competition', html)
+}
+
+// ── 7. Short Film Contest ───────────────────────────────────────────────────
+async function sendShortFilmConfirmation(d) {
+  const html = shell('Registration Confirmed – Short Film Contest', `
+    ${section('Film Details', [
+      row('Film Title', d.filmTitle),
+      row('Language', d.filmLanguage),
+      row('Duration (mins)', d.duration),
+      row('Genre', d.genre),
+      row('Participation', d.participationType),
+      row('Director', d.directorName),
+      row('Film Link', d.filmUrl ? `<a href="${d.filmUrl}" style="color:#0197B2;">${d.filmUrl}</a>` : ''),
+    ].join(''))}
+    ${section('Contact Person', [
+      row('Name', d.contactName),
+      row('Email', d.contactEmail),
+      row('Phone', d.contactPhone),
+    ].join(''))}
+    ${d.paymentStatus ? section('Payment Details', [
+      row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
+      row('Order ID', d.razorpayOrderId),
+      row('Transaction ID', d.razorpayPaymentId),
+    ].join('')) : ''}
+    <p style="font-size:13px;color:#475569;margin-top:16px;">
+      Your short film registration has been received successfully. Our team will contact you if any additional details are needed.
+    </p>
+  `)
+  await sendMail(d.contactEmail, 'Registration Confirmed – VYUGA Short Film Contest', html)
 }
 
 // ── Status update email ───────────────────────────────────────────────────────
@@ -668,6 +738,7 @@ module.exports = {
   sendTalentStudentConfirmation,
   sendCricketConfirmation,
   sendChessConfirmation,
+  sendShortFilmConfirmation,
   sendStatusUpdateEmail,
   sendGSTInvoiceEmail,
   sendMail,

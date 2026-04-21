@@ -121,13 +121,6 @@ export default function ShortFilmForm() {
     setError('')
 
     try {
-      const userInfo = {
-        name: form.directorName || form.contactName,
-        email: form.contactEmail,
-        phone: form.contactPhone,
-        eventType: 'shortfilm',
-      }
-
       const submitData = {
         ...form,
         genre: 'N/A',
@@ -140,11 +133,11 @@ export default function ShortFilmForm() {
       }
 
       const res = await postJSON('/api/shortfilm', submitData)
-        if (res.invoice_link) {
-          window.location.href = res.invoice_link;
-        } else {
-          setSubmitted(true)
-        }
+      if (res.invoice_link) {
+        window.location.href = res.invoice_link
+      } else {
+        setSubmitted(true)
+      }
     } catch (err) {
       setError(err.message)
     } finally {

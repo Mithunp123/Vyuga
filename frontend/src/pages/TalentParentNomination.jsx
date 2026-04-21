@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import { fetchEventFee } from '../paymentHandler.js'
-import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -128,10 +127,8 @@ export default function TalentParentNomination() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [declared, setDeclared] = useState(false)
-  const [videoFile, setVideoFile] = useState(null)
   const [showPaymentWarning, setShowPaymentWarning] = useState(false)
   const [performanceUrl, setPerformanceUrl] = useState('')
-  const [compressProgress, setCompressProgress] = useState(null)
   const [showDriveInfo, setShowDriveInfo] = useState(false)
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -263,7 +260,10 @@ export default function TalentParentNomination() {
     }
 
     if (!declared) { showError('Please confirm the declaration at the bottom of the form.'); return }
-    if (!videoFile && !performanceUrl.trim()) { showError('Please provide a performance video by either uploading a file OR providing a Google Drive link.'); return }
+    if (!performanceUrl.trim()) { showError('Please provide a Google Drive link for the performance video.'); return }
+    if (!/^https?:\/\//i.test(performanceUrl.trim()) || !performanceUrl.includes('drive.google.com')) {
+      showError('Please enter a valid public Google Drive link.'); return
+    }
     if (!form.contactName.trim()) { showError('Please enter parent/guardian name.'); return }
     if (!form.contactEmail.trim()) { showError('Please enter email.'); return }
     if (!/^\d{10}$/.test(form.contactPhone)) { showError('Phone number must be exactly 10 digits.'); return }
@@ -317,8 +317,6 @@ export default function TalentParentNomination() {
     setShowPaymentWarning(false)
     setLoading(true)
     setError('')
-    setCompressProgress(null)
-
     try {
       const fd = new FormData()
       
@@ -359,19 +357,9 @@ export default function TalentParentNomination() {
       // gradeCategory is removed from parent form, inject dummy
       fd.set('gradeCategory', '1–5');
 
-      if (videoFile) {
-        fd.append('performanceVideo', videoFile)
-      }
       if (performanceUrl.trim()) {
         fd.append('performanceUrl', performanceUrl.trim())
       }
-
-      const userInfo = {
-        name: form.nominationType === 'team' ? form.contactName : form.studentName,
-        email: form.contactEmail,
-        phone: form.contactPhone,
-        eventType: 'talent-student'
-      };
       
       const res = await postFormData('/api/talent-combined', fd)
         if (res.invoice_link) {
@@ -712,65 +700,12 @@ export default function TalentParentNomination() {
           </Section>
         )}
 
-        {/* Video Upload Options */}
-
-
-        {/* Video Upload */}
+        {/* Video Upload Option disabled: Drive link only for parent nomination */}
         <div>
-        
-          <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
-            Performance Video Upload <span className="text-slate-500 text-sm font-normal ml-2">(Option 1)</span>
-          </h2>
-          <p className="mb-3 text-xs text-slate-500">Upload a performance video (max 3 minutes). Accepted formats: MP4, MOV, AVI, WEBM.</p>
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-[#0197B2]/50 hover:bg-slate-100">
-            <span className="text-3xl">🎬</span>
-            <span className="text-sm font-medium text-slate-600">
-              {videoFile ? videoFile.name : 'Click to upload performance video'}
-            </span>
-            <span className="text-xs text-slate-400">MP4, MOV, AVI, WEBM — max 200 MB (~3 mins)</span>
-            <input
-              type="file"
-              accept="video/mp4,video/quicktime,video/x-msvideo,video/webm,video/x-matroska"
-              className="hidden"
-              onChange={(e) => setVideoFile(e.target.files[0] || null)}
-            />
-          </label>
-          {videoFile && (
-            <div className="mt-2 flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setVideoFile(null)}
-                className="text-xs text-red-500 hover:underline"
-              >
-                Remove video
-              </button>
-              {videoFile.size >= 5 * 1024 * 1024 && (
-                <span className="text-xs text-slate-400">
-                  {(videoFile.size / (1024 * 1024)).toFixed(1)} MB — will be compressed before upload
-                </span>
-              )}
-            </div>
-          )}
-          {compressProgress !== null && (
-            <div className="mt-3">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold" style={{ color: '#0197B2' }}>Compressing video…</span>
-                <span className="text-xs text-slate-500">{compressProgress}%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${compressProgress}%`, background: 'linear-gradient(90deg, #0197B2, #5BCB2B)' }}
-                />
-              </div>
-            </div>
-          )}
-      
-          
           <div className="mt-4 relative bg-slate-50 border border-slate-200 p-5 rounded-2xl">
             <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
               <label className="flex items-center gap-2 font-display text-base font-bold text-slate-800">
-                Performance Drive Link <span className="text-slate-500 text-sm font-normal">(Option 2)</span>
+                Performance Drive Link <span className="text-red-500">*</span>
               </label>
               <button 
                 type="button" 

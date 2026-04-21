@@ -368,13 +368,6 @@ export default function TalentStudentNomination() {
         fd.append('performanceUrl', performanceUrl.trim())
       }
       
-      const userInfo = {
-        name: form.nominationType === 'team' ? form.contactName : form.studentName,
-        email: form.contactEmail,
-        phone: form.contactPhone,
-        eventType: 'talent-combined'
-      };
-      
       const res = await postFormData('/api/talent-combined', fd)
         if (res.invoice_link) {
           window.location.href = res.invoice_link;
