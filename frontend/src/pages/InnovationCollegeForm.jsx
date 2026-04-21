@@ -6,7 +6,7 @@ import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
-import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
+import { fetchEventFee } from '../paymentHandler.js'
 
 const THEMES = [
   'Assistive Technology',
@@ -79,31 +79,23 @@ export default function InnovationCollegeForm() {
     setLoading(true)
     setError('')
     try {
-      // If fee, run Razorpay payment first
-      let paymentData = null
-      if (fee) {
-        const userInfo = {
-          name: form.member1Name,
-          email: form.member1Email,
-          phone: form.member1Phone,
-          eventType: 'innovation-college',
-        }
-        paymentData = await handlePaymentProcess(userInfo)
-      }
-
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, v))
       if (protoFile) fd.append('prototypeImage', protoFile)
       if (pptFile) fd.append('pptFile', pptFile)
       if (prototypeUrl.trim()) fd.append('prototypeUrl', prototypeUrl.trim())
-      if (paymentData) {
-        fd.append('razorpay_payment_id', paymentData.razorpay_payment_id)
-        fd.append('razorpay_order_id', paymentData.razorpay_order_id)
-        fd.append('razorpay_signature', paymentData.razorpay_signature)
+
+      const res = await postFormData('/api/innovation-college', fd)
+
+      if (res.invoice_link) {
+
+        window.location.href = res.invoice_link;
+
+      } else {
+
+        setSubmitted(true)
+
       }
-      
-      await postFormData('/api/innovation-college', fd)
-      setSubmitted(true)
     } catch (err) {
       setError(err.message)
     } finally {

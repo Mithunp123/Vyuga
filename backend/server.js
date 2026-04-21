@@ -52,7 +52,7 @@ if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 const ID_DIR = path.join(UPLOAD_DIR, 'ID')
 if (!fs.existsSync(ID_DIR)) fs.mkdirSync(ID_DIR, { recursive: true })
 
-// ── Middleware ────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Middleware Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }))
 const ALLOWED_ORIGINS = process.env.CLIENT_ORIGIN
   ? process.env.CLIENT_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
@@ -85,7 +85,7 @@ app.use('/assets', (req, res, next) => {
   next()
 }, express.static(path.join(__dirname, 'assets')))
 
-// ── Rate limiters ─────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Rate limiters Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 200,                   // 200 requests per window per IP
@@ -113,7 +113,7 @@ const errorReportLimiter = rateLimit({
   message: { success: false, message: 'Too many error reports.' },
 })
 
-// ── Multer – Innovation Forms (Prototype & UDID) ──────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Multer Ã¢â‚¬â€œ Innovation Forms (Prototype & UDID) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 // Uses memory storage so we can rename using the phone number from req.body
 const memStorage = multer.memoryStorage()
 const ALLOWED_IMAGE_EXT = /\.(png|jpe?g|webp)$/i
@@ -153,7 +153,7 @@ const innovationUpload = multer({
   },
 })
 
-// ── Multer (video uploads for talent nominations) ─────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Multer (video uploads for talent nominations) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const ALLOWED_VIDEO_EXT = /\.(mp4|mov|avi|mkv|webm)$/i
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
@@ -179,7 +179,7 @@ const upload = multer({
   },
 })
 
-// ── Multer (Sponsor Logo) ─────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Multer (Sponsor Logo) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const LOGO_DIR = path.join(UPLOAD_DIR, 'logo')
 if (!fs.existsSync(LOGO_DIR)) fs.mkdirSync(LOGO_DIR, { recursive: true })
 
@@ -203,7 +203,7 @@ const sponsorUpload = multer({
   },
 })
 
-// ── Multer (Gallery Images) ───────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Multer (Gallery Images) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const GALLERY_DIR = path.join(UPLOAD_DIR, 'gallery')
 if (!fs.existsSync(GALLERY_DIR)) fs.mkdirSync(GALLERY_DIR, { recursive: true })
 
@@ -230,7 +230,7 @@ const galleryUpload = multer({
   },
 })
 
-// ── Video compression with ffmpeg ─────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Video compression with ffmpeg Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 function compressVideoWithFFmpeg(inputPath) {
   return new Promise((resolve) => {
     // Validate path has no shell metacharacters
@@ -279,10 +279,10 @@ function compressVideoWithFFmpeg(inputPath) {
   })
 }
 
-// ── Health check ──────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Health check Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }))
 
-// ── Error logging helper ──────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Error logging helper Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 function sanitizeBody(body) {
   if (!body) return null
   const clean = { ...body }
@@ -311,7 +311,7 @@ async function logError({ source, endpoint, method, errorType, message, stack, r
   }
 }
 
-// ── Client-side error reporting ───────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Client-side error reporting Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.post('/api/log-error', errorReportLimiter, async (req, res) => {
   const { endpoint, errorType, message, stack } = req.body
   if (!message || typeof message !== 'string') return res.status(400).json({ success: false, message: 'message is required' })
@@ -327,63 +327,224 @@ app.post('/api/log-error', errorReportLimiter, async (req, res) => {
   res.json({ success: true })
 })
 
-// ── Razorpay Payment Order Creation ───────────────────────────────────────────────
-app.post('/api/payment/create-order', globalLimiter, async (req, res) => {
+// Ã¢â€â‚¬Ã¢â€â‚¬ Razorpay Payment Invoice Creation Helper Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+async function createRazorpayInvoice({ eventType, name, email, phone }) {
+  let baseFee = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
+  if (eventType) {
+    const { data: setting } = await supabase
+      .from('form_settings')
+      .select('registration_fee_paise')
+      .eq('id', eventType)
+      .maybeSingle();
+    if (setting && setting.registration_fee_paise != null) {
+      baseFee = setting.registration_fee_paise;
+    }
+  }
+
+  const gstAmount = Math.round(baseFee * 18 / 100);
+  const totalAmount = baseFee + gstAmount;
+
+  const EVENT_NAME_MAP = {
+    'innovation-college': 'Inclusive Innovation Fest For Specially Abled (College)',
+    'innovation-pwd':     'Inclusive Innovation Fest By Specially Abled',
+    'talent-org':         'Special Talent Utsav  Organization Registration',
+    'talent-student':     'Special Talent Utsav Student Nomination',
+    'talent-combined':    'Special Talent Utsav Nomination',
+    'short-film':         'Short Film Competition',
+    'cricket':            'Blind Cricket Tournament',
+    'chess':              'Blind Chess Competition',
+  };
+  const eventLabel = EVENT_NAME_MAP[eventType] || 'Event Registration';
+
+  const expireBy = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60; // 7 days from now
+
+  const options = {
+    type: "invoice",
+    description: "VYUGA Event Registration",
+    customer: {
+      name: sanitizeText(name, 100) || 'Customer',
+      email: email ? email.trim().toLowerCase() : undefined,
+      contact: phone ? phone.trim() : undefined,
+    },
+    line_items: [
+      { name: `${eventLabel} (incl. 18% GST)`, amount: totalAmount, currency: "INR", quantity: 1 }
+    ],
+    sms_notify: 0,
+    email_notify: 0,
+    currency: "INR",
+    expire_by: expireBy,
+    callback_url: `${process.env.CLIENT_ORIGIN || "http://localhost:5173"}/payment-success`,
+    callback_method: "get",
+  };
+
+  console.log('[Razorpay] Creating invoice for', eventType, '| fee:', baseFee, 'paise | expire_by:', expireBy);
+  const invoice = await razorpay.invoices.create(options);
+  console.log('[Razorpay] Invoice created:', invoice.id, '| short_url:', invoice.short_url);
+  const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
+
+  return { invoice, totalAmount, baseFee, gstAmount, invoiceNumber };
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬ Razorpay Webhook Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), async (req, res) => {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const signature = req.headers['x-razorpay-signature'];
+  
+  if (!secret || !signature) return res.status(400).send('Missing signature or secret');
+
   try {
-    const { eventType, name, email, phone } = req.body;
+    const expectedSignature = crypto.createHmac('sha256', secret)
+      .update(req.body)
+      .digest('hex');
+      
+    if (expectedSignature !== signature) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    const payload = JSON.parse(req.body.toString());
+    console.log('[webhook] Event received:', payload.event);
     
-    // Look up per-event BASE fee from form_settings, fall back to env var
-    let baseFee = parseInt(process.env.REGISTRATION_FEE_PAISE || '9900', 10);
-    if (eventType) {
-      const { data: setting } = await supabase
-        .from('form_settings')
-        .select('registration_fee_paise')
-        .eq('id', eventType)
-        .maybeSingle();
-      if (setting && setting.registration_fee_paise != null) {
-        baseFee = setting.registration_fee_paise;
+    if (payload.event === 'invoice.paid') {
+      const invoice = payload.payload.invoice.entity;
+      const orderId = invoice.order_id;
+      const paymentId = invoice.payment_id;
+      
+      // Update payment record to paid
+      const { data: payment } = await supabase.from('payments').update({
+        status: 'paid',
+        razorpay_payment_id: paymentId,
+        payment_method: paymentId ? 'razorpay' : null,
+      }).eq('razorpay_order_id', orderId).select().single();
+      
+      console.log('[webhook] Payment record updated:', payment?.id, '| event_type:', payment?.event_type);
+      
+      if (payment && payment.registration_id) {
+        const tableMap = {
+          'innovation-college': 'innovation_college_registrations',
+          'innovation-pwd':     'innovation_pwd_registrations',
+          'talent-org':         'talent_organizations',
+          'talent-student':     'talent_nominations',
+          'talent-combined':    'talent_nominations',
+          'short-film':         'shortfilm_registrations',
+          'cricket':            'cricket_team_registrations',
+          'chess':              'blind_chess_registrations'
+        };
+        const table = tableMap[payment.event_type];
+        if (table) {
+          await supabase.from(table).update({ payment_status: 'paid' }).eq('id', payment.registration_id);
+          console.log('[webhook] Registration marked paid in', table);
+        }
+
+        // ── Send GST invoice email ──────────────────────────────────────────
+        try {
+          await sendGSTInvoiceEmail({
+            payerName:        payment.payer_name,
+            payerEmail:       payment.payer_email,
+            payerPhone:       payment.payer_phone,
+            eventType:        payment.event_type,
+            baseAmount:       payment.base_amount,
+            gstAmount:        payment.gst_amount,
+            totalAmount:      payment.amount,
+            razorpayOrderId:  orderId,
+            razorpayPaymentId: paymentId,
+            invoiceDate:      new Date().toISOString(),
+            invoiceNumber:    payment.invoice_number,
+          });
+          console.log(`[webhook] GST invoice email sent to ${payment.payer_email}`);
+        } catch (emailErr) {
+          console.error('[webhook] Failed to send GST invoice email:', emailErr.message);
+        }
+
+        // ── Send event-specific confirmation email ──────────────────────────
+        try {
+          if (table) {
+            const { data: reg } = await supabase.from(table).select('*').eq('id', payment.registration_id).single();
+            if (reg) {
+              const et = payment.event_type;
+              const paymentDetails = {
+                paymentStatus: 'Paid',
+                razorpayOrderId: orderId,
+                razorpayPaymentId: paymentId,
+              };
+
+              if (et === 'innovation-college') {
+                await sendInnovationCollegeConfirmation({
+                  teamName: reg.team_name, collegeName: reg.college_name, theme: reg.theme,
+                  ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
+                  member1Name: reg.name, member1Email: reg.email, member1Phone: reg.phone,
+                  member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
+                  member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
+                  ...paymentDetails,
+                });
+
+              } else if (et === 'innovation-pwd') {
+                await sendInnovationPwdConfirmation({
+                  participationType: reg.participation_type,
+                  ideaTitle: reg.idea_title, ideaDescription: reg.idea_description,
+                  member1Name: reg.name, member1Email: reg.email, member1Phone: reg.phone,
+                  member1DisabilityType: reg.disability_type,
+                  member2Name: reg.members?.[0]?.name, member2Email: reg.members?.[0]?.email, member2Phone: reg.members?.[0]?.phone,
+                  member3Name: reg.members?.[1]?.name, member3Email: reg.members?.[1]?.email, member3Phone: reg.members?.[1]?.phone,
+                  ...paymentDetails,
+                });
+
+              } else if (et === 'talent-org') {
+                await sendTalentOrgConfirmation({
+                  orgName: reg.org_name, orgType: reg.org_type, orgFocus: reg.org_focus,
+                  disabilityTypes: reg.disability_types ? JSON.parse(reg.disability_types) : [],
+                  address: reg.address, studentCount: reg.student_count,
+                  contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
+                  ...paymentDetails,
+                });
+
+              } else if (et === 'talent-student' || et === 'talent-combined') {
+                await sendTalentStudentConfirmation({
+                  orgName: reg.org_name, studentName: reg.student_name, studentAge: reg.student_age,
+                  disabilityType: reg.disability_type, talentCategory: reg.talent_category,
+                  talentDescription: reg.talent_desc,
+                  guardianName: reg.guardian_name, guardianPhone: reg.guardian_phone,
+                  guardianEmail: reg.guardian_email, videoLink: reg.video_link,
+                  orgContactEmail: reg.contact_email || null,
+                  orgContactName: reg.contact_name || null,
+                  ...paymentDetails,
+                });
+
+              } else if (et === 'cricket') {
+                await sendCricketConfirmation({
+                  teamName: reg.team_name, city: reg.city, state: reg.state,
+                  playerCount: reg.player_count, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
+                  additionalInfo: reg.additional_info,
+                  contactName: reg.contact_name, contactEmail: reg.contact_email, contactPhone: reg.contact_phone,
+                  ...paymentDetails,
+                });
+
+              } else if (et === 'chess') {
+                await sendChessConfirmation({
+                  participantName: reg.participant_name, email: reg.email, phone: reg.phone,
+                  age: reg.age, city: reg.city, state: reg.state,
+                  disabilityType: reg.disability_type, hasPlayedBefore: reg.has_played_before ? 'yes' : 'no',
+                  experienceLevel: reg.experience_level, additionalInfo: reg.additional_info,
+                });
+              }
+              console.log(`[webhook] Confirmation email sent for ${et}`);
+            }
+          }
+        } catch (confErr) {
+          console.error('[webhook] Failed to send confirmation email:', confErr.message);
+        }
       }
     }
-
-    // GST @ 18% exclusive – added ON TOP of the base registration fee
-    const gstAmount   = Math.round(baseFee * 18 / 100);
-    const totalAmount = baseFee + gstAmount;
     
-    const options = {
-      amount: totalAmount,
-      currency: 'INR',
-      receipt: `rcpt_${Date.now()}`
-    };
-    
-    const order = await razorpay.orders.create(options);
-    const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
-    
-    const { data: payRecord, error } = await supabase.from('payments').insert([{
-      razorpay_order_id: order.id,
-      event_type: eventType,
-      amount: totalAmount,
-      base_amount: baseFee,
-      gst_amount: gstAmount,
-      payer_name: sanitizeText(name, 100),
-      payer_email: email ? email.trim().toLowerCase() : null,
-      payer_phone: phone ? phone.trim() : null,
-      invoice_number: invoiceNumber,
-      status: 'created'
-    }]).select().single();
-    
-    if (error) {
-      console.error('Payment DB Error:', error);
-      throw error;
-    }
-    
-    res.json({ success: true, orderId: order.id, amount: totalAmount, baseAmount: baseFee, gstAmount, currency: 'INR', keyId: process.env.RAZORPAY_KEY_ID });
+    res.json({ status: 'ok' });
   } catch (err) {
-    await logError({ source: 'user', endpoint: '/api/payment/create-order', method: 'POST', errorType: 'server_error', message: err.message, req });
-    res.status(500).json({ success: false, message: 'Failed to create payment order' });
+    console.error('Webhook error:', err);
+    res.status(500).send('Error handling webhook');
   }
-})
+});
 
-// ── 1. Innovation Fest – College Category ─────────────────────────────────────
+
+
+// Ã¢â€â‚¬Ã¢â€â‚¬ 1. Innovation Fest Ã¢â‚¬â€œ College Category Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 // POST /api/innovation-college
 app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'pptFile', maxCount: 1 }]), async (req, res) => {
   try {
@@ -396,12 +557,23 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       member3Name, member3Email, member3Phone,
     } = req.body
 
-    // ── Payment Verification ─────────────────────────────
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+
+    let invoiceInfo;
+
+
+    try {
+
+
+      invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-college', name: member1Name, email: member1Email, phone: member1Phone });
+    } catch (e) {
+      console.error('[innovation-college] Razorpay invoice error:', e.message, e.error);
+      return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
     }
 
-    // ── Validation ───────────────────────────────────────
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Validation Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     const errors = validate([
       { field: 'teamName', check: teamName && sanitizeText(teamName, 100).length > 0, msg: 'required, max 100 chars' },
       { field: 'collegeName', check: collegeName && sanitizeText(collegeName, 200).length > 0, msg: 'required, max 200 chars' },
@@ -427,14 +599,14 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
     }
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
-    // ── Magic byte check for image ───────────────────────
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Magic byte check for image Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     if (req.files && req.files['prototypeImage']) {
       if (!isValidImageBuffer(req.files['prototypeImage'][0].buffer)) {
         return res.status(400).json({ success: false, message: 'Uploaded file is not a valid image' })
       }
     }
 
-    // ── Sanitize all text fields ─────────────────────────
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Sanitize all text fields Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     const sTeamName = sanitizeText(teamName, 100)
     const sCollegeName = sanitizeText(collegeName, 200)
     const sTheme = String(theme).toLowerCase() === 'other'
@@ -492,9 +664,9 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
         prototype_image_path: protoImagePath,
         ppt_file_path: pptFilePath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: req.body.razorpay_order_id,
-        razorpay_payment_id: req.body.razorpay_payment_id,
-        payment_status: 'paid'
+        razorpay_order_id: invoiceInfo.invoice.order_id,
+        razorpay_payment_id: null,
+        payment_status: 'pending'
       }])
       .select()
       .single()
@@ -504,50 +676,56 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Update payment record
-    supabase.from('payments').update({
-      status: 'paid',
-      razorpay_payment_id: req.body.razorpay_payment_id,
-      razorpay_signature: req.body.razorpay_signature,
+    // Insert payment record
+
+
+    supabase.from('payments').insert([{
+
+
+      razorpay_order_id: invoiceInfo.invoice.order_id,
+
+
+      event_type: 'innovation-college',
+
+
+      amount: invoiceInfo.totalAmount,
+
+
+      base_amount: invoiceInfo.baseFee,
+
+
+      gst_amount: invoiceInfo.gstAmount,
+
+
+      payer_name: member1Name,
+
+
+      payer_email: member1Email,
+
+
+      payer_phone: member1Phone,
+
+
+      invoice_number: invoiceInfo.invoiceNumber,
+
+
+      status: 'created',
+
+
       registration_id: data.id
-    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
 
-    // Fetch payment record for invoice
-    supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
-      .eq('razorpay_order_id', req.body.razorpay_order_id)
-      .maybeSingle()
-      .then(({ data: payRec }) => {
-        if (payRec && payRec.payer_email) {
-          sendGSTInvoiceEmail({
-            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
-            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
-            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
-            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
-          })
-        }
-      })
 
-    try {
-      sendInnovationCollegeConfirmation({
-        teamName, collegeName, theme: sTheme, ideaTitle, ideaDescription,
-        member1Name, member1Email, member1Phone,
-        member2Name, member2Email, member2Phone,
-        member3Name, member3Email, member3Phone,
-        paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
-      })
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
-    }
-    res.status(201).json({ success: true, data })
+    }]).then();
+
+    // Confirmation email will be sent by webhook after payment is completed
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
 
-// ── 2. Innovation Fest – PWD Category ────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ 2. Innovation Fest Ã¢â‚¬â€œ PWD Category Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 // POST /api/innovation-pwd
 app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ name: 'prototypeImage', maxCount: 1 }, { name: 'udidCard', maxCount: 1 }, { name: 'pptFile', maxCount: 1 }]), async (req, res) => {
   try {
@@ -559,14 +737,21 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       member3Name, member3Email, member3Phone,
     } = req.body
 
-    // ── Payment Verification ─────────────────────────────
-    if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
-      if (req.files && req.files['prototypeImage']) { try { fs.unlinkSync(req.files['prototypeImage'][0].path) } catch(e) {} }
-      if (req.files && req.files['udidCard']) { try { fs.unlinkSync(req.files['udidCard'][0].path) } catch(e) {} }
-      return res.status(400).json({ success: false, message: 'Payment verification failed' })
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+
+    let invoiceInfo;
+
+
+    try {
+      invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-pwd', name: member1Name, email: member1Email, phone: member1Phone });
+    } catch (e) {
+      console.error('[innovation-pwd] Razorpay invoice error:', e.message, e.error);
+      return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
     }
 
-    // ── Validation ───────────────────────────────────────
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Validation Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     const errors = validate([
       { field: 'participationType', check: isValidEnum(participationType, ['individual', 'team']), msg: 'must be individual or team' },
       { field: 'ideaTitle', check: ideaTitle && sanitizeText(ideaTitle, 200).length > 0, msg: 'required, max 200 chars' },
@@ -599,7 +784,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
     }
     // (Optional: Add buffer validation for UDID if strict check needed, skipping for PDF complexity)
 
-    // ── Sanitize ─────────────────────────────────────────
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Sanitize Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     const sPartType = participationType.trim()
     const sIdeaTitle = sanitizeText(ideaTitle, 200)
     const sIdeaDesc = sanitizeText(ideaDescription, 500)
@@ -680,9 +865,9 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         ppt_file_path: pptFilePath,
         udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: req.body.razorpay_order_id,
-        razorpay_payment_id: req.body.razorpay_payment_id,
-        payment_status: 'paid'
+        razorpay_order_id: invoiceInfo.invoice.order_id,
+        razorpay_payment_id: null,
+        payment_status: 'pending'
       }])
       .select()
       .single()
@@ -692,51 +877,32 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Update payment record
-    supabase.from('payments').update({
-      status: 'paid',
-      razorpay_payment_id: req.body.razorpay_payment_id,
-      razorpay_signature: req.body.razorpay_signature,
+    // Insert payment record
+
+    supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoice.order_id,
+      event_type: 'innovation-pwd',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: member1Name,
+      payer_email: member1Email,
+      payer_phone: member1Phone,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
       registration_id: data.id
-    }).eq('razorpay_order_id', req.body.razorpay_order_id).then();
+    }]).then();
 
-    // Fetch payment record for invoice
-    supabase.from('payments')
-      .select('amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, event_type, invoice_number')
-      .eq('razorpay_order_id', req.body.razorpay_order_id)
-      .maybeSingle()
-      .then(({ data: payRec }) => {
-        if (payRec && payRec.payer_email) {
-          sendGSTInvoiceEmail({
-            payerName: payRec.payer_name, payerEmail: payRec.payer_email, payerPhone: payRec.payer_phone,
-            eventType: payRec.event_type, baseAmount: payRec.base_amount || Math.round((payRec.amount || 0) * 100 / 118),
-            gstAmount: payRec.gst_amount || Math.round((payRec.amount || 0) * 18 / 118),
-            totalAmount: payRec.amount, razorpayOrderId: req.body.razorpay_order_id,
-            razorpayPaymentId: req.body.razorpay_payment_id, invoiceDate: new Date().toISOString(), invoiceNumber: payRec.invoice_number
-          })
-        }
-      })
-
-    try {
-      sendInnovationPwdConfirmation({
-        participationType, ideaTitle, ideaDescription,
-        member1Name, member1Email, member1Phone, member1DisabilityType: sDisability,
-        member2Name, member2Email, member2Phone,
-        member3Name, member3Email, member3Phone,
-        paymentStatus: 'Paid', razorpayOrderId: req.body.razorpay_order_id, razorpayPaymentId: req.body.razorpay_payment_id,
-      })
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
-    }
-    res.status(201).json({ success: true, data })
+    // Confirmation email will be sent by webhook after payment is completed
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
 
-// ── 3. Special Talent Utsav– Organization Registration ──────────────────────
-// GET /api/talent-org  – list all registered organizations
+// Ã¢â€â‚¬Ã¢â€â‚¬ 3. Special Talent UtsavÃ¢â‚¬â€œ Organization Registration Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// GET /api/talent-org  Ã¢â‚¬â€œ list all registered organizations
 app.get('/api/talent-org', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -760,7 +926,16 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
   try {
     const { orgName, orgType, orgTypeOther, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone } = req.body
 
-    // ── Validation ───────────────────────────────────────
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    let invoiceInfo;
+    try {
+      invoiceInfo = await createRazorpayInvoice({ eventType: 'talent-org', name: contactName, email: contactEmail, phone: contactPhone });
+    } catch (e) {
+      console.error('[talent-org] Razorpay invoice error:', e.message, e.error);
+      return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
+    }
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ Validation Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
     const errors = validate([
       { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required, max 200 chars' },
       { field: 'orgType', check: orgType && sanitizeText(orgType, 100).length > 0, msg: 'required' },
@@ -769,14 +944,14 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactEmail', check: isValidEmail(contactEmail), msg: 'invalid email' },
       { field: 'contactPhone', check: isValidPhone(contactPhone), msg: 'must be exactly 10 digits' },
-      { field: 'studentCount', check: !studentCount || isValidInt(studentCount, 0, 100000), msg: 'must be a number 0–100000' },
+      { field: 'studentCount', check: !studentCount || isValidInt(studentCount, 0, 100000), msg: 'must be a number 0Ã¢â‚¬â€œ100000' },
     ])
-    
+
     // Validate focus-specific constraints
     if (orgFocus === 'single' && Array.isArray(disabilityTypes) && disabilityTypes.length > 1) {
       errors.push({ field: 'disabilityTypes', msg: 'single focus organizations can only select one disability type' })
     }
-    
+
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
     const effectiveOrgType = String(orgType).toLowerCase() === 'other'
@@ -798,6 +973,8 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
         contact_name: sanitizeText(contactName, 100),
         contact_email: contactEmail.trim().toLowerCase(),
         contact_phone: contactPhone.trim(),
+        razorpay_order_id: invoiceInfo.invoice.order_id,
+        payment_status: 'pending',
       }])
       .select()
       .single()
@@ -809,19 +986,30 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       }
       return res.status(500).json({ success: false, message: error.message })
     }
-    try {
-      sendTalentOrgConfirmation({ orgName, orgType: effectiveOrgType, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone })
-    } catch (emailErr) {
-      await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
-    }
-    res.status(201).json({ success: true, data })
+
+    // Insert payment record
+    supabase.from('payments').insert([{
+      razorpay_order_id: invoiceInfo.invoice.order_id,
+      event_type: 'talent-org',
+      amount: invoiceInfo.totalAmount,
+      base_amount: invoiceInfo.baseFee,
+      gst_amount: invoiceInfo.gstAmount,
+      payer_name: contactName,
+      payer_email: contactEmail,
+      payer_phone: contactPhone,
+      invoice_number: invoiceInfo.invoiceNumber,
+      status: 'created',
+      registration_id: data.id
+    }]).then();
+
+    // Confirmation email will be sent by webhook after payment is completed
+    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
 
-// ── 4. Special Talent Utsav – Student Nomination ─────────────────────────────
 // POST /api/talent-student  (multipart/form-data; required performanceVideo field)
 app.post('/api/talent-student', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
   try {
@@ -830,20 +1018,20 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       talentCategory, talentCategoryOther, talentDescription, gradeCategory, guardianName, guardianPhone, guardianEmail, videoLink, performanceUrl, social
     } = req.body
 
-    // ── Payment Verification ─────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
       if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
       return res.status(400).json({ success: false, message: 'Payment verification failed' })
     }
 
-    // ── Validation ───────────────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required' },
       { field: 'studentName', check: studentName && sanitizeText(studentName, 100).length > 0, msg: 'required' },
-      { field: 'studentAge', check: isValidInt(studentAge, 1, 120), msg: 'must be a number 1–120' },
+      { field: 'studentAge', check: isValidInt(studentAge, 1, 120), msg: 'must be a number 1Î“Ã‡Ã´120' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
-      { field: 'gradeCategory', check: gradeCategory && ['1–5', '6–8', '9–12'].includes(gradeCategory), msg: 'must be 1–5, 6–8, or 9–12' },
+      { field: 'gradeCategory', check: gradeCategory && ['1Î“Ã‡Ã´5', '6Î“Ã‡Ã´8', '9Î“Ã‡Ã´12'].includes(gradeCategory), msg: 'must be 1Î“Ã‡Ã´5, 6Î“Ã‡Ã´8, or 9Î“Ã‡Ã´12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'guardianName', check: guardianName && sanitizeText(guardianName, 100).length > 0, msg: 'required' },
       { field: 'guardianPhone', check: isValidPhone(guardianPhone), msg: 'must be exactly 10 digits' },
@@ -883,7 +1071,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
       ? sanitizeText(talentCategoryOther, 100)
       : sanitizeText(talentCategory, 100)
 
-    // ── Validate video magic bytes ───────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validate video magic bytes Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     if (req.file) {
       const headBuf = Buffer.alloc(12)
       const fd = fs.openSync(req.file.path, 'r')
@@ -969,7 +1157,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
   }
 })
 
-// ── Combined Special Talent Utsav (Organization + Student/Team Nomination) ─────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Combined Special Talent Utsav (Organization + Student/Team Nomination) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/talent-combined  (multipart/form-data; required performanceVideo field)
 app.post('/api/talent-combined', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
   try {
@@ -1008,13 +1196,13 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     }
     console.log('Parsed orgDisabilityTypes:', parsedOrgDisabilityTypes)
 
-    // ── Payment Verification ─────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
       if (req.file) { try { fs.unlinkSync(req.file.path) } catch(e) {} }
       return res.status(400).json({ success: false, message: 'Payment verification failed' })
     }
 
-    // ── Validation ───────────────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       // Organization validation
       { field: 'orgName', check: orgName && sanitizeText(orgName, 200).length > 0, msg: 'required' },
@@ -1032,7 +1220,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       
       // Talent details (common)
       { field: 'talentCategory', check: talentCategory && sanitizeText(talentCategory, 100).length > 0, msg: 'required' },
-      { field: 'gradeCategory', check: gradeCategory && ['1–5', '6–8', '9–12'].includes(gradeCategory), msg: 'must be 1–5, 6–8, or 9–12' },
+      { field: 'gradeCategory', check: gradeCategory && ['1Î“Ã‡Ã´5', '6Î“Ã‡Ã´8', '9Î“Ã‡Ã´12'].includes(gradeCategory), msg: 'must be 1Î“Ã‡Ã´5, 6Î“Ã‡Ã´8, or 9Î“Ã‡Ã´12' },
       { field: 'talentDescription', check: !talentDescription || (talentDescription.trim().split(/\s+/).filter(w => w.length > 0).length <= 50), msg: 'must be 50 words or less' },
       { field: 'videoFile', check: req.file || videoLink || performanceUrl, msg: 'video file, video link, or performance URL is required' }
     ])
@@ -1053,7 +1241,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     if (nominationType === 'team') {
       try {
         const teamMembersData = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : teamMembers
-        console.log('🔍 Debug - Raw team members data received:', JSON.stringify(teamMembersData, null, 2))
+        console.log('â‰¡Æ’Ã¶Ã¬ Debug - Raw team members data received:', JSON.stringify(teamMembersData, null, 2))
         
         errors.push(...validate([
           { field: 'teamSize', check: teamSize && Number.isInteger(+teamSize) && +teamSize >= 2 && +teamSize <= 10, msg: 'team size must be 2-10 members' },
@@ -1083,7 +1271,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     }
 
     if (errors.length > 0) {
-      console.log('❌ Validation failed:', errors)
+      console.log('Î“Â¥Ã® Validation failed:', errors)
       return res.status(400).json({ success: false, errors })
     }
 
@@ -1110,8 +1298,8 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       processedTalentCategory = `Other: ${sanitizeText(talentCategoryOther, 100)}`
     }
 
-    // ── File handling ────────────────────────────────────
-    console.log('🎥 Processing video file...')
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ File handling Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
+    console.log('â‰¡Æ’Ã„Ã‘ Processing video file...')
     let videoFilePath = null
     if (req.file) {
       try {
@@ -1119,7 +1307,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         console.log('Video compression completed:', path.basename(videoFilePath))
         // Note: compressVideoWithFFmpeg already handles cleanup of original file
       } catch (e) {
-        console.error('❌ Video compression failed:', e.message)
+        console.error('Î“Â¥Ã® Video compression failed:', e.message)
         videoFilePath = req.file.path // Use original file if compression fails
         await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'upload_error', message: `ffmpeg compression error: ${e.message}`, req })
       }
@@ -1148,7 +1336,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       }
     }
 
-    console.log('💾 Inserting into database...')
+    console.log('â‰¡Æ’Ã†â•› Inserting into database...')
     const { data, error } = await supabase
       .from('talent_nominations')
       .insert([{
@@ -1191,7 +1379,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       }])
 
     if (error) {
-      console.log('❌ Database error:', error.message)
+      console.log('Î“Â¥Ã® Database error:', error.message)
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
@@ -1224,7 +1412,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     console.log('Database insertion successful')
 
     // Send confirmation emails
-    console.log('📧 Sending confirmation emails...')
+    console.log('â‰¡Æ’Ã´Âº Sending confirmation emails...')
     try {
       if (nominationType === 'individual') {
         sendTalentStudentConfirmation({
@@ -1247,21 +1435,21 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       }
       console.log('Emails sent successfully')
     } catch (emailErr) {
-      console.log('⚠️ Email error (non-critical):', emailErr.message)
+      console.log('Î“ÃœÃ¡âˆ©â••Ã… Email error (non-critical):', emailErr.message)
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'email_error', message: emailErr.message, stack: emailErr.stack, req })
     }
 
     console.log('Form submission completed successfully')
     res.status(201).json({ success: true, data })
   } catch (err) {
-    console.log('❌ Unexpected error:', err.message)
+    console.log('Î“Â¥Ã® Unexpected error:', err.message)
     console.log('Stack trace:', err.stack)
     await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
 })
 
-// ── Short Film Contest Registration ────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Short Film Contest Registration Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/shortfilm
 app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
   try {
@@ -1273,16 +1461,16 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       contactName, contactEmail, contactPhone, additionalInfo,
     } = req.body
 
-    // ── Payment Verification ─────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
       return res.status(400).json({ success: false, message: 'Payment verification failed' })
     }
 
-    // ── Validation ───────────────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       { field: 'filmTitle',             check: filmTitle && sanitizeText(filmTitle, 200).length > 0,               msg: 'required, max 200 chars' },
       { field: 'genre',                 check: genre && sanitizeText(genre, 100).length > 0,                       msg: 'required' },
-      { field: 'duration',              check: isValidInt(duration, 1, 3),                                         msg: 'must be 1–3 minutes (strict event rule)' },
+      { field: 'duration',              check: isValidInt(duration, 1, 3),                                         msg: 'must be 1Î“Ã‡Ã´3 minutes (strict event rule)' },
       { field: 'synopsis',              check: synopsis && sanitizeText(synopsis, 2000).length > 0,                msg: 'required, max 2000 chars' },
       { field: 'filmUrl',               check: filmUrl && isValidURL(filmUrl),                                     msg: 'must be a valid http/https URL' },
       { field: 'participationType',     check: isValidEnum(participationType, ['individual', 'team']),             msg: 'must be individual or team' },
@@ -1373,7 +1561,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       const mailOptions = {
         from: process.env.MAIL_FROM || process.env.MAIL_USER,
         to: contactEmail.trim().toLowerCase(),
-        subject: `Short Film Submitted – VYUGA | ${filmTitle}`,
+        subject: `Short Film Submitted Î“Ã‡Ã´ VYUGA | ${filmTitle}`,
         html: `
           <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
             <div style="background:linear-gradient(135deg,#0197B2,#5BCB2B);padding:28px;text-align:center">
@@ -1381,7 +1569,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
             </div>
             <div style="padding:24px">
               <p>Dear <strong>${sanitizeText(contactName, 100)}</strong>,</p>
-              <p>Thank you for submitting your short film to <strong>VYUGA – Short Film Contest</strong>!</p>
+              <p>Thank you for submitting your short film to <strong>VYUGA Î“Ã‡Ã´ Short Film Contest</strong>!</p>
               <table style="width:100%;border-collapse:collapse;margin:16px 0">
                 <tr><td style="padding:6px 0;color:#64748b;width:160px">Film Title</td><td style="padding:6px 0;font-weight:bold">${sanitizeText(filmTitle, 200)}</td></tr>
                 <tr><td style="padding:6px 0;color:#64748b">Genre</td><td style="padding:6px 0">${sanitizeText(genre, 100)}</td></tr>
@@ -1409,7 +1597,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
   }
 })
 
-// ── 5. Blind Cricket Tournament ───────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ 5. Blind Cricket Tournament Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/cricket
 app.post('/api/cricket', registrationLimiter, async (req, res) => {
   try {
@@ -1421,17 +1609,17 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       tournamentExperience,
     } = req.body
 
-    // ── Payment Verification ─────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Payment Verification Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     if (!verifyRazorpaySignature(req.body.razorpay_order_id, req.body.razorpay_payment_id, req.body.razorpay_signature)) {
       return res.status(400).json({ success: false, message: 'Payment verification failed' })
     }
 
-    // ── Validation ───────────────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       { field: 'teamName', check: teamName && sanitizeText(teamName, 100).length > 0, msg: 'required, max 100 chars' },
       { field: 'city', check: city && sanitizeText(city, 100).length > 0, msg: 'required' },
       { field: 'state', check: state && sanitizeText(state, 100).length > 0, msg: 'required' },
-      { field: 'playerCount', check: isValidInt(playerCount, 1, 50), msg: 'must be 1–50' },
+      { field: 'playerCount', check: isValidInt(playerCount, 1, 50), msg: 'must be 1Î“Ã‡Ã´50' },
       { field: 'hasPlayedBefore', check: isValidEnum(hasPlayedBefore, ['yes', 'no']), msg: 'must be yes or no' },
       { field: 'contactName', check: contactName && sanitizeText(contactName, 100).length > 0, msg: 'required' },
       { field: 'contactEmail', check: isValidEmail(contactEmail), msg: 'invalid email' },
@@ -1503,7 +1691,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
   }
 })
 
-// ── 6. Blind Chess Competition ────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ 6. Blind Chess Competition Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/chess
 app.post('/api/chess', registrationLimiter, async (req, res) => {
   try {
@@ -1513,12 +1701,12 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       hasPlayedBefore, experienceLevel, experienceLevelOther, additionalInfo,
     } = req.body
 
-    // ── Validation ───────────────────────────────────────
+    // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
       { field: 'participantName', check: participantName && sanitizeText(participantName, 100).length > 0, msg: 'required, max 100 chars' },
       { field: 'email', check: isValidEmail(email), msg: 'invalid email' },
       { field: 'phone', check: isValidPhone(phone), msg: 'must be exactly 10 digits' },
-      { field: 'age', check: isValidInt(age, 5, 100), msg: 'must be 5–100' },
+      { field: 'age', check: isValidInt(age, 5, 100), msg: 'must be 5Î“Ã‡Ã´100' },
       { field: 'city', check: city && sanitizeText(city, 100).length > 0, msg: 'required' },
       { field: 'state', check: state && sanitizeText(state, 100).length > 0, msg: 'required' },
       { field: 'disabilityType', check: disabilityType && sanitizeText(disabilityType, 100).length > 0, msg: 'required' },
@@ -1588,11 +1776,11 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
   }
 })
 
-// ── 6. Accommodation Request ─────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ 6. Accommodation Request Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/accommodation-request
 app.post('/api/accommodation-request', registrationLimiter, async (req, res) => {
   try {
-    console.log('🏨 Accommodation Request Received:', req.body)
+    console.log('â‰¡Æ’Ã…Â¿ Accommodation Request Received:', req.body)
 
     const {
       fullName,
@@ -1671,7 +1859,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
       const adminEmailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #0ea5e9 0%, #84cc16 100%); padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">🏨 New Accommodation Request</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">â‰¡Æ’Ã…Â¿ New Accommodation Request</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">VYUGA Event Portal</p>
           </div>
           
@@ -1727,13 +1915,13 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'noreply@vyuga.org',
         to: 'vikasthangavel@gmail.com',
-        subject: `🏨 New Accommodation Request - ${fullName}`,
+        subject: `â‰¡Æ’Ã…Â¿ New Accommodation Request - ${fullName}`,
         html: adminEmailHtml
       })
 
       console.log('Admin notification email sent successfully')
     } catch (emailError) {
-      console.error('❌ Failed to send admin notification:', emailError)
+      console.error('Î“Â¥Ã® Failed to send admin notification:', emailError)
       // Don't fail the request if email fails
     }
 
@@ -1742,7 +1930,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
       const confirmationEmailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #0ea5e9 0%, #84cc16 100%); padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">🏨 Accommodation Request Received</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">â‰¡Æ’Ã…Â¿ Accommodation Request Received</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">VYUGA Event Portal</p>
           </div>
           
@@ -1793,13 +1981,13 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'noreply@vyuga.org',
         to: email,
-        subject: '🏨 Accommodation Request Confirmed - VYUGA',
+        subject: 'â‰¡Æ’Ã…Â¿ Accommodation Request Confirmed - VYUGA',
         html: confirmationEmailHtml
       })
 
       console.log('User confirmation email sent successfully')
     } catch (emailError) {
-      console.error('❌ Failed to send user confirmation:', emailError)
+      console.error('Î“Â¥Ã® Failed to send user confirmation:', emailError)
       // Don't fail the request if email fails
     }
 
@@ -1811,7 +1999,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
     })
 
   } catch (error) {
-    console.error('❌ Accommodation Request Error:', error)
+    console.error('Î“Â¥Ã® Accommodation Request Error:', error)
     await logError({ source: 'user', endpoint: '/api/accommodation-request', method: 'POST', errorType: 'server_error', message: error.message, stack: error.stack, req })
     res.status(500).json({
       success: false,
@@ -1820,7 +2008,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
   }
 })
 
-// ── Sponsor Message ──────────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Sponsor Message Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/sponsors
 app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), async (req, res) => {
   const { name, phone, email, message, orgName, sponsorType, amount, website } = req.body
@@ -1857,13 +2045,13 @@ app.post('/api/sponsors', registrationLimiter, sponsorUpload.single('logo'), asy
     res.json({ success: true, message: 'Sponsor interest submitted successfully', data })
   } catch (err) {
     if (req.file) fs.unlinkSync(req.file.path) // Cleanup on error
-    console.error('❌ Sponsor Message Error:', err)
+    console.error('Î“Â¥Ã® Sponsor Message Error:', err)
     await logError({ source: 'user', endpoint: '/api/sponsors', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Internal Server Error' })
   }
 })
 
-// ── Gallery (Public) ──────────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Gallery (Public) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/gallery', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -1873,13 +2061,13 @@ app.get('/api/gallery', async (req, res) => {
     if (error) throw error
     res.json({ success: true, data })
   } catch (err) {
-    console.error('❌ Gallery fetch error:', err)
+    console.error('Î“Â¥Ã® Gallery fetch error:', err)
     await logError({ source: 'user', endpoint: '/api/gallery', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Failed to fetch gallery' })
   }
 })
 
-// ── Global Form Settings (Public) ─────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Global Form Settings (Public) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/form-settings', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -1895,7 +2083,7 @@ app.get('/api/form-settings', async (req, res) => {
   }
 })
 
-// ── Admin middleware ──────────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin middleware Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 function requireAdmin(req, res, next) {
   const token = req.headers['x-admin-token'] || req.query.token
   if (!token || token !== process.env.ADMIN_TOKEN) {
@@ -1904,7 +2092,7 @@ function requireAdmin(req, res, next) {
   next()
 }
 
-// ── Admin: verify token ───────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: verify token Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/admin/login', loginLimiter, (req, res) => {
   try {
     const { password } = req.body
@@ -1923,7 +2111,7 @@ app.post('/api/admin/login', loginLimiter, (req, res) => {
   }
 })
 
-// ── Admin: Gallery Upload ─────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: Gallery Upload Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/admin/gallery', requireAdmin, galleryUpload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Image file is required' })
@@ -1942,7 +2130,7 @@ app.post('/api/admin/gallery', requireAdmin, galleryUpload.single('image'), asyn
     res.json({ success: true, data })
   } catch (err) {
     if (req.file) fs.unlinkSync(req.file.path)
-    console.error('❌ Gallery upload error:', err)
+    console.error('Î“Â¥Ã® Gallery upload error:', err)
     await logError({ source: 'admin', endpoint: '/api/admin/gallery', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Upload failed' })
   }
@@ -1973,13 +2161,13 @@ app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
     }
     res.json({ success: true, message: 'Image deleted' })
   } catch (err) {
-    console.error('❌ Gallery delete error:', err)
+    console.error('Î“Â¥Ã® Gallery delete error:', err)
     await logError({ source: 'admin', endpoint: `/api/admin/gallery/${req.params?.id}`, method: 'DELETE', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: 'Delete failed' })
   }
 })
 
-// ── Admin: all innovation-college registrations ───────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all innovation-college registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/innovation-college', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -1997,7 +2185,7 @@ app.get('/api/admin/innovation-college', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all innovation-pwd registrations ───────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all innovation-pwd registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/innovation-pwd', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2015,7 +2203,7 @@ app.get('/api/admin/innovation-pwd', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all talent organisations ──────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all talent organisations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/talent-org', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2033,7 +2221,7 @@ app.get('/api/admin/talent-org', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all talent nominations ────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all talent nominations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/talent-student', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2051,7 +2239,7 @@ app.get('/api/admin/talent-student', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all cricket registrations ─────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all cricket registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/cricket', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2069,7 +2257,7 @@ app.get('/api/admin/cricket', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all chess registrations ───────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all chess registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/chess', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2087,7 +2275,7 @@ app.get('/api/admin/chess', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all short film registrations ──────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all short film registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/shortfilm', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2105,7 +2293,7 @@ app.get('/api/admin/shortfilm', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all accommodation requests ─────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all accommodation requests Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/accommodation', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2123,7 +2311,7 @@ app.get('/api/admin/accommodation', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all sponsor messages ──────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all sponsor messages Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/sponsors', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2141,7 +2329,7 @@ app.get('/api/admin/sponsors', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: all payments ──────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all payments Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/payments', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2159,7 +2347,7 @@ app.get('/api/admin/payments', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: update registration status ────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: update registration status Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // PATCH /api/admin/status/:table/:id
 // body: { status: 'approved'|'rejected'|'pending', adminNote? }
 const TABLE_MAP = {
@@ -2179,7 +2367,7 @@ const TABLE_MAP = {
     table: 'talent_nominations',
     emailField: 'contact_email',
     nameField: 'contact_name',
-    event: 'Special Talent Utsav – Student Nomination',
+    event: 'Special Talent Utsav Î“Ã‡Ã´ Student Nomination',
   },
   cricket: {
     table: 'cricket_team_registrations',
@@ -2239,7 +2427,7 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: trigger status email manually ──────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: trigger status email manually Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) => {
   try {
     const { type, id } = req.params
@@ -2293,7 +2481,7 @@ app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) =>
   }
 })
 
-// ── Admin: trigger ALL status emails manually ─────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: trigger ALL status emails manually Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) => {
   try {
     const { type } = req.params
@@ -2345,7 +2533,7 @@ app.post('/api/admin/trigger-email-all/:type', requireAdmin, async (req, res) =>
   }
 })
 
-// ── Admin: Jury Management ───────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: Jury Management Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 
 // Get Jury allocation stats across all events
 app.get('/api/admin/jury/stats', requireAdmin, async (req, res) => {
@@ -2554,7 +2742,7 @@ app.post('/api/admin/jury/allocate', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Jury Routes ──────────────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Jury Routes Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 
 // Jury Login
 app.post('/api/jury/login', loginLimiter, async (req, res) => {
@@ -2770,7 +2958,7 @@ app.patch('/api/admin/form-settings/:id', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Admin: view error logs ───────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: view error logs Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/error-logs', requireAdmin, async (req, res) => {
   try {
     const { source, errorType, limit = 100 } = req.query
@@ -2789,7 +2977,7 @@ app.get('/api/admin/error-logs', requireAdmin, async (req, res) => {
   }
 })
 
-// ── Dev: Error Logs Middleware (Date-based Auth) ──────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Error Logs Middleware (Date-based Auth) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 const requireDevAuth = (req, res, next) => {
   const authHeader = req.headers['x-dev-auth']
   
@@ -2813,7 +3001,7 @@ const requireDevAuth = (req, res, next) => {
   }
 }
 
-// ── Dev: Login (Check Date Password) ──────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Login (Check Date Password) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/dev/login', (req, res) => {
   const { password } = req.body
   
@@ -2832,7 +3020,7 @@ app.post('/api/dev/login', (req, res) => {
   }
 })
 
-// ── Dev: View Error Logs ──────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: View Error Logs Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/dev/error-logs', requireDevAuth, async (req, res) => {
   try {
     const { limit = 100, status } = req.query
@@ -2857,7 +3045,7 @@ app.get('/api/dev/error-logs', requireDevAuth, async (req, res) => {
   }
 })
 
-// ── Dev: Update Error Log Status ──────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Update Error Log Status Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.put('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   try {
     const { id } = req.params
@@ -2876,7 +3064,7 @@ app.put('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   }
 })
 
-// ── Dev: Delete Error Log ─────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Dev: Delete Error Log Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.delete('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   try {
     const { id } = req.params
@@ -2893,7 +3081,7 @@ app.delete('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
   }
 })
 
-// ── Global error handler ──────────────────────────────────────────────────────
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Global error handler Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.use(async (err, req, res, next) => {
   await logError({
     source: 'server',

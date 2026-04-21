@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
-import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
+import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -275,22 +275,13 @@ export default function InnovationUnifiedForm() {
     setError('')
 
     try {
-      const userInfo = {
-        name: isForSpeciallyAbled ? form.teamName : form.member1Name,
-        email: form.member1Email,
-        phone: form.member1Phone,
-        eventType: isForSpeciallyAbled ? 'innovation-college' : 'innovation-pwd'
-      };
-      
-      const paymentData = await handlePaymentProcess(userInfo);
-      
       const payload = buildPayload();
-      payload.append('razorpay_payment_id', paymentData.razorpay_payment_id);
-      payload.append('razorpay_order_id', paymentData.razorpay_order_id);
-      payload.append('razorpay_signature', paymentData.razorpay_signature);
-
-      await postFormData(endpoint, payload)
-      setSubmitted(true)
+      const res = await postFormData(endpoint, payload)
+      if (res.invoice_link) {
+         window.location.href = res.invoice_link;
+      } else {
+         setSubmitted(true)
+      }
     } catch (err) {
       setError(err.message)
     } finally {

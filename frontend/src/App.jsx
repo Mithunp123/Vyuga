@@ -37,6 +37,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
 import ShippingPolicy from './pages/ShippingPolicy.jsx'
 import ContactUs from './pages/ContactUs.jsx'
 import CancellationAndRefunds from './pages/CancellationAndRefunds.jsx'
+import PaymentSuccess from './pages/PaymentSuccess.jsx'
 
 export default function App() {
   return (
@@ -80,6 +81,8 @@ export default function App() {
       {/* ── Jury Portal ── */}
       <Route path="/jury-login" element={<JuryLogin />} />
       <Route path="/jury-dashboard" element={<JuryDashboard />} />
+
+      <Route path="/payment-success" element={<PaymentSuccess />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

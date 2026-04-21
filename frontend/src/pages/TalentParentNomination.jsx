@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
-import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
+import { fetchEventFee } from '../paymentHandler.js'
 import compressVideo from '../compressVideo'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
@@ -373,13 +373,12 @@ export default function TalentParentNomination() {
         eventType: 'talent-student'
       };
       
-      const paymentData = await handlePaymentProcess(userInfo);
-      fd.append('razorpay_payment_id', paymentData.razorpay_payment_id);
-      fd.append('razorpay_order_id', paymentData.razorpay_order_id);
-      fd.append('razorpay_signature', paymentData.razorpay_signature);
-      
-      await postFormData('/api/talent-combined', fd)
-      setSubmitted(true)
+      const res = await postFormData('/api/talent-combined', fd)
+        if (res.invoice_link) {
+          window.location.href = res.invoice_link;
+        } else {
+          setSubmitted(true)
+        }
     } catch (err) {
       setError(err.message)
     } finally {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
-import { handlePaymentProcess, fetchEventFee } from '../paymentHandler.js'
+import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -128,8 +128,6 @@ export default function ShortFilmForm() {
         eventType: 'shortfilm',
       }
 
-      const paymentData = await handlePaymentProcess(userInfo)
-
       const submitData = {
         ...form,
         genre: 'N/A',
@@ -139,13 +137,14 @@ export default function ShortFilmForm() {
           : null,
         hasSubtitles: form.hasSubtitles,
         hasAudioDescription: form.hasAudioDescription,
-        razorpay_payment_id: paymentData.razorpay_payment_id,
-        razorpay_order_id: paymentData.razorpay_order_id,
-        razorpay_signature: paymentData.razorpay_signature,
       }
 
-      await postJSON('/api/shortfilm', submitData)
-      setSubmitted(true)
+      const res = await postJSON('/api/shortfilm', submitData)
+        if (res.invoice_link) {
+          window.location.href = res.invoice_link;
+        } else {
+          setSubmitted(true)
+        }
     } catch (err) {
       setError(err.message)
     } finally {
