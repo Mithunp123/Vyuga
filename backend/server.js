@@ -408,9 +408,7 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
     callback_method: "get",
   };
 
-  console.log('[Razorpay] Creating invoice for', eventType, '| fee:', baseFee, 'paise | expire_by:', expireBy);
   const invoice = await razorpay.invoices.create(options);
-  console.log('[Razorpay] Invoice created:', invoice.id, '| short_url:', invoice.short_url);
   const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
   const invoiceRef = invoice.id || invoice.order_id;
 
@@ -489,18 +487,10 @@ app.post('/api/payment/create-order', async (req, res) => {
 })
 
 async function processSuccessfulPayment({ payment, orderId, paymentId, source }) {
-  console.log(`[${source}] processSuccessfulPayment invoked:`, {
-    paymentId: payment?.id,
-    eventType: payment?.event_type,
-    registrationId: payment?.registration_id,
-    orderId,
-    razorpayPaymentId: paymentId,
-    payerEmail: payment?.payer_email,
-    status: payment?.status,
-  })
+
 
   if (!payment || !payment.registration_id) {
-    console.log(`[${source}] processSuccessfulPayment skipped - missing payment or registration_id`)
+
     return
   }
 
@@ -517,10 +507,8 @@ async function processSuccessfulPayment({ payment, orderId, paymentId, source })
   }
 
   const table = tableMap[payment.event_type]
-  console.log(`[${source}] resolved registration table:`, table || 'none')
   if (table) {
     await supabase.from(table).update({ payment_status: 'paid' }).eq('id', payment.registration_id)
-    console.log(`[${source}] Registration marked paid in`, table)
   }
 
   try {
@@ -605,7 +593,7 @@ async function processSuccessfulPayment({ payment, orderId, paymentId, source })
       })
     }
 
-    console.log(`[${source}] Confirmation email sent for ${et}`)
+
   } catch (confErr) {
     console.error(`[${source}] Failed to send confirmation email:`, confErr.message)
   }
@@ -720,7 +708,7 @@ app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), asy
     }
 
     const payload = JSON.parse(req.body.toString());
-    console.log('[webhook] Event received:', payload.event);
+
 
     if (payload.event === 'invoice.paid') {
       const invoice = payload.payload.invoice.entity;
@@ -745,10 +733,6 @@ app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), asy
       }
 
       if (existingPayment.status === 'paid') {
-        console.log('[webhook] Payment already marked paid, skipping duplicate processing:', {
-          paymentId: existingPayment.id,
-          invoiceId: invoice.id,
-        })
         return res.json({ status: 'ok' })
       }
 
@@ -766,12 +750,11 @@ app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), asy
       if (!payment) {
         const { data: latest } = await supabase.from('payments').select('*').eq(matchKey, matchValue).maybeSingle()
         if (latest?.status === 'paid') {
-          console.log('[webhook] Payment already updated by another request, skipping duplicate confirmation')
           return res.json({ status: 'ok' })
         }
       }
 
-      console.log('[webhook] Payment record updated:', payment?.id || 'not-found', '| event_type:', payment?.event_type || 'unknown', '| invoice_ref:', invoiceRef, '| matched_by:', `${matchKey}:${matchValue}`);
+
 
       const effectiveOrderId = payment?.razorpay_order_id || existingPayment?.razorpay_order_id || orderId || invoiceRef
       await processSuccessfulPayment({ payment: payment || existingPayment, orderId: effectiveOrderId, paymentId, source: 'webhook' })
@@ -786,24 +769,12 @@ app.post('/api/webhook/razorpay', express.raw({ type: 'application/json' }), asy
 
 app.post('/api/payment/verify', async (req, res) => {
   const { razorpay_invoice_id: invoiceId, razorpay_payment_id: paymentIdFromClient } = req.body || {}
-  console.log('[verify] Incoming request:', {
-    invoiceId,
-    paymentIdFromClient,
-    userAgent: req.headers['user-agent'],
-    ip: req.ip,
-  })
+
   if (!invoiceId) return res.status(400).json({ success: false, message: 'razorpay_invoice_id is required' })
 
   try {
     const invoice = await razorpay.invoices.fetch(invoiceId)
-    console.log('[verify] Razorpay invoice fetched:', {
-      id: invoice?.id,
-      status: invoice?.status,
-      orderId: invoice?.order_id,
-      paymentId: invoice?.payment_id,
-      amountPaid: invoice?.amount_paid,
-      receipt: invoice?.receipt,
-    })
+
     if (!invoice) return res.status(404).json({ success: false, message: 'Invoice not found' })
 
     const isPaid = invoice.status === 'paid' || Number(invoice.amount_paid || 0) > 0
@@ -822,21 +793,12 @@ app.post('/api/payment/verify', async (req, res) => {
       receiptId,
     })
 
-    console.log('[verify] Payment record lookup result:', {
-      found: Boolean(existing),
-      paymentId: existing?.id,
-      eventType: existing?.event_type,
-      registrationId: existing?.registration_id,
-      status: existing?.status,
-      payerEmail: existing?.payer_email,
-      matchKey,
-      matchValue,
-    })
+
 
     let recoveredMissingRegistration = false
     if (existing && !existing.registration_id) {
       const fallbackReg = await findRegistrationByRazorpayRefs({ invoiceId: invoice.id, orderId })
-      console.log('[verify] Missing registration_id fallback lookup:', fallbackReg)
+
 
       if (fallbackReg?.registrationId) {
         const { data: patchedPayment, error: patchError } = await supabase
@@ -856,11 +818,7 @@ app.post('/api/payment/verify', async (req, res) => {
           matchKey = 'id'
           matchValue = existing.id
           recoveredMissingRegistration = true
-          console.log('[verify] Patched payment with registration_id:', {
-            paymentId: existing.id,
-            registrationId: existing.registration_id,
-            eventType: existing.event_type,
-          })
+
         }
       }
     }
@@ -869,20 +827,17 @@ app.post('/api/payment/verify', async (req, res) => {
       if (recoveredMissingRegistration && existing.registration_id) {
         const effectiveOrderId = existing.razorpay_order_id || orderId || invoiceRef
         await processSuccessfulPayment({ payment: existing, orderId: effectiveOrderId, paymentId, source: 'verify' })
-        console.log('[verify] Recovered paid payment with registration_id and triggered confirmation flow')
+
         return res.json({ success: true, message: 'Payment already verified; confirmation triggered' })
       }
 
-      console.log('[verify] Payment already processed, skipping duplicate confirmation:', {
-        paymentId: existing.id,
-        invoiceId: invoice.id,
-      })
+
       return res.json({ success: true, message: 'Payment already verified' })
     }
 
     if (!existing) {
       const fallbackReg = await findRegistrationByRazorpayRefs({ invoiceId: invoice.id, orderId })
-      console.log('[verify] Registration fallback lookup:', fallbackReg)
+
 
       if (!fallbackReg) {
         return res.status(404).json({ success: false, message: 'Payment record not found for this invoice' })
@@ -936,7 +891,7 @@ app.post('/api/payment/verify', async (req, res) => {
       existing = insertedPayment || paymentRow
       matchKey = 'razorpay_order_id'
       matchValue = existing.razorpay_order_id
-      console.log('[verify] Backfilled payment row:', { id: existing?.id, eventType: existing?.event_type, registrationId: existing?.registration_id, orderId: existing?.razorpay_order_id })
+
     }
 
     const updatePayload = {
@@ -952,13 +907,7 @@ app.post('/api/payment/verify', async (req, res) => {
       .select()
       .maybeSingle()
 
-    console.log('[verify] Payment update result:', {
-      error: paymentUpdateError?.message || null,
-      paymentId: payment?.id,
-      status: payment?.status,
-      registrationId: payment?.registration_id,
-      payerEmail: payment?.payer_email,
-    })
+
 
     if (paymentUpdateError) {
       return res.status(500).json({ success: false, message: paymentUpdateError.message })
@@ -967,7 +916,7 @@ app.post('/api/payment/verify', async (req, res) => {
     if (!payment) {
       const { data: latest } = await supabase.from('payments').select('*').eq(matchKey, matchValue).maybeSingle()
       if (latest?.status === 'paid') {
-        console.log('[verify] Payment was already updated by another request, skipping duplicate confirmation')
+
         return res.json({ success: true, message: 'Payment already verified' })
       }
       return res.status(409).json({ success: false, message: 'Unable to finalize payment update' })
@@ -975,7 +924,7 @@ app.post('/api/payment/verify', async (req, res) => {
 
     const effectiveOrderId = payment?.razorpay_order_id || existing?.razorpay_order_id || orderId || invoiceRef
     await processSuccessfulPayment({ payment: payment || existing, orderId: effectiveOrderId, paymentId, source: 'verify' })
-    console.log('[verify] Completed verify flow successfully')
+
     return res.json({ success: true, message: 'Payment verified and emails triggered' })
   } catch (err) {
     console.error('[verify] verify flow failed:', { message: err?.message, stack: err?.stack })
@@ -1589,11 +1538,7 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
 // POST /api/talent-combined  (multipart/form-data; required performanceVideo field)
 app.post('/api/talent-combined', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
   try {
-    console.log('=== Talent Combined Submission ===')
-    console.log('File received:', req.file ? 'Yes' : 'No')
-    console.log('Nomination type:', req.body.nominationType)
-    console.log('orgDisabilityTypes received:', req.body.orgDisabilityTypes, 'Type:', typeof req.body.orgDisabilityTypes)
-    console.log('orgDisabilityFocus received:', req.body.orgDisabilityFocus)
+
 
     const {
       // Organization details
@@ -1618,13 +1563,13 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       try {
         parsedOrgDisabilityTypes = JSON.parse(orgDisabilityTypes)
       } catch (e) {
-        console.warn('Failed to parse orgDisabilityTypes:', orgDisabilityTypes)
+        console.error('[talent-combined] Failed to parse orgDisabilityTypes:', orgDisabilityTypes)
         parsedOrgDisabilityTypes = []
       }
     } else if (!orgDisabilityTypes) {
       parsedOrgDisabilityTypes = []
     }
-    console.log('Parsed orgDisabilityTypes:', parsedOrgDisabilityTypes)
+
 
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ Validation Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
     const errors = validate([
@@ -1668,7 +1613,6 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     if (nominationType === 'team') {
       try {
         const teamMembersData = typeof teamMembers === 'string' ? JSON.parse(teamMembers) : teamMembers
-        console.log('â‰¡Æ’Ã¶Ã¬ Debug - Raw team members data received:', JSON.stringify(teamMembersData, null, 2))
 
         errors.push(...validate([
           { field: 'teamSize', check: teamSize && Number.isInteger(+teamSize) && +teamSize >= 2 && +teamSize <= 10, msg: 'team size must be 2-10 members' },
@@ -1698,11 +1642,10 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     }
 
     if (errors.length > 0) {
-      console.log('Î“Â¥Ã® Validation failed:', errors)
       return res.status(400).json({ success: false, errors })
     }
 
-    console.log('Validation passed')
+
 
     const invoiceInfo = await createRazorpayInvoice({
       eventType: 'talent-combined',
@@ -1733,12 +1676,11 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     }
 
     // Î“Ã¶Ã‡Î“Ã¶Ã‡ File handling Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-    console.log('â‰¡Æ’Ã„Ã‘ Processing video file...')
     let videoFilePath = null
     if (req.file) {
       try {
         videoFilePath = await compressVideoWithFFmpeg(req.file.path)
-        console.log('Video compression completed:', path.basename(videoFilePath))
+
         // Note: compressVideoWithFFmpeg already handles cleanup of original file
       } catch (e) {
         console.error('Î“Â¥Ã® Video compression failed:', e.message)
@@ -1770,7 +1712,6 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       }
     }
 
-    console.log('â‰¡Æ’Ã†â•› Inserting into database...')
     const { data, error } = await supabase
       .from('talent_nominations')
       .insert([{
@@ -1814,7 +1755,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       .single()
 
     if (error) {
-      console.log('Î“Â¥Ã® Database error:', error.message)
+      console.error('[talent-combined] Database error:', error.message)
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
@@ -1839,7 +1780,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${combinedPaymentInsertError.message}`, req })
     }
 
-    console.log('Database insertion successful')
+
     res.status(201).json({
       success: true,
       data,
@@ -1848,8 +1789,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       receipt_id: invoiceInfo.receiptId,
     })
   } catch (err) {
-    console.log('Î“Â¥Ã® Unexpected error:', err.message)
-    console.log('Stack trace:', err.stack)
+    console.error('[talent-combined] Unexpected error:', err.message, err.stack)
     await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
   }
@@ -2203,7 +2143,6 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
 // POST /api/accommodation-request
 app.post('/api/accommodation-request', registrationLimiter, async (req, res) => {
   try {
-    console.log('â‰¡Æ’Ã…Â¿ Accommodation Request Received:', req.body)
 
     const {
       fullName,
@@ -2342,7 +2281,7 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
         html: adminEmailHtml
       })
 
-      console.log('Admin notification email sent successfully')
+
     } catch (emailError) {
       console.error('Î“Â¥Ã® Failed to send admin notification:', emailError)
       // Don't fail the request if email fails
@@ -2408,13 +2347,13 @@ app.post('/api/accommodation-request', registrationLimiter, async (req, res) => 
         html: confirmationEmailHtml
       })
 
-      console.log('User confirmation email sent successfully')
+
     } catch (emailError) {
       console.error('Î“Â¥Ã® Failed to send user confirmation:', emailError)
       // Don't fail the request if email fails
     }
 
-    console.log('Accommodation request processed successfully')
+
     res.status(201).json({
       success: true,
       message: 'Accommodation request submitted successfully',
@@ -2884,7 +2823,7 @@ app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) =>
     // Send email
     try {
       await sendStatusUpdateEmail({ to: email, name, event: meta.event, status: reg.status, adminNote: reg.admin_note })
-      console.log(`[manual-status-update] Email sent to ${email}`)
+
 
       // Update email_sent flag
       await supabase
