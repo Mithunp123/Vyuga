@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
-import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
@@ -104,19 +103,20 @@ export default function TalentParentNomination() {
   const [gstFee, setGstFee] = useState(null)
 
   useEffect(() => {
-    fetchEventFee('specialtalent').then(result => {
-      if (result) { setFee(result.baseFee); setGstFee(result.gstFee); }
-    }).catch(console.error);
-    
     fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/form-settings`)
       .then(res => res.json())
       .then(json => {
         if (json.success) {
-          const setting = json.data.find(s => s.id === 'talent-student')
+          // Use 'talent-org' record which holds the correct ₹399 fee for Parent/Individual Nomination
+          const setting = json.data.find(s => s.id === 'talent-combined')
+            || json.data.find(s => s.id === 'talent-org')
           if (setting) {
             if (setting.is_open === false) setIsClosed(true)
             if (setting.registration_fee_paise !== undefined && setting.registration_fee_paise !== null) {
-              setFee(setting.registration_fee_paise / 100)
+              const basePaise = setting.registration_fee_paise
+              const gstPaise = Math.round(basePaise * 18 / 100)
+              setFee(basePaise / 100)
+              setGstFee(gstPaise / 100)
             }
           }
         }

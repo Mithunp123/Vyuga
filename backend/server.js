@@ -355,6 +355,16 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
       .maybeSingle();
     if (setting && setting.registration_fee_paise != null) {
       baseFee = setting.registration_fee_paise;
+    } else if (eventType === 'talent-combined') {
+      // Fallback: use 'talent-org' record which holds the correct ₹399 fee
+      const { data: fallback } = await supabase
+        .from('form_settings')
+        .select('registration_fee_paise')
+        .eq('id', 'talent-org')
+        .maybeSingle();
+      if (fallback && fallback.registration_fee_paise != null) {
+        baseFee = fallback.registration_fee_paise;
+      }
     }
   }
 
