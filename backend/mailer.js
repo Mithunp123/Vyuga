@@ -13,14 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-console.log('[mailer] Transport configured:', {
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '465', 10),
-  secure: process.env.SMTP_SECURE !== 'false',
-  userConfigured: Boolean(process.env.SMTP_USER),
-  passConfigured: Boolean(process.env.SMTP_PASS),
-  from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
-})
+
 
 // Absolute path to the logo (copied into backend/assets/)
 const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png')
@@ -92,7 +85,7 @@ function section(heading, rows) {
 // ── Send helper ───────────────────────────────────────────────────────────────
 async function sendMail(to, subject, html) {
   try {
-    console.log('[mailer] Sending email attempt:', { to, subject })
+
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
       to,
@@ -104,14 +97,7 @@ async function sendMail(to, subject, html) {
         cid: 'vyuga-logo',
       }],
     })
-    console.log('[mailer] Email sent:', {
-      to,
-      subject,
-      messageId: info?.messageId,
-      accepted: info?.accepted,
-      rejected: info?.rejected,
-      response: info?.response,
-    })
+
   } catch (err) {
     console.error('[mailer] Failed to send email:', {
       to,
@@ -266,12 +252,7 @@ async function sendTalentStudentConfirmation(d) {
   }
 
   if (!primaryRecipients.length && !isValidRecipient(d.orgContactEmail)) {
-    console.warn('[mailer] No valid recipient found for talent nomination confirmation', {
-      guardianEmail: d.guardianEmail,
-      orgContactEmail: d.orgContactEmail,
-      payerEmail: d.payerEmail,
-      studentName: d.studentName,
-    })
+    console.error('[mailer] No valid recipient found for talent nomination confirmation — studentName:', d.studentName)
   }
 }
 
@@ -379,7 +360,7 @@ async function sendStatusUpdateEmail({ to, name, event, status, adminNote }) {
       If you have any questions, please contact the VYUGA organizing team.
     </p>
   `)
-  console.log(`[mailer] Sending status update email to ${to} (${status})`)
+
   await sendMail(to, `Registration ${s.label} – VYUGA 2026`, html)
 }
 
@@ -725,7 +706,7 @@ async function sendGSTInvoiceEmail({ payerName, payerEmail, payerPhone, eventTyp
         }
       ]
     })
-    console.log(`[mailer] GST invoice sent to ${payerEmail}`)
+
   } catch (err) {
     console.error('[mailer] Failed to send GST invoice:', err.message)
   }
