@@ -13,6 +13,7 @@ import chessImg from '../assets/images/chess.png'
 import shortFilmImg from '../assets/images/shortflim.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import srpLogo from '../assets/present by/SRP.webp'
+import rangaLogo from '../assets/present by/ranga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import triNexguga from '../assets/present by/tri_nexguga.png'
 import logoSrpIcon from '../assets/present by/logo_SRP.jpg'
@@ -272,8 +273,10 @@ export default function About() {
                   onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
-                    <img src={srpLogo} alt="SRP Foundation" className="max-h-full max-w-full object-contain" />
+                  <div className="relative bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center gap-6 h-36 w-auto sm:w-80 px-6">
+                    <img src={rangaLogo} alt="Ranga" className="h-20 sm:h-24 w-auto object-contain flex-1" />
+                    <div className="h-16 w-px bg-slate-200 shrink-0" />
+                    <img src={srpLogo} alt="SRP Foundation" className="h-20 sm:h-24 w-auto object-contain flex-1 transform scale-[1.25]" />
                   </div>
                 </motion.div>
               </div>
