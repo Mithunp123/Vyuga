@@ -22,7 +22,7 @@ const EVENT_DATA = [
 
     ],
     timeline: [
-      { label: "Application Open", date: "20/04/2026" },
+      { label: "Application Open", date: "25/04/2026" },
       { label: "Application Close", date: "25/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
@@ -43,7 +43,7 @@ const EVENT_DATA = [
       { label: 'Eligibility & Selection', value: ['Special Schools or Parents nominate 1 team or individual', 'Entries screened and shortlisted', 'Top 20 participants selected for live performance'] }
     ],
     timeline: [
-      { label: "Application Open", date: "20/04/2026" },
+      { label: "Application Open", date: "25/04/2026" },
       { label: "Application Close", date: "25/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
@@ -97,8 +97,8 @@ const EVENT_DATA = [
       },
     ],
     timeline: [
-      { label: "Application Open", date: "20/04/2026" },
-      { label: "Application Close", date: "25/05/2026" },
+      { label: "Application Open", date: "25/04/2026" },
+      { label: "Application Close", date: "30/05/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
 
