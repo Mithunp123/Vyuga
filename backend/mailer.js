@@ -111,6 +111,17 @@ async function sendMail(to, subject, html) {
   }
 }
 
+function statusButton(d) {
+  if (!d.registrationId || !d.eventType) return ''
+  const baseUrl = process.env.FRONTEND_URL || process.env.CLIENT_ORIGIN || 'https://vyuga.nexyuga.in'
+  const url = `${baseUrl}/status/${d.eventType}/${d.registrationId}`
+  return `
+    <div style="text-align:center;margin-top:32px;">
+      <a href="${url}" style="display:inline-block;padding:12px 24px;background:#0197B2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;">Check Application Status</a>
+    </div>
+  `
+}
+
 // ── 1. Innovation Fest – College (For Specially Abled) ───────────────────────
 async function sendInnovationCollegeConfirmation(d) {
   const members = [
@@ -133,6 +144,7 @@ async function sendInnovationCollegeConfirmation(d) {
       row('Order ID', d.razorpayOrderId),
       row('Transaction ID', d.razorpayPaymentId),
     ].join('')) : ''}
+    ${statusButton(d)}
   `)
   await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (For Specially Abled)', html)
 }
@@ -162,6 +174,7 @@ async function sendInnovationPwdConfirmation(d) {
       row('Order ID', d.razorpayOrderId),
       row('Transaction ID', d.razorpayPaymentId),
     ].join('')) : ''}
+    ${statusButton(d)}
   `)
   await sendMail(d.member1Email, 'Registration Confirmed – VYUGA Innovation Fest (By Specially Abled)', html)
 }
@@ -188,6 +201,7 @@ async function sendTalentOrgConfirmation(d) {
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Next step: Visit the <strong>Student Nomination</strong> form to nominate your talented students.
     </p>
+    ${statusButton(d)}
   `)
   await sendMail(d.contactEmail, 'Organization Registered – VYUGA Special Talent Utsav', html)
 }
@@ -218,6 +232,7 @@ async function sendTalentStudentConfirmation(d) {
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       📹 Your performance video has been received and will be reviewed by our team.
     </p>
+    ${statusButton(d)}
   `)
   const isValidRecipient = (email) => typeof email === 'string' && email.includes('@')
   const primaryRecipients = Array.from(new Set([
@@ -280,6 +295,7 @@ async function sendCricketConfirmation(d) {
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Our team will reach out to you with tournament details soon.
     </p>
+    ${statusButton(d)}
   `)
   await sendMail(d.contactEmail, 'Interest Submitted – VYUGA Blind Cricket Tournament', html)
 }
@@ -304,6 +320,7 @@ async function sendChessConfirmation(d) {
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Our team will reach out to you with competition details soon.
     </p>
+    ${statusButton(d)}
   `)
   await sendMail(d.email, 'Registration Confirmed – VYUGA Blind Chess Competition', html)
 }
@@ -333,6 +350,7 @@ async function sendShortFilmConfirmation(d) {
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Your short film registration has been received successfully. Our team will contact you if any additional details are needed.
     </p>
+    ${statusButton(d)}
   `)
   await sendMail(d.contactEmail, 'Registration Confirmed – VYUGA Short Film Contest', html)
 }

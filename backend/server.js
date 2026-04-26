@@ -299,6 +299,83 @@ function compressVideoWithFFmpeg(inputPath) {
 // Ã¢â€â‚¬Ã¢â€â‚¬ Health check Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }))
 
+app.get('/api/status/:eventType/:id', async (req, res) => {
+  try {
+    const { eventType, id } = req.params;
+
+    const tableMap = {
+      'innovation-college': 'innovation_college_registrations',
+      'innovation-pwd': 'innovation_pwd_registrations',
+      'talent-org': 'talent_organizations',
+      'talent-student': 'talent_nominations',
+      'talent-combined': 'talent_nominations',
+      'shortfilm': 'shortfilm_registrations',
+      'short-film': 'shortfilm_registrations',
+      'cricket': 'cricket_team_registrations',
+      'chess': 'blind_chess_registrations'
+    };
+
+    const table = tableMap[eventType];
+    if (!table) {
+      return res.status(400).json({ success: false, message: 'Invalid event type' });
+    }
+
+    const { data: reg, error } = await supabase
+      .from(table)
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('[status API] Error fetching registration:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to fetch registration data' });
+    }
+
+    if (!reg) {
+      return res.status(404).json({ success: false, message: 'Registration not found' });
+    }
+
+    // Determine common fields mapping to display generic info
+    let name = 'Applicant';
+    let eventName = eventType;
+    if (eventType === 'innovation-college') {
+      name = reg.team_name || reg.leader_name;
+      eventName = 'Innovation Fest - College';
+    } else if (eventType === 'innovation-pwd') {
+      name = reg.name;
+      eventName = 'Innovation Fest - PWD';
+    } else if (eventType.startsWith('talent')) {
+      name = reg.org_name || reg.student_name || reg.contact_name;
+      eventName = 'Special Talent Utsav';
+    } else if (eventType === 'cricket') {
+      name = reg.team_name || reg.contact_name;
+      eventName = 'Blind Cricket Tournament';
+    } else if (eventType === 'chess') {
+      name = reg.participant_name;
+      eventName = 'Blind Chess Competition';
+    } else if (eventType.startsWith('short')) {
+      name = reg.film_title || reg.contact_name;
+      eventName = 'Short Film Contest';
+    }
+
+    res.json({
+      success: true,
+      data: {
+        name,
+        eventName,
+        status: reg.status || 'pending',
+        paymentStatus: reg.payment_status || 'unpaid',
+        adminNote: reg.admin_note || reg.admin_notes || null,
+        submittedAt: reg.submitted_at || reg.created_at || null,
+      }
+    });
+
+  } catch (err) {
+    console.error('[status API] exception:', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Ã¢â€â‚¬Ã¢â€â‚¬ Error logging helper Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 function sanitizeBody(body) {
   if (!body) return null
@@ -521,6 +598,8 @@ async function processSuccessfulPayment({ payment, orderId, paymentId, source })
       paymentStatus: 'Paid',
       razorpayOrderId: orderId,
       razorpayPaymentId: paymentId,
+      registrationId: reg.id,
+      eventType: et,
     }
 
     if (et === 'innovation-college') {

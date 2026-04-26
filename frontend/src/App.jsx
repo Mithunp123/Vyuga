@@ -38,6 +38,7 @@ import ShippingPolicy from './pages/ShippingPolicy.jsx'
 import ContactUs from './pages/ContactUs.jsx'
 import CancellationAndRefunds from './pages/CancellationAndRefunds.jsx'
 import PaymentSuccess from './pages/PaymentSuccess.jsx'
+import RegistrationStatus from './pages/RegistrationStatus.jsx'
 
 export default function App() {
   return (
@@ -83,6 +84,7 @@ export default function App() {
       <Route path="/jury-dashboard" element={<JuryDashboard />} />
 
       <Route path="/payment-success" element={<PaymentSuccess />} />
+      <Route path="/status/:eventType/:id" element={<RegistrationStatus />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
