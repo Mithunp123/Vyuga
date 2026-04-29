@@ -3,6 +3,7 @@ import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/Home.jsx'
 import Program from './pages/Program.jsx'
 import AboutPage from './pages/AboutPage.jsx'
+import AwardsPage from './pages/AwardsPage.jsx'
 import SpeakersPage from './pages/SpeakersPage.jsx'
 import SponsorsPage from './pages/SponsorsPage.jsx'
 import ExhibitorsPage from './pages/ExhibitorsPage.jsx'
@@ -48,6 +49,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/awards" element={<AwardsPage />} />
       <Route path="/speakers" element={<SpeakersPage />} />
       <Route path="/sponsors" element={<SponsorsPage />} />
 

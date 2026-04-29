@@ -118,6 +118,7 @@ export default function Navbar() {
         <nav className="hidden items-center gap-7 md:flex" aria-label="Primary">
           <NavLink to="/" className={navItemClass} end>Home</NavLink>
              <NavLink to="/about" className={navItemClass}>About</NavLink>
+          <NavLink to="/awards" className={navItemClass}>Awards</NavLink>
           <DesktopDropdown
             label="Attend"
             items={attendItems}
@@ -162,7 +163,7 @@ export default function Navbar() {
                   {[
                     { to: '/', label: 'Home', end: true },
                     { to: '/about', label: 'About' },
-                
+                    { to: '/awards', label: 'Awards' },
                     { to: '/sponsors', label: 'Sponsors' },
                   ].map((item) => (
                     <NavLink
