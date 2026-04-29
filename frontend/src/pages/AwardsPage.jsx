@@ -8,11 +8,16 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 
+// Import high-quality trophy assets
+import tropy1 from '../assets/images/tropy1.png';
+import tropy2 from '../assets/images/tropy2.png';
+import tropy3 from '../assets/images/tropy3.png';
+
 const CYAN = '#0197B2';
 const LIME = '#5BCB2B';
 
 /* Award list item - Vertical Badge Style */
-function AwardItem({ name, accent, icon: Icon = Award, delay = 0 }) {
+function AwardItem({ name, accent, icon: Icon = Award, imgSrc, delay = 0 }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -62,7 +67,17 @@ function AwardItem({ name, accent, icon: Icon = Award, delay = 0 }) {
         boxShadow: `0 6px 16px ${accent}15`,
         zIndex: 1
       }}>
-        <Icon size={28} strokeWidth={2.2} />
+        {imgSrc ? (
+          <motion.img 
+            src={imgSrc} 
+            alt="trophy" 
+            style={{ width: 38, height: 38, objectFit: 'contain', filter: `drop-shadow(0 4px 6px ${accent}44)` }} 
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+        ) : (
+          <Icon size={28} strokeWidth={2.2} />
+        )}
       </div>
       <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a', lineHeight: 1.3, zIndex: 1 }}>{name}</span>
     </motion.div>
@@ -169,8 +184,8 @@ export default function AwardsPage() {
           <AwardCard accent={LIME}>
             <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={26} color={LIME} />} accent={LIME} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <AwardItem name="Ability Innovation Champion" accent={LIME} icon={Trophy} delay={0.1} />
-              <AwardItem name="Emerging Ability Innovator" accent={LIME} icon={Zap} delay={0.2} />
+              <AwardItem name="Ability Innovation Champion" accent={LIME} imgSrc={tropy1} delay={0.1} />
+              <AwardItem name="Emerging Ability Innovator" accent={LIME} imgSrc={tropy2} delay={0.2} />
             </div>
           </AwardCard>
 
@@ -191,8 +206,8 @@ export default function AwardsPage() {
           <AwardCard accent={CYAN}>
             <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={26} color={CYAN} />} accent={CYAN} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <AwardItem name="Impact Innovator Icon" accent={CYAN} icon={Rocket} delay={0.1} />
-              <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} icon={ShieldCheck} delay={0.2} />
+              <AwardItem name="Impact Innovator Icon" accent={CYAN} imgSrc={tropy1} delay={0.1} />
+              <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} imgSrc={tropy2} delay={0.2} />
             </div>
           </AwardCard>
         </div>
@@ -202,8 +217,8 @@ export default function AwardsPage() {
         <AwardCard accent={LIME} style={{ maxWidth: 900, margin: '0 auto' }}>
           <SectionHeader label="Special Talent Hunt" sublabel="Ability Showcase" icon={<Users size={26} color={LIME} />} accent={LIME} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}>
-            <AwardItem name="Shining Ability Icon" accent={LIME} icon={Crown} delay={0.1} />
-            <AwardItem name="Rising Ability Performer" accent={LIME} icon={TrendingUp} delay={0.2} />
+            <AwardItem name="Shining Ability Icon" accent={LIME} imgSrc={tropy1} delay={0.1} />
+            <AwardItem name="Rising Ability Performer" accent={LIME} imgSrc={tropy2} delay={0.2} />
             <AwardItem name="People's Favorite" accent={LIME} icon={Heart} delay={0.3} />
             <AwardItem name="Most Creative Talent" accent={LIME} icon={Palette} delay={0.4} />
           </div>
@@ -214,8 +229,8 @@ export default function AwardsPage() {
         <AwardCard accent={CYAN} style={{ maxWidth: 900, margin: '0 auto' }}>
           <SectionHeader label="Short Film Contest" sublabel="Inclusivity Theme" icon={<Video size={26} color={CYAN} />} accent={CYAN} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}>
-            <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} icon={Clapperboard} delay={0.1} />
-            <AwardItem name="Impact Story Award" accent={CYAN} icon={BookOpen} delay={0.2} />
+            <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} imgSrc={tropy1} delay={0.1} />
+            <AwardItem name="Impact Story Award" accent={CYAN} imgSrc={tropy3} delay={0.2} />
             <AwardItem name="People's Favorite" accent={CYAN} icon={Heart} delay={0.3} />
             <AwardItem name="Best Visual Storytelling" accent={CYAN} icon={Eye} delay={0.4} />
           </div>
