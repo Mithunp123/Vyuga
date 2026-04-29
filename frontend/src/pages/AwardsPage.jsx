@@ -1,42 +1,70 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Users, Video, Sparkles, Award } from 'lucide-react';
+import { 
+  Lightbulb, Users, Video, Sparkles, Award, Trophy, 
+  Medal, Star, Crown, Target, Heart, Palette, 
+  Clapperboard, BookOpen, Eye, TrendingUp, ShieldCheck,
+  Zap, Rocket, Gift, Gem, Flame, Ghost
+} from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 
 const CYAN = '#0197B2';
 const LIME = '#5BCB2B';
 
-/* Award list item */
-function AwardItem({ name, accent }) {
+/* Award list item - Vertical Badge Style */
+function AwardItem({ name, accent, icon: Icon = Award, delay = 0 }) {
   return (
     <motion.div 
-      whileHover={{ x: 4, background: `${accent}0d` }}
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+      whileHover={{ y: -5, background: `${accent}08`, borderColor: `${accent}44` }}
       style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         alignItems: 'center', 
+        textAlign: 'center',
         gap: 12, 
-        padding: '14px 18px', 
-        borderRadius: 16, 
-        background: `${accent}08`, 
-        border: `1.2px solid ${accent}15`,
-        marginBottom: 12,
-        boxShadow: `0 2px 8px ${accent}05`
+        padding: '24px 16px', 
+        borderRadius: 24, 
+        background: '#fff', 
+        border: `1.5px solid ${accent}15`,
+        position: 'relative',
+        boxShadow: `0 8px 24px ${accent}08`,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        minHeight: 140,
+        justifyContent: 'center'
       }}
     >
+      {/* Decorative background shape */}
       <div style={{ 
-        width: 32, 
-        height: 32, 
-        borderRadius: 10, 
-        background: `${accent}15`, 
+        position: 'absolute', 
+        top: -10, 
+        right: -10, 
+        width: 40, 
+        height: 40, 
+        borderRadius: '50%', 
+        background: `${accent}0a`, 
+        zIndex: 0 
+      }} />
+
+      <div style={{ 
+        width: 56, 
+        height: 56, 
+        borderRadius: 18, 
+        background: `linear-gradient(135deg, ${accent}15 0%, ${accent}08 100%)`, 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
         color: accent,
-        flexShrink: 0
+        flexShrink: 0,
+        boxShadow: `0 6px 16px ${accent}15`,
+        zIndex: 1
       }}>
-        <Award size={18} strokeWidth={2.5} />
+        <Icon size={28} strokeWidth={2.2} />
       </div>
-      <span style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', letterSpacing: '-0.01em' }}>{name}</span>
+      <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a', lineHeight: 1.3, zIndex: 1 }}>{name}</span>
     </motion.div>
   );
 }
@@ -58,11 +86,11 @@ function SpinningStar({ size = 52 }) {
 /* Section header */
 function SectionHeader({ label, sublabel, icon, accent }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-      <div style={{ width: 44, height: 44, borderRadius: 14, background: `${accent}15`, border: `1.5px solid ${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
-      <div>
-        <p style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', margin: 0 }}>{label}</p>
-        {sublabel && <p style={{ fontSize: 10, color: accent, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', margin: '2px 0 0' }}>{sublabel}</p>}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28, justifyContent: 'center' }}>
+      <div style={{ width: 52, height: 52, borderRadius: 18, background: `${accent}15`, border: `1.5px solid ${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 6px 16px ${accent}15` }}>{icon}</div>
+      <div style={{ textAlign: 'left' }}>
+        <p style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>{label}</p>
+        {sublabel && <p style={{ fontSize: 10, color: accent, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', margin: '3px 0 0' }}>{sublabel}</p>}
       </div>
     </div>
   );
@@ -73,7 +101,7 @@ function AwardCard({ accent, children, style = {} }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.55 }}
-      style={{ background: '#fff', borderRadius: 24, border: `1.5px solid ${accent}25`, boxShadow: `0 8px 30px ${accent}0a`, padding: '28px 24px', ...style }}
+      style={{ background: `linear-gradient(180deg, #fff 0%, ${accent}03 100%)`, borderRadius: 32, border: `1.5px solid ${accent}15`, boxShadow: `0 16px 48px ${accent}0a`, padding: '40px 32px', ...style }}
     >
       {children}
     </motion.div>
@@ -83,10 +111,10 @@ function AwardCard({ accent, children, style = {} }) {
 /* Divider label */
 function Divider({ label, accent }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '48px 0 24px' }}>
-      <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, transparent, ${accent})`, borderRadius: 999 }} />
-      <span style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.22em', color: accent, whiteSpace: 'nowrap' }}>{label}</span>
-      <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, ${accent}, transparent)`, borderRadius: 999 }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '60px 0 32px' }}>
+      <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, transparent, ${accent})`, borderRadius: 999, opacity: 0.4 }} />
+      <span style={{ fontSize: 13, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.28em', color: accent, whiteSpace: 'nowrap' }}>{label}</span>
+      <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, ${accent}, transparent)`, borderRadius: 999, opacity: 0.4 }} />
     </div>
   );
 }
@@ -96,36 +124,37 @@ export default function AwardsPage() {
     <div style={{ background: '#ffffff', minHeight: '100vh' }}>
       <Navbar />
 
-      <div style={{ paddingTop: 80, maxWidth: 1100, margin: '0 auto', padding: '80px 20px 60px' }}>
+      <div style={{ paddingTop: 80, maxWidth: 1200, margin: '0 auto', padding: '80px 20px 100px' }}>
 
         {/* Page title */}
-        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: 50 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 18px', borderRadius: 999, background: `${CYAN}12`, border: `1px solid ${CYAN}33`, color: CYAN, fontSize: 11, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>
-            <Sparkles size={11} /> Vyuga 2026
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: 70 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 22px', borderRadius: 999, background: `${CYAN}12`, border: `1px solid ${CYAN}33`, color: CYAN, fontSize: 12, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 18 }}>
+            <Sparkles size={12} /> Vyuga 2026
           </div>
-          <h1 style={{ fontSize: 42, fontWeight: 900, margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: 52, fontWeight: 900, margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
             <span style={{ background: `linear-gradient(90deg, ${CYAN}, ${LIME})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               National Ability Awards
             </span>
           </h1>
-          <div style={{ height: 5, width: 80, background: `linear-gradient(90deg,${CYAN},${LIME})`, borderRadius: 999, margin: '0 auto 12px' }} />
-          <p style={{ color: '#64748b', fontSize: 16, margin: '0 0 24px', fontWeight: 500 }}>Celebrating inclusivity, innovation & outstanding talent</p>
+          <div style={{ height: 7, width: 100, background: `linear-gradient(90deg,${CYAN},${LIME})`, borderRadius: 999, margin: '0 auto 20px' }} />
+          <p style={{ color: '#64748b', fontSize: 18, margin: '0 0 40px', fontWeight: 500 }}>Celebrating inclusivity, innovation & outstanding talent</p>
           
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
             style={{ 
-              padding: '20px 40px', 
-              borderRadius: 24, 
-              background: `linear-gradient(135deg, ${CYAN}08 0%, ${LIME}08 100%)`, 
-              border: `1.5px dashed ${CYAN}33`,
+              padding: '28px 56px', 
+              borderRadius: 32, 
+              background: `linear-gradient(135deg, ${CYAN}0a 0%, ${LIME}0a 100%)`, 
+              border: `2px dashed ${CYAN}33`,
               display: 'inline-block',
-              maxWidth: '650px'
+              maxWidth: '750px',
+              boxShadow: `0 12px 40px ${CYAN}0a`
             }}
           >
-            <p style={{ color: '#0f172a', fontSize: 20, fontWeight: 800, margin: '0 0 6px' }}>Attractive Cash Prizes, Gifts & Trophies</p>
-            <p style={{ color: '#475569', fontSize: 15, margin: 0, fontWeight: 500, lineHeight: 1.6 }}>
+            <p style={{ color: '#0f172a', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Attractive Recognitions, Gifts & Trophies</p>
+            <p style={{ color: '#475569', fontSize: 16, margin: 0, fontWeight: 500, lineHeight: 1.6 }}>
               Participate and stand a chance to win amazing rewards across all events at VYUGA!
             </p>
           </motion.div>
@@ -134,70 +163,66 @@ export default function AwardsPage() {
         {/* ── INNOVATION FEST ── */}
         <Divider label="Inclusive Innovation Fest" accent={CYAN} />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 24, alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 32, alignItems: 'stretch' }}>
 
           {/* By S.A — LEFT */}
           <AwardCard accent={LIME}>
-            <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={22} color={LIME} />} accent={LIME} />
-            <AwardItem name="Ability Innovation Champion" accent={LIME} />
-            <AwardItem name="Emerging Ability Innovator" accent={LIME} />
+            <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={26} color={LIME} />} accent={LIME} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <AwardItem name="Ability Innovation Champion" accent={LIME} icon={Trophy} delay={0.1} />
+              <AwardItem name="Emerging Ability Innovator" accent={LIME} icon={Zap} delay={0.2} />
+            </div>
           </AwardCard>
 
           {/* Jury Special Mention — CENTER */}
-          <AwardCard accent={CYAN} style={{ width: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 24px' }}>
-            <SpinningStar size={80} />
-            <p style={{ fontSize: 12, fontWeight: 800, color: CYAN, textTransform: 'uppercase', letterSpacing: '0.16em', margin: '12px 0 6px' }}>Jury Special Mention</p>
-            <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 18px', fontWeight: 600, lineHeight: 1.5 }}>Promising Future Innovation Award<br />on Innovation Fest</p>
-            <div style={{ padding: '14px 18px', borderRadius: 16, background: `${CYAN}12`, border: `1.5px solid ${CYAN}33`, width: '100%' }}>
-              <span style={{ fontSize: 15, fontWeight: 800, color: '#0f172a' }}>Jury Special Mention Award</span>
+          <AwardCard accent={CYAN} style={{ width: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '40px 32px' }}>
+            <SpinningStar size={90} />
+            <p style={{ fontSize: 14, fontWeight: 800, color: CYAN, textTransform: 'uppercase', letterSpacing: '0.18em', margin: '16px 0 10px' }}>Jury Special Mention</p>
+            <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 28px', fontWeight: 600, lineHeight: 1.5 }}>Promising Future Innovation Award<br />on Innovation Fest</p>
+            <div style={{ padding: '20px 24px', borderRadius: 24, background: `${CYAN}14`, border: `1.5px solid ${CYAN}44`, width: '100%', boxShadow: `0 6px 16px ${CYAN}12` }}>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#0f172a' }}>Jury Special Mention Award</span>
             </div>
-            <div style={{ marginTop: 16, padding: '6px 20px', borderRadius: 999, background: `linear-gradient(90deg, ${CYAN}, ${LIME})`, boxShadow: `0 4px 14px ${CYAN}33` }}>
-              <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Special Award</span>
+            <div style={{ marginTop: 24, padding: '10px 28px', borderRadius: 999, background: `linear-gradient(90deg, ${CYAN}, ${LIME})`, boxShadow: `0 8px 24px ${CYAN}44` }}>
+              <span style={{ fontSize: 12, fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Special Award</span>
             </div>
           </AwardCard>
 
           {/* For S.A — RIGHT */}
           <AwardCard accent={CYAN}>
-            <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={22} color={CYAN} />} accent={CYAN} />
-            <AwardItem name="Impact Innovator Icon" accent={CYAN} />
-            <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} />
+            <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={26} color={CYAN} />} accent={CYAN} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <AwardItem name="Impact Innovator Icon" accent={CYAN} icon={Rocket} delay={0.1} />
+              <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} icon={ShieldCheck} delay={0.2} />
+            </div>
           </AwardCard>
         </div>
 
         {/* ── SPECIAL TALENT HUNT ── */}
         <Divider label="Special Talent Hunt" accent={LIME} />
-        <AwardCard accent={LIME} style={{ maxWidth: 800, margin: '0 auto' }}>
-          <SectionHeader label="Special Talent Hunt" sublabel="Ability Showcase" icon={<Users size={22} color={LIME} />} accent={LIME} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div>
-              <AwardItem name="Shining Ability Icon" accent={LIME} />
-              <AwardItem name="Rising Ability Performer" accent={LIME} />
-            </div>
-            <div>
-              <AwardItem name="People's Favorite" accent={LIME} />
-              <AwardItem name="Most Creative Talent" accent={LIME} />
-            </div>
+        <AwardCard accent={LIME} style={{ maxWidth: 900, margin: '0 auto' }}>
+          <SectionHeader label="Special Talent Hunt" sublabel="Ability Showcase" icon={<Users size={26} color={LIME} />} accent={LIME} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}>
+            <AwardItem name="Shining Ability Icon" accent={LIME} icon={Crown} delay={0.1} />
+            <AwardItem name="Rising Ability Performer" accent={LIME} icon={TrendingUp} delay={0.2} />
+            <AwardItem name="People's Favorite" accent={LIME} icon={Heart} delay={0.3} />
+            <AwardItem name="Most Creative Talent" accent={LIME} icon={Palette} delay={0.4} />
           </div>
         </AwardCard>
 
         {/* ── SHORT FILM CONTEST ── */}
         <Divider label="Short Film Contest — Inclusivity Theme" accent={CYAN} />
-        <AwardCard accent={CYAN} style={{ maxWidth: 800, margin: '0 auto' }}>
-          <SectionHeader label="Short Film Contest" sublabel="Inclusivity Theme" icon={<Video size={22} color={CYAN} />} accent={CYAN} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div>
-              <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} />
-              <AwardItem name="Impact Story Award" accent={CYAN} />
-            </div>
-            <div>
-              <AwardItem name="People's Favorite" accent={CYAN} />
-              <AwardItem name="Best Visual Storytelling" accent={CYAN} />
-            </div>
+        <AwardCard accent={CYAN} style={{ maxWidth: 900, margin: '0 auto' }}>
+          <SectionHeader label="Short Film Contest" sublabel="Inclusivity Theme" icon={<Video size={26} color={CYAN} />} accent={CYAN} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}>
+            <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} icon={Clapperboard} delay={0.1} />
+            <AwardItem name="Impact Story Award" accent={CYAN} icon={BookOpen} delay={0.2} />
+            <AwardItem name="People's Favorite" accent={CYAN} icon={Heart} delay={0.3} />
+            <AwardItem name="Best Visual Storytelling" accent={CYAN} icon={Eye} delay={0.4} />
           </div>
         </AwardCard>
 
-        <div style={{ textAlign: 'center', marginTop: 60 }}>
-          <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#94a3b8', margin: 0 }}>
+        <div style={{ textAlign: 'center', marginTop: 100 }}>
+          <p style={{ fontSize: 13, fontWeight: 800, letterSpacing: '0.45em', textTransform: 'uppercase', color: '#cbd5e1', margin: 0 }}>
             Vyuga 2026 • Ability Beyond Limits
           </p>
         </div>
