@@ -79,7 +79,7 @@ function AwardItem({ name, accent, imgSrc, delay = 0 }) {
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
-      <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0f172a', lineHeight: 1.3, zIndex: 1, padding: '0 4px' }}>{name}</span>
+      <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', lineHeight: 1.3, zIndex: 1, padding: '0 4px' }}>{name}</span>
     </motion.div>
   );
 }
@@ -104,8 +104,8 @@ function SectionHeader({ label, sublabel, icon, accent }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, justifyContent: 'center' }}>
       <div style={{ width: 48, height: 48, borderRadius: 16, background: `${accent}15`, border: `1.5px solid ${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${accent}15` }}>{icon}</div>
       <div style={{ textAlign: 'left' }}>
-        <p style={{ fontSize: 19, fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>{label}</p>
-        {sublabel && <p style={{ fontSize: 10, color: accent, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', margin: '2px 0 0' }}>{sublabel}</p>}
+        <p style={{ fontSize: 21, fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>{label}</p>
+        {sublabel && <p style={{ fontSize: 12, color: accent, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', margin: '2px 0 0' }}>{sublabel}</p>}
       </div>
     </div>
   );
@@ -128,7 +128,7 @@ function Divider({ label, accent }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '50px 0 28px' }}>
       <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, transparent, ${accent})`, borderRadius: 999, opacity: 0.4 }} />
-      <span style={{ fontSize: 13, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: accent, whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontSize: 15, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.25em', color: accent, whiteSpace: 'nowrap' }}>{label}</span>
       <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, ${accent}, transparent)`, borderRadius: 999, opacity: 0.4 }} />
     </div>
   );
