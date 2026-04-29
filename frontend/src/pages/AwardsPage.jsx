@@ -14,14 +14,14 @@ const CYAN_LIGHT = '#e0f6fa';
 const LIME_LIGHT = '#e8f9de';
 
 /* Animated trophy image */
-function TrophyImg({ src, size = 90, delay = 0 }) {
+function TrophyImg({ src, size = 90, delay = 0, shadowColor = CYAN }) {
   return (
     <motion.img
       src={src}
       alt="trophy"
       width={size}
       height={size}
-      style={{ objectFit: 'contain', filter: `drop-shadow(0 8px 20px ${GOLD}88)` }}
+      style={{ objectFit: 'contain', filter: `drop-shadow(0 8px 20px ${shadowColor}88)` }}
       animate={{ y: [0, -10, 0] }}
       transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay }}
     />
@@ -65,7 +65,7 @@ function SpinningStar({ size = 52 }) {
     <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 7, repeat: Infinity, ease: 'linear' }}>
       <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
         <defs><linearGradient id="starG" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FCD34D" /><stop offset="100%" stopColor="#D97706" />
+          <stop offset="0%" stopColor={CYAN} /><stop offset="100%" stopColor={LIME} />
         </linearGradient></defs>
         <path d="M32 4l5.6 17.2H56l-14.8 10.7 5.6 17.2L32 39.5 17.2 49.1l5.6-17.2L8 21.2h18.4z" fill="url(#starG)" />
       </svg>
@@ -79,26 +79,26 @@ function Podium2({ winner, runnerUp }) {
     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 16, paddingTop: 8 }}>
       {/* Runner-up */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 160 }}>
-        <TrophyImg src={trophy2} size={70} delay={0.2} />
-        <div style={{ width: '100%', padding: '10px', borderRadius: '12px 12px 0 0', background: `${SILVER}14`, border: `1.5px solid ${SILVER}44`, textAlign: 'center', minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-          <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: SILVER }}>Runner-up</span>
+        <TrophyImg src={trophy2} size={70} delay={0.2} shadowColor={LIME} />
+        <div style={{ width: '100%', padding: '10px', borderRadius: '12px 12px 0 0', background: `${LIME}14`, border: `1.5px solid ${LIME}44`, textAlign: 'center', minHeight: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: LIME }}>Runner-up</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#334155', lineHeight: 1.3 }}>{runnerUp}</span>
         </div>
-        <div style={{ width: '100%', height: 28, background: `${SILVER}33`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 15, fontWeight: 900, color: SILVER }}>2</span>
+        <div style={{ width: '100%', height: 28, background: `${LIME}33`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 15, fontWeight: 900, color: LIME }}>2</span>
         </div>
       </div>
 
       {/* Winner */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 190 }}>
-        <TrophyImg src={trophy1} size={90} delay={0} />
-        <div style={{ width: '100%', padding: '14px 10px', borderRadius: '12px 12px 0 0', background: `${GOLD}18`, border: `2px solid ${GOLD}55`, textAlign: 'center', minHeight: 110, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: `0 -6px 24px ${GOLD}22` }}>
-          <div style={{ padding: '3px 14px', borderRadius: 999, background: GOLD }}>
+        <TrophyImg src={trophy1} size={90} delay={0} shadowColor={CYAN} />
+        <div style={{ width: '100%', padding: '14px 10px', borderRadius: '12px 12px 0 0', background: `${CYAN}18`, border: `2px solid ${CYAN}55`, textAlign: 'center', minHeight: 110, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: `0 -6px 24px ${CYAN}22` }}>
+          <div style={{ padding: '3px 14px', borderRadius: 999, background: CYAN }}>
             <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#fff' }}>Winner</span>
           </div>
           <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a', lineHeight: 1.3 }}>{winner}</span>
         </div>
-        <div style={{ width: '100%', height: 48, background: `linear-gradient(to bottom, ${GOLD}, #b45309)`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 14px ${GOLD}44` }}>
+        <div style={{ width: '100%', height: 48, background: `linear-gradient(to bottom, ${CYAN}, ${CYAN}dd)`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 14px ${CYAN}44` }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: '#fff' }}>1</span>
         </div>
       </div>
@@ -112,33 +112,33 @@ function Podium3({ winner, runnerUp, favorite, accent }) {
     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 14, paddingTop: 8 }}>
       {/* Runner-up */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 155 }}>
-        <TrophyImg src={trophy2} size={64} delay={0.2} />
-        <div style={{ width: '100%', padding: '10px', borderRadius: '12px 12px 0 0', background: `${SILVER}14`, border: `1.5px solid ${SILVER}44`, textAlign: 'center', minHeight: 76, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-          <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: SILVER }}>Runner-up</span>
+        <TrophyImg src={trophy2} size={64} delay={0.2} shadowColor={LIME} />
+        <div style={{ width: '100%', padding: '10px', borderRadius: '12px 12px 0 0', background: `${LIME}14`, border: `1.5px solid ${LIME}44`, textAlign: 'center', minHeight: 76, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: LIME }}>Runner-up</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#334155', lineHeight: 1.3 }}>{runnerUp}</span>
         </div>
-        <div style={{ width: '100%', height: 26, background: `${SILVER}33`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 14, fontWeight: 900, color: SILVER }}>2</span>
+        <div style={{ width: '100%', height: 26, background: `${LIME}33`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 14, fontWeight: 900, color: LIME }}>2</span>
         </div>
       </div>
 
       {/* Winner */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 186 }}>
-        <TrophyImg src={trophy1} size={88} delay={0} />
-        <div style={{ width: '100%', padding: '12px 10px', borderRadius: '12px 12px 0 0', background: `${GOLD}18`, border: `2px solid ${GOLD}55`, textAlign: 'center', minHeight: 106, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 7, boxShadow: `0 -6px 20px ${GOLD}22` }}>
-          <div style={{ padding: '3px 12px', borderRadius: 999, background: GOLD }}>
+        <TrophyImg src={trophy1} size={88} delay={0} shadowColor={CYAN} />
+        <div style={{ width: '100%', padding: '12px 10px', borderRadius: '12px 12px 0 0', background: `${CYAN}18`, border: `2px solid ${CYAN}55`, textAlign: 'center', minHeight: 106, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 7, boxShadow: `0 -6px 20px ${CYAN}22` }}>
+          <div style={{ padding: '3px 12px', borderRadius: 999, background: CYAN }}>
             <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#fff' }}>Winner</span>
           </div>
           <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', lineHeight: 1.3 }}>{winner}</span>
         </div>
-        <div style={{ width: '100%', height: 44, background: `linear-gradient(to bottom, ${GOLD}, #b45309)`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 14px ${GOLD}44` }}>
+        <div style={{ width: '100%', height: 44, background: `linear-gradient(to bottom, ${CYAN}, ${CYAN}dd)`, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 14px ${CYAN}44` }}>
           <span style={{ fontSize: 20, fontWeight: 900, color: '#fff' }}>1</span>
         </div>
       </div>
 
       {/* Favorite */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 155 }}>
-        <TrophyImg src={trophy3} size={58} delay={0.4} />
+        <TrophyImg src={trophy3} size={58} delay={0.4} shadowColor={accent} />
         <div style={{ width: '100%', padding: '10px', borderRadius: '12px 12px 0 0', background: `${accent}14`, border: `1.5px solid ${accent}44`, textAlign: 'center', minHeight: 58, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
           <span style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: accent }}>People's Favorite</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#334155', lineHeight: 1.3 }}>{favorite}</span>
@@ -218,7 +218,7 @@ export default function AwardsPage() {
               maxWidth: '600px'
             }}
           >
-            <p style={{ color: '#0f172a', fontSize: 18, fontWeight: 800, margin: '0 0 6px' }}>Attractive Cash Prizes, Gifts & Trophies</p>
+            <p style={{ color: '#0f172a', fontSize: 18, fontWeight: 800, margin: '0 0 6px' }}>Attractive Rec Prizes, Gifts & Trophies</p>
             <p style={{ color: '#475569', fontSize: 14, margin: 0, fontWeight: 500, lineHeight: 1.5 }}>
               Participate and stand a chance to win amazing rewards across all events at VYUGA!
             </p>
@@ -238,14 +238,14 @@ export default function AwardsPage() {
           </AwardCard>
 
           {/* Jury Special Mention — CENTER */}
-          <AwardCard accent={GOLD} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 20px' }}>
+          <AwardCard accent={CYAN} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '28px 20px' }}>
             <SpinningStar size={72} />
-            <p style={{ fontSize: 11, fontWeight: 800, color: GOLD, textTransform: 'uppercase', letterSpacing: '0.16em', margin: '8px 0 4px' }}>Jury Special Mention</p>
-            <p style={{ fontSize: 10, color: '#64748b', margin: '0 0 14px', fontWeight: 600, lineHeight: 1.5 }}>Best Performance Award<br />on Innovation Fest</p>
-            <div style={{ padding: '12px 16px', borderRadius: 14, background: `${GOLD}14`, border: `1.5px solid ${GOLD}44`, width: '100%' }}>
+            <p style={{ fontSize: 11, fontWeight: 800, color: CYAN, textTransform: 'uppercase', letterSpacing: '0.16em', margin: '8px 0 4px' }}>Jury Special Mention</p>
+            <p style={{ fontSize: 10, color: '#64748b', margin: '0 0 14px', fontWeight: 600, lineHeight: 1.5 }}>Promising Future Innovation Award<br />on Innovation Fest</p>
+            <div style={{ padding: '12px 16px', borderRadius: 14, background: `${CYAN}14`, border: `1.5px solid ${CYAN}44`, width: '100%' }}>
               <span style={{ fontSize: 14, fontWeight: 800, color: '#0f172a' }}>Jury Special Mention Award</span>
             </div>
-            <div style={{ marginTop: 12, padding: '5px 16px', borderRadius: 999, background: `linear-gradient(90deg,${GOLD},#b45309)`, boxShadow: `0 3px 12px ${GOLD}44` }}>
+            <div style={{ marginTop: 12, padding: '5px 16px', borderRadius: 999, background: `linear-gradient(90deg, ${CYAN}, ${LIME})`, boxShadow: `0 3px 12px ${CYAN}44` }}>
               <span style={{ fontSize: 9, fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Special Award</span>
             </div>
           </AwardCard>
