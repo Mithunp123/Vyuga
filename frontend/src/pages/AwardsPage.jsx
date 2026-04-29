@@ -74,12 +74,12 @@ function AwardItem({ name, accent, imgSrc, delay = 0 }) {
         <motion.img 
           src={imgSrc} 
           alt="award asset" 
-          style={{ width: 105, height: 105, objectFit: 'contain' }} 
+          className="award-item-img"
           animate={{ y: [0, -4, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
-      <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', lineHeight: 1.3, zIndex: 1, padding: '0 4px' }}>{name}</span>
+      <span className="award-item-text">{name}</span>
     </motion.div>
   );
 }
@@ -101,9 +101,9 @@ function SpinningStar({ size = 52 }) {
 /* Section header */
 function SectionHeader({ label, sublabel, icon, accent }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, justifyContent: 'center' }}>
+    <div className="awards-header-container">
       <div style={{ width: 48, height: 48, borderRadius: 16, background: `${accent}15`, border: `1.5px solid ${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${accent}15` }}>{icon}</div>
-      <div style={{ textAlign: 'left' }}>
+      <div className="awards-header-text">
         <p style={{ fontSize: 21, fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>{label}</p>
         {sublabel && <p style={{ fontSize: 12, color: accent, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', margin: '2px 0 0' }}>{sublabel}</p>}
       </div>
@@ -116,6 +116,7 @@ function AwardCard({ accent, children, style = {} }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6 }}
+      className="award-card-responsive"
       style={{ background: `linear-gradient(180deg, #fff 0%, ${accent}02 100%)`, borderRadius: 28, border: `1.5px solid ${accent}15`, boxShadow: `0 16px 48px ${accent}08`, padding: '24px 16px', ...style }}
     >
       {children}
@@ -139,6 +140,154 @@ export default function AwardsPage() {
     <div style={{ background: '#ffffff', minHeight: '100vh' }}>
       <Navbar />
 
+      <style>{`
+        .awards-grid-innovation {
+          display: grid;
+          grid-template-columns: 1.2fr 0.8fr 1.2fr;
+          gap: 12px;
+          align-items: stretch;
+        }
+        .awards-grid-4col {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          justify-items: center;
+        }
+        .awards-title {
+          font-size: 52px;
+          font-weight: 900;
+          margin: 0 0 14px;
+          letter-spacing: -0.03em;
+          line-height: 1.1;
+        }
+        .awards-subtitle {
+          color: #64748b;
+          font-size: 18px;
+          margin: 0 0 40px;
+          font-weight: 500;
+        }
+        .awards-recognitions {
+          padding: 28px 56px;
+          border-radius: 32px;
+          background: linear-gradient(135deg, ${CYAN}0a 0%, ${LIME}0a 100%);
+          border: 2px dashed ${CYAN}33%;
+          display: inline-block;
+          max-width: 750px;
+          box-shadow: 0 12px 40px ${CYAN}0a;
+        }
+        .awards-recognitions-title {
+          color: #0f172a;
+          font-size: 24px;
+          font-weight: 800;
+          margin: 0 0 8px;
+        }
+        .awards-recognitions-text {
+          color: #475569;
+          font-size: 16px;
+          margin: 0;
+          font-weight: 500;
+          line-height: 1.6;
+        }
+
+        .award-item-img {
+          width: 105px;
+          height: 105px;
+          object-fit: contain;
+        }
+        .award-item-text {
+          font-size: 13px;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.3;
+          z-index: 1;
+          padding: 0 4px;
+        }
+
+        .awards-header-container {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+          justify-content: center;
+        }
+        .awards-header-text {
+          text-align: left;
+        }
+
+        .award-card-responsive {
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .award-item-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          width: 100%;
+          justify-items: center;
+        }
+
+        @media (max-width: 1024px) {
+          .awards-grid-innovation {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          .awards-grid-4col {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .awards-title {
+            font-size: 32px;
+          }
+          .awards-subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+          }
+          .awards-recognitions {
+            padding: 24px 20px;
+            width: 100%;
+          }
+          .awards-recognitions-title {
+            font-size: 20px;
+          }
+          .award-item-img {
+            width: 85px;
+            height: 85px;
+          }
+          .awards-header-container {
+            flex-direction: column;
+            text-align: center;
+          }
+          .awards-header-text {
+            text-align: center;
+          }
+          .award-card-responsive {
+            padding: 24px 12px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .awards-grid-4col {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+          .award-item-grid {
+            gap: 8px;
+          }
+          .awards-title {
+            font-size: 28px;
+          }
+          .award-item-text {
+            font-size: 11px;
+          }
+          .award-item-img {
+            width: 70px;
+            height: 70px;
+          }
+        }
+      `}</style>
+
       <div style={{ paddingTop: 80, maxWidth: 1250, margin: '0 auto', padding: '60px 16px 100px' }}>
 
         {/* Page title */}
@@ -146,30 +295,22 @@ export default function AwardsPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 22px', borderRadius: 999, background: `${CYAN}12`, border: `1px solid ${CYAN}33`, color: CYAN, fontSize: 12, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 18 }}>
             <Sparkles size={12} /> Vyuga 2026
           </div>
-          <h1 style={{ fontSize: 52, fontWeight: 900, margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+          <h1 className="awards-title">
             <span style={{ background: `linear-gradient(90deg, ${CYAN}, ${LIME})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               National Ability Awards
             </span>
           </h1>
           <div style={{ height: 7, width: 100, background: `linear-gradient(90deg,${CYAN},${LIME})`, borderRadius: 999, margin: '0 auto 20px' }} />
-          <p style={{ color: '#64748b', fontSize: 18, margin: '0 0 40px', fontWeight: 500 }}>Celebrating inclusivity, innovation & outstanding talent</p>
+          <p className="awards-subtitle">Celebrating inclusivity, innovation & outstanding talent</p>
           
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            style={{ 
-              padding: '28px 56px', 
-              borderRadius: 32, 
-              background: `linear-gradient(135deg, ${CYAN}0a 0%, ${LIME}0a 100%)`, 
-              border: `2px dashed ${CYAN}33`,
-              display: 'inline-block',
-              maxWidth: '750px',
-              boxShadow: `0 12px 40px ${CYAN}0a`
-            }}
+            className="awards-recognitions"
           >
-            <p style={{ color: '#0f172a', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Attractive Recognitions, Gifts & Trophies</p>
-            <p style={{ color: '#475569', fontSize: 16, margin: 0, fontWeight: 500, lineHeight: 1.6 }}>
+            <p className="awards-recognitions-title">Attractive Recognitions, Gifts & Trophies</p>
+            <p className="awards-recognitions-text">
               Participate and stand a chance to win amazing rewards across all events at VYUGA!
             </p>
           </motion.div>
@@ -178,12 +319,12 @@ export default function AwardsPage() {
         {/* ── INNOVATION FEST ── */}
         <Divider label="Inclusive Innovation Fest" accent={CYAN} />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 1.2fr', gap: 12, alignItems: 'stretch' }}>
+        <div className="awards-grid-innovation">
 
           {/* By S.A — LEFT */}
           <AwardCard accent={LIME}>
             <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={LIME} />} accent={LIME} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="award-item-grid">
               <AwardItem name="Ability Innovation Champion" accent={LIME} imgSrc={tropy1} delay={0.1} />
               <AwardItem name="Emerging Ability Innovator" accent={LIME} imgSrc={tropy4} delay={0.2} />
             </div>
@@ -205,7 +346,7 @@ export default function AwardsPage() {
           {/* For S.A — RIGHT */}
           <AwardCard accent={CYAN}>
             <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={CYAN} />} accent={CYAN} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="award-item-grid">
               <AwardItem name="Impact Innovator Icon" accent={CYAN} imgSrc={tropy5} delay={0.1} />
               <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} imgSrc={tropy6} delay={0.2} />
             </div>
@@ -216,7 +357,7 @@ export default function AwardsPage() {
         <Divider label="Special Talent Hunt" accent={LIME} />
         <AwardCard accent={LIME} style={{ maxWidth: 1100, margin: '0 auto' }}>
           <SectionHeader label="Special Talent Hunt" sublabel="Ability Showcase" icon={<Users size={24} color={LIME} />} accent={LIME} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          <div className="awards-grid-4col">
             <AwardItem name="Shining Ability Icon" accent={LIME} imgSrc={tropy7} delay={0.1} />
             <AwardItem name="Rising Ability Performer" accent={LIME} imgSrc={child} delay={0.2} />
             <AwardItem name="People's Favorite" accent={LIME} imgSrc={hand} delay={0.3} />
@@ -225,10 +366,10 @@ export default function AwardsPage() {
         </AwardCard>
 
         {/* ── SHORT FILM CONTEST ── */}
-        <Divider label="Short Film Contest — Inclusivity Theme" accent={CYAN} />
+        <Divider label="Short Film Contest" accent={CYAN} />
         <AwardCard accent={CYAN} style={{ maxWidth: 1100, margin: '0 auto' }}>
           <SectionHeader label="Short Film Contest" sublabel="Inclusivity Theme" icon={<Video size={24} color={CYAN} />} accent={CYAN} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          <div className="awards-grid-4col">
             <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} imgSrc={shortflim} delay={0.1} />
             <AwardItem name="Impact Story Award" accent={CYAN} imgSrc={tropy3} delay={0.2} />
             <AwardItem name="People's Favorite" accent={CYAN} imgSrc={hand} delay={0.3} />
