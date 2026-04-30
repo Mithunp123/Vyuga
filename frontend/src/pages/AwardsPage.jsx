@@ -47,7 +47,9 @@ function AwardItem({ name, accent, imgSrc, delay = 0 }) {
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         minHeight: 175,
         justifyContent: 'center',
-        width: '100%'
+        width: '100%',
+        maxWidth: 280,
+        minWidth: 140
       }}
     >
       {/* Decorative background shape */}
@@ -148,10 +150,11 @@ export default function AwardsPage() {
           align-items: stretch;
         }
         .awards-grid-4col {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 10px;
-          justify-items: center;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          justify-content: center;
+          width: 100%;
         }
         .awards-title {
           font-size: 52px;
@@ -231,9 +234,6 @@ export default function AwardsPage() {
             grid-template-columns: 1fr;
             gap: 24px;
           }
-          .awards-grid-4col {
-            grid-template-columns: repeat(2, 1fr);
-          }
         }
 
         @media (max-width: 768px) {
@@ -269,8 +269,7 @@ export default function AwardsPage() {
 
         @media (max-width: 480px) {
           .awards-grid-4col {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 12px;
           }
           .award-item-grid {
             gap: 8px;
@@ -361,7 +360,6 @@ export default function AwardsPage() {
             <AwardItem name="Shining Ability Icon" accent={LIME} imgSrc={tropy7} delay={0.1} />
             <AwardItem name="Rising Ability Performer" accent={LIME} imgSrc={child} delay={0.2} />
             <AwardItem name="People's Favorite" accent={LIME} imgSrc={hand} delay={0.3} />
-            <AwardItem name="Most Creative Talent" accent={LIME} imgSrc={tropy8} delay={0.4} />
           </div>
         </AwardCard>
 
@@ -373,7 +371,6 @@ export default function AwardsPage() {
             <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} imgSrc={shortflim} delay={0.1} />
             <AwardItem name="Impact Story Award" accent={CYAN} imgSrc={tropy3} delay={0.2} />
             <AwardItem name="People's Favorite" accent={CYAN} imgSrc={hand} delay={0.3} />
-            <AwardItem name="Best Visual Storytelling" accent={CYAN} imgSrc={tropy4} delay={0.4} />
           </div>
         </AwardCard>
 
