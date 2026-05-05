@@ -322,7 +322,7 @@ export default function AwardsPage() {
 
           {/* By S.A — LEFT */}
           <AwardCard accent={LIME}>
-            <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={LIME} />} accent={LIME} />
+            <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={LIME} />} accent={LIME} />
             <div className="award-item-grid">
               <AwardItem name="Ability Innovation Champion" accent={LIME} imgSrc={tropy1} delay={0.1} />
               <AwardItem name="Emerging Ability Innovator" accent={LIME} imgSrc={tropy4} delay={0.2} />
@@ -344,7 +344,7 @@ export default function AwardsPage() {
 
           {/* For S.A — RIGHT */}
           <AwardCard accent={CYAN}>
-            <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={CYAN} />} accent={CYAN} />
+            <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={CYAN} />} accent={CYAN} />
             <div className="award-item-grid">
               <AwardItem name="Impact Innovator Icon" accent={CYAN} imgSrc={tropy5} delay={0.1} />
               <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} imgSrc={tropy6} delay={0.2} />
