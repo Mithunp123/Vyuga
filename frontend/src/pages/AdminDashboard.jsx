@@ -495,114 +495,151 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
       )}
 
       {/* ── Organization & Nomination Details (for talent-student) ── */}
-      {tabId === 'talent-student' && (row.org_address || row.org_size || row.contact_name || row.nomination_type) && (
-        <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: '#0197B2' }}>
-            Organization & Nomination Details
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Organization Details */}
-            <div>
-              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Organization Details</p>
-              <div className="space-y-2">
-                {row.org_name && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Name</span>
-                    <span className="text-sm text-slate-800 font-medium">{row.org_name}</span>
-                  </div>
-                )}
-                {row.org_address && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Address</span>
-                    <span className="text-sm text-slate-700">{row.org_address}</span>
-                  </div>
-                )}
-                <div className="flex items-start gap-3">
-                  <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Location</span>
-                  <span className="text-sm text-slate-700">{row.org_city}{row.org_state && `, ${row.org_state}`}{row.org_zip && ` ${row.org_zip}`}</span>
+      {tabId === 'talent-student' && (row.org_address || row.org_size || row.contact_name || row.nomination_type || row.org_name) && (() => {
+        const isParent = String(row.org_name || '').startsWith('(Parent Nomination)')
+        const displayOrgName = isParent
+          ? row.org_name.replace(/^\(Parent Nomination\)\s*/, '')
+          : row.org_name
+
+        return (
+          <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+            {/* Section badge */}
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold border"
+                style={isParent
+                  ? { background: '#fef3c7', color: '#d97706', borderColor: '#fde68a' }
+                  : { background: '#e0f6fa', color: '#0197B2', borderColor: '#bae6fd' }
+                }
+              >
+                {isParent ? 'Parent Nomination' : 'Organisation Nomination'}
+              </span>
+              <p className="text-sm font-bold tracking-wider uppercase" style={{ color: '#0197B2' }}>
+                {isParent ? 'Parent & Nomination Details' : 'Organization & Nomination Details'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column */}
+              <div>
+                <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">
+                  {isParent ? 'Parent Details' : 'Organization Details'}
+                </p>
+                <div className="space-y-2">
+                  {displayOrgName && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">
+                        {isParent ? 'Parent Name' : 'Org Name'}
+                      </span>
+                      <span className="text-sm text-slate-800 font-medium">{displayOrgName}</span>
+                    </div>
+                  )}
+                  {row.org_address && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">
+                        {isParent ? 'Home Address' : 'Address'}
+                      </span>
+                      <span className="text-sm text-slate-700">{row.org_address}</span>
+                    </div>
+                  )}
+                  {(row.org_city || row.org_state) && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">
+                        {isParent ? 'City / State' : 'Location'}
+                      </span>
+                      <span className="text-sm text-slate-700">
+                        {row.org_city}{row.org_state && `, ${row.org_state}`}{row.org_zip && ` ${row.org_zip}`}
+                      </span>
+                    </div>
+                  )}
+                  {/* Org-only — hidden for parents */}
+                  {!isParent && row.org_size && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Org Size</span>
+                      <span className="text-sm text-slate-700">{row.org_size} students</span>
+                    </div>
+                  )}
+                  {!isParent && row.org_disability_focus && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Focus</span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                        style={{
+                          backgroundColor: row.org_disability_focus === 'single' ? '#fef3c7' : '#dbeafe',
+                          color: row.org_disability_focus === 'single' ? '#d97706' : '#1d4ed8'
+                        }}>
+                        {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Disabilities'}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                {row.org_size && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Size</span>
-                    <span className="text-sm text-slate-700">{row.org_size} students</span>
-                  </div>
-                )}
-                {row.org_disability_focus && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Focus</span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                      style={{ 
-                        backgroundColor: row.org_disability_focus === 'single' ? '#fef3c7' : '#dbeafe',
-                        color: row.org_disability_focus === 'single' ? '#d97706' : '#1d4ed8'
-                      }}>
-                      {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Disabilities'}
-                    </span>
-                  </div>
-                )}
               </div>
-            </div>
 
-            {/* SPOC Details */}
-            <div>
-              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">SPOC Details</p>
-              <div className="space-y-2">
-                {row.contact_name && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Contact</span>
-                    <span className="text-sm text-slate-800 font-medium">{row.contact_name}</span>
-                  </div>
-                )}
-                {row.contact_designation && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Title</span>
-                    <span className="text-sm text-slate-700">{row.contact_designation}</span>
-                  </div>
-                )}
-                {row.contact_email && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Email</span>
-                    <span className="text-sm text-slate-700">{row.contact_email}</span>
-                  </div>
-                )}
-                {row.contact_phone && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Phone</span>
-                    <span className="text-sm text-slate-700">{row.contact_phone}</span>
-                  </div>
-                )}
+              {/* Middle column */}
+              <div>
+                <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">
+                  {isParent ? 'Parent Contact' : 'SPOC Details'}
+                </p>
+                <div className="space-y-2">
+                  {row.contact_name && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">
+                        {isParent ? 'Name' : 'Contact'}
+                      </span>
+                      <span className="text-sm text-slate-800 font-medium">{row.contact_name}</span>
+                    </div>
+                  )}
+                  {!isParent && row.contact_designation && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Title</span>
+                      <span className="text-sm text-slate-700">{row.contact_designation}</span>
+                    </div>
+                  )}
+                  {row.contact_email && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Email</span>
+                      <span className="text-sm text-slate-700">{row.contact_email}</span>
+                    </div>
+                  )}
+                  {row.contact_phone && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Phone</span>
+                      <span className="text-sm text-slate-700">{row.contact_phone}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Nomination Details */}
-            <div>
-              <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Nomination Info</p>
-              <div className="space-y-2">
-                {row.nomination_type && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Type</span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                      style={{ 
-                        backgroundColor: row.nomination_type === 'team' ? '#e8f9de' : '#e0f6fa',
-                        color: row.nomination_type === 'team' ? '#16a34a' : '#0197B2'
-                      }}>
-                      {row.nomination_type === 'team' ? `Team (${row.team_size || 'Unknown'} members)` : 'Individual'}
-                    </span>
-                  </div>
-                )}
-                {row.grade_category && (
-                  <div className="flex items-start gap-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[60px] mt-0.5">Grade</span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
-                      {row.grade_category}
-                    </span>
-                  </div>
-                )}
+              {/* Right column — nomination info */}
+              <div>
+                <p className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">Nomination Info</p>
+                <div className="space-y-2">
+                  {row.nomination_type && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Type</span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                        style={{
+                          backgroundColor: row.nomination_type === 'team' ? '#e8f9de' : '#e0f6fa',
+                          color: row.nomination_type === 'team' ? '#16a34a' : '#0197B2'
+                        }}>
+                        {row.nomination_type === 'team' ? `Team (${row.team_size || 'Unknown'} members)` : 'Individual'}
+                      </span>
+                    </div>
+                  )}
+                  {row.grade_category && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Grade</span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                        {row.grade_category}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
+
 
       {/* ── Tournament Experience Details (for cricket) ── */}
       {tabId === 'cricket' && row.tournament_experience && (
@@ -671,72 +708,113 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
       )}
 
       {/* ── All fields ──*/}
-      <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
-        <div className="flex flex-col gap-3">
-          {Object.entries(row).filter(([k, v]) => k !== 'status' && !(Array.isArray(v) && v.length > 0 && typeof v[0] === 'object')).map(([k, v]) => (
-            v !== null && v !== undefined && v !== '' ? (
-              <div key={k} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-slate-200 px-4 py-3" style={{ background: '#f8fafc' }}>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">{k.replace(/_/g, ' ')}</p>
-                <p className="text-sm text-slate-800 font-medium break-words leading-relaxed w-full">
-                  {typeof v === 'boolean'
-                    ? (v ? 'Yes' : 'No')
-                    : Array.isArray(v)
-                      ? v.map((m, i) => <span key={i} className="block">{String(m)}</span>)
-                      : k.endsWith('_at') ? fmtDate(v) 
-                      : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && v.startsWith('http') ? (
-                        <a href={v} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
-                          {v}
-                        </a>
-                      )
-                      : String(v)
-                  }
-                </p>
-              </div>
-            ) : null
-          ))}
-          {/* Status at the end */}
-          {row.status !== null && row.status !== undefined && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 rounded-xl border-2 border-slate-200 px-4 py-3" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">Status</p>
-              <p className="text-sm font-medium">
-                <StatusBadge status={row.status} />
-              </p>
-            </div>
-          )}
-        </div>
+      {(() => {
+        const isParentRec = tabId === 'talent-student' && String(row.org_name || '').startsWith('(Parent Nomination)')
 
-        {/* ── Members / Players (array of objects) ── */}
-        {Object.entries(row).filter(([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === 'object').map(([k, arr]) => (
-          <div key={k} className="mt-6">
-            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#0197B2' }}>
-              {k.replace(/_/g, ' ')} ({arr.length})
-            </p>
+        // Fields to completely hide for parent nominations
+        const parentHiddenKeys = new Set(['org_size', 'org_disability_focus', 'org_disability_types'])
+
+        // Human-friendly label overrides for parent nominations
+        const parentLabelMap = {
+          org_name:    'Parent Name',
+          org_address: 'Home Address',
+          org_city:    'City',
+          org_state:   'State',
+          org_zip:     'PIN Code',
+          contact_name: 'Parent Contact Name',
+        }
+
+        return (
+          <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
             <div className="flex flex-col gap-3">
-              {arr.map((member, i) => (
-                <div key={i} className="rounded-xl border-2 border-slate-200 bg-white overflow-hidden">
-                  <div className="px-4 py-2 border-b border-slate-100 flex items-center gap-3" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: '#0197B2' }}>{i + 1}</span>
-                    <span className="text-sm font-bold text-slate-800">{member.name || member.student_name || member.player_name || `#${i + 1}`}</span>
-                  </div>
-                  <div className="px-4 py-3 flex flex-col gap-2">
-                    {Object.entries(member).map(([field, val]) => (
-                      val !== null && val !== undefined && val !== '' ? (
-                        <div key={field} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold min-w-[120px] shrink-0">{field.replace(/_/g, ' ')}</span>
-                          <span className="text-sm text-slate-700 font-medium break-words leading-relaxed w-full">
-                            {typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}
-                          </span>
-                        </div>
-                      ) : null
-                    ))}
-                  </div>
+              {Object.entries(row)
+                .filter(([k, v]) => {
+                  if (k === 'status') return false
+                  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object') return false
+                  if (isParentRec && parentHiddenKeys.has(k)) return false
+                  return true
+                })
+                .map(([k, v]) => {
+                  if (v === null || v === undefined || v === '') return null
+
+                  // For parent nominations: strip prefix from org_name value
+                  let displayVal = v
+                  if (isParentRec && k === 'org_name') {
+                    displayVal = String(v).replace(/^\(Parent Nomination\)\s*/, '')
+                  }
+
+                  // Choose label
+                  const label = isParentRec && parentLabelMap[k]
+                    ? parentLabelMap[k]
+                    : k.replace(/_/g, ' ')
+
+                  return (
+                    <div key={k} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-slate-200 px-4 py-3" style={{ background: '#f8fafc' }}>
+                      <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">{label}</p>
+                      <p className="text-sm text-slate-800 font-medium break-words leading-relaxed w-full">
+                        {typeof displayVal === 'boolean'
+                          ? (displayVal ? 'Yes' : 'No')
+                          : Array.isArray(displayVal)
+                            ? displayVal.map((m, i) => <span key={i} className="block">{String(m)}</span>)
+                            : k.endsWith('_at') ? fmtDate(displayVal)
+                            : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && String(displayVal).startsWith('http') ? (
+                              <a href={displayVal} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
+                                {displayVal}
+                              </a>
+                            )
+                            : String(displayVal)
+                        }
+                      </p>
+                    </div>
+                  )
+                })
+              }
+              {/* Status at the end */}
+              {row.status !== null && row.status !== undefined && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 rounded-xl border-2 border-slate-200 px-4 py-3" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">Status</p>
+                  <p className="text-sm font-medium">
+                    <StatusBadge status={row.status} />
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        ))}
-      </div>
+        )
+      })()}
+
+      {/* ── Members / Players (array of objects) ── */}
+      {Object.entries(row).filter(([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === 'object').map(([k, arr]) => (
+        <div key={k} className="mt-6 rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#0197B2' }}>
+            {k.replace(/_/g, ' ')} ({arr.length})
+          </p>
+          <div className="flex flex-col gap-3">
+            {arr.map((member, i) => (
+              <div key={i} className="rounded-xl border-2 border-slate-200 bg-white overflow-hidden">
+                <div className="px-4 py-2 border-b border-slate-100 flex items-center gap-3" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
+                  <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: '#0197B2' }}>{i + 1}</span>
+                  <span className="text-sm font-bold text-slate-800">{member.name || member.student_name || member.player_name || `#${i + 1}`}</span>
+                </div>
+                <div className="px-4 py-3 flex flex-col gap-2">
+                  {Object.entries(member).map(([field, val]) => (
+                    val !== null && val !== undefined && val !== '' ? (
+                      <div key={field} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold min-w-[120px] shrink-0">{field.replace(/_/g, ' ')}</span>
+                        <span className="text-sm text-slate-700 font-medium break-words leading-relaxed w-full">
+                          {typeof val === 'boolean' ? (val ? 'Yes' : 'No') : String(val)}
+                        </span>
+                      </div>
+                    ) : null
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
 
       {/* ── Status controls (hidden for org tab) ── */}
       {!isOrgTab && (
