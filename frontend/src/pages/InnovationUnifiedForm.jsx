@@ -320,8 +320,8 @@ export default function InnovationUnifiedForm() {
     const path = location.pathname
     if (path.includes('innovation-college')) {
       return {
-        title: "Inclusive Innovation Fest – For Specially Abled",
-        subtitle: "Register your college team to develop solutions for accessibility and inclusion."
+        title: "Inclusive Innovation Fest \u2013 For Specially Abled",
+        subtitle: "College students need to analyze the problems faced by specially challenged people and innovate solutions for specially challenged individuals."
       }
     } else if (path.includes('innovation-pwd')) {
       return {
