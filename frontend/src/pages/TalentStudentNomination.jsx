@@ -47,7 +47,7 @@ const DISABILITY_TYPES = [
   'Speech Impairment',
   'Cognitive Disability',
   'Autism',
-  'Multiple Special Abled',
+  'Multiple Specially Abled',
   'Other',
 ]
 
