@@ -595,9 +595,9 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
                     </div>
                   )}
                   {row.contact_email && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Email</span>
-                      <span className="text-sm text-slate-700">{row.contact_email}</span>
+                    <div className="flex items-start gap-3 min-w-0">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] shrink-0 mt-0.5">Email</span>
+                      <span className="text-sm text-slate-700 break-all min-w-0">{row.contact_email}</span>
                     </div>
                   )}
                   {row.contact_phone && (

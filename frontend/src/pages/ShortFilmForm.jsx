@@ -246,7 +246,9 @@ export default function ShortFilmForm() {
               placeholder="https://drive.google.com/..."
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-brand-cyan focus:outline-none focus:ring-2 focus:ring-brand-cyan/20"
             />
-            <p className="mt-1 text-xs text-slate-400">Ensure the link is publicly accessible or view-enabled.</p>
+            <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-700">
+              Please share a <strong>video format only</strong> (MP4, MOV, AVI, WEBM). Ensure the link is publicly accessible.
+            </p>
           </div>
         </Section>
 

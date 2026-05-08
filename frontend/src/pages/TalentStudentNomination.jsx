@@ -922,6 +922,9 @@ export default function TalentStudentNomination() {
               onChange={(e) => setPerformanceUrl(e.target.value)}
               className="w-full mt-2 rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-sm placeholder:text-slate-400 focus:border-[#0197B2] focus:ring-4 focus:ring-[#0197B2]/10 focus:outline-none transition-all shadow-sm"
             />
+            <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-700">
+              Please share a <strong>video format only</strong> (MP4, MOV, AVI, WEBM). Do not share documents,images or any other files.
+            </p>
             
             <div className="mt-4 flex items-start gap-3 rounded-xl bg-red-50 p-4 border border-red-200 shadow-sm">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
