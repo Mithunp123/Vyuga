@@ -15,11 +15,18 @@ const EVENT_DATA = [
     id: "innovation",
     title: "Inclusive Innovation Fest",
     accent: "For Specially Abled / By Specially Abled",
-    description: "Participants choose whether their submission is for specially abled or by specially abled and continue with relevant fields. College teams and individuals develop innovative solutions to improve accessibility.",
+    description: "A platform where college teams and specially challenged innovators come together to create impactful solutions for accessibility and inclusion.",
     image: thinkImage,
     details: [
+      {
+        label: 'For Specially Abled',
+        value: ['College students need to analyze the problems faced by specially challenged people and innovate solutions for specially challenged individuals.']
+      },
+      {
+        label: 'By Specially Abled',
+        value: ['Open to all specially challenged innovators to create solutions for the problems they face in their daily lives or any assistive tech ideas are also welcome.']
+      },
       { label: 'Focus Sector', value: ['Assistive Technology'] },
-
     ],
     timeline: [
       { label: "Application Open", date: "25/04/2026" },
@@ -33,6 +40,7 @@ const EVENT_DATA = [
       { link: '/register/innovation-pwd', label: 'Specially Abled', id: 'innovation-pwd' }
     ]
   },
+
   {
     id: "talent",
     title: "Special Talent Hunt",
@@ -263,7 +271,7 @@ export default function AttendRegister() {
                 </div>
               </div>
 
-              <p className="text-slate-600 text-base leading-relaxed mb-6 max-w-3xl">{event.description}</p>
+              <p className="text-slate-600 text-base leading-relaxed mb-6 max-w-3xl text-justify">{event.description}</p>
 
               {/* ── Main Content Grid ── */}
               {isShortFilm ? (
@@ -289,7 +297,7 @@ export default function AttendRegister() {
                             {sec.value.map((val, vIdx) => (
                               <li key={vIdx} className="flex gap-2 text-xs text-slate-600 leading-snug">
                                 <span className={`mt-1 w-1 h-1 rounded-full ${sc.dot} shrink-0`} />
-                                <span>{val}</span>
+                                <span className="text-justify">{val}</span>
                               </li>
                             ))}
                           </ul>
@@ -351,7 +359,7 @@ export default function AttendRegister() {
                               {sec.value.map((val, vIdx) => (
                                 <li key={vIdx} className="flex gap-2 text-sm text-slate-600">
                                   <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#5BCB2B] shrink-0" />
-                                  <span>{val}</span>
+                                  <span className="text-justify">{val}</span>
                                 </li>
                               ))}
                             </ul>

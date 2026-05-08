@@ -436,7 +436,37 @@ export default function InnovationUnifiedForm() {
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
 
+        {/* Category & Focus Sector info — unified route only */}
+        {!location.pathname.includes('innovation-college') && !location.pathname.includes('innovation-pwd') && (
+          <>
+            {/* For Specially Abled card */}
+            <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
+              <h3 className="mb-2 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">For Specially Abled</h3>
+              <p className="text-[15px] font-medium text-slate-700 leading-relaxed">
+                College students need to analyze the problems faced by specially challenged people and innovate solutions for specially challenged individuals.
+              </p>
+            </div>
+
+            {/* By Specially Abled card */}
+            <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
+              <h3 className="mb-2 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">By Specially Abled</h3>
+              <p className="text-[15px] font-medium text-slate-700 leading-relaxed">
+                By Specially Abled category is open to all specially challenged innovators to create solutions for the problems they face in their daily lives or any assistive tech ideas are also welcome.
+              </p>
+            </div>
+
+            {/* Focus Sector card */}
+            <div className="rounded-2xl border border-[#0197B2]/20 bg-[#0197B2]/5 p-6 shadow-sm">
+              <h3 className="mb-2 font-display text-xs font-bold uppercase tracking-widest text-[#0197B2]">Focus Sector</h3>
+              <p className="text-[15px] font-medium text-slate-700 leading-relaxed">
+                Assistive Technology
+              </p>
+            </div>
+          </>
+        )}
+
         {/* Only show Registration Type selector for the unified route */}
+
         {!location.pathname.includes('innovation-college') && !location.pathname.includes('innovation-pwd') && (
           <Section title="Registration Type">
             <div className="sm:col-span-2">
