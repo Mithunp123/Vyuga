@@ -334,12 +334,59 @@ function PaymentBadge({ status }) {
 }
 
 // ── Expanded detail panel ─────────────────────────────────────────────────────
-function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
+function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate }) {
   const [status, setStatus] = useState(row.status || 'pending')
   const [adminNote, setAdminNote] = useState(row.admin_note || '')
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [triggering, setTriggering] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [editData, setEditData] = useState({})
+  const [editSaving, setEditSaving] = useState(false)
+  const [editMsg, setEditMsg] = useState('')
+
+  const EDIT_BLOCKED = new Set([
+    'id', 'submitted_at', 'registered_at', 'created_at',
+    'payment_status', 'invoice_link', 'razorpay_order_id',
+    'razorpay_payment_id', 'amount_paise', 'paid_at',
+    'status', 'admin_note', 'email_sent',
+    'video_file_path', 'prototype_image_path', 'ppt_file_path', 'udid_card_path', 'logo_path'
+  ])
+
+  const openEdit = () => {
+    const initial = {}
+    for (const [k, v] of Object.entries(row)) {
+      if (!EDIT_BLOCKED.has(k) && v !== null && v !== undefined && typeof v !== 'object') {
+        initial[k] = String(v)
+      }
+    }
+    setEditData(initial)
+    setEditMsg('')
+    setEditMode(true)
+  }
+
+  const saveEdit = async () => {
+    setEditSaving(true)
+    setEditMsg('')
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/record/${tabId}/${row.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify(editData),
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      onRowUpdate(row.id, json.data)
+      setEditMode(false)
+      setEditMsg('')
+      alert('Changes saved successfully')
+    } catch (err) {
+      setEditMsg('Error: ' + err.message)
+    } finally {
+      setEditSaving(false)
+    }
+  }
+
 
   // Org tab and Sponsors tab don't have status management
   const isOrgTab = ['talent-org', 'sponsors'].includes(tabId)
@@ -402,10 +449,32 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
 
   return (
     <>
-      <SubmitLoader visible={saving} />
-      <div className="px-6 py-6" style={{ background: 'linear-gradient(135deg, #f0fbfd 0%, #f4fef0 100%)' }}>
+      <SubmitLoader visible={saving || editSaving} />
 
+      {/* Edit Application banner */}
+      <div className="flex items-center justify-between px-6 pt-5 pb-2">
+        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>Application Details</p>
+        <div className="flex gap-2">
+          {!editMode && !['sponsors'].includes(tabId) && (
+            <button
+              onClick={openEdit}
+              className="rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-xs font-bold text-slate-700 transition hover:border-[#0197B2] hover:text-[#0197B2]"
+            >
+              Edit Application
+            </button>
+          )}
+          {editMode && (
+            <button
+              onClick={() => setEditMode(false)}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-50"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
+      </div>
 
+      <div className="px-6 py-4" style={{ background: 'linear-gradient(135deg, #f0fbfd 0%, #f4fef0 100%)' }}>
 
       {/* ── Media preview ── */}
       {mediaUrl && (
@@ -725,62 +794,118 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
         }
 
         return (
-          <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
-            <div className="flex flex-col gap-3">
-              {Object.entries(row)
-                .filter(([k, v]) => {
-                  if (k === 'status') return false
-                  if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object') return false
-                  if (isParentRec && parentHiddenKeys.has(k)) return false
-                  return true
-                })
-                .map(([k, v]) => {
-                  if (v === null || v === undefined || v === '') return null
+          editMode ? (
+            /* ── Edit Form (replaces Full Record when editing) ── */
+            <div className="rounded-2xl border-2 border-[#0197B2]/30 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-xs font-bold tracking-widest uppercase" style={{ color: '#0197B2' }}>Edit Application</p>
+                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-500">
+                  Payment and system fields are locked
+                </span>
+              </div>
 
-                  // For parent nominations: strip prefix from org_name value
-                  let displayVal = v
-                  if (isParentRec && k === 'org_name') {
-                    displayVal = String(v).replace(/^\(Parent Nomination\)\s*/, '')
-                  }
-
-                  // Choose label
-                  const label = isParentRec && parentLabelMap[k]
-                    ? parentLabelMap[k]
-                    : k.replace(/_/g, ' ')
-
+              <div className="grid gap-4 sm:grid-cols-2">
+                {Object.entries(editData).map(([key, val]) => {
+                  const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                  const isLong = val && val.length > 80
                   return (
-                    <div key={k} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-slate-200 px-4 py-3" style={{ background: '#f8fafc' }}>
-                      <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">{label}</p>
-                      <p className="text-sm text-slate-800 font-medium break-words leading-relaxed w-full">
-                        {typeof displayVal === 'boolean'
-                          ? (displayVal ? 'Yes' : 'No')
-                          : Array.isArray(displayVal)
-                            ? displayVal.map((m, i) => <span key={i} className="block">{String(m)}</span>)
-                            : k.endsWith('_at') ? fmtDate(displayVal)
-                            : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && String(displayVal).startsWith('http') ? (
-                              <a href={displayVal} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
-                                {displayVal}
-                              </a>
-                            )
-                            : String(displayVal)
-                        }
-                      </p>
+                    <div key={key} className={isLong ? 'sm:col-span-2' : ''}>
+                      <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        {label}
+                      </label>
+                      {isLong ? (
+                        <textarea
+                          rows={3}
+                          value={val}
+                          onChange={(e) => setEditData(d => ({ ...d, [key]: e.target.value }))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-[#0197B2] focus:outline-none focus:ring-2 focus:ring-[#0197B2]/10 resize-none"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={val}
+                          onChange={(e) => setEditData(d => ({ ...d, [key]: e.target.value }))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-[#0197B2] focus:outline-none focus:ring-2 focus:ring-[#0197B2]/10"
+                        />
+                      )}
                     </div>
                   )
-                })
-              }
-              {/* Status at the end */}
-              {row.status !== null && row.status !== undefined && (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 rounded-xl border-2 border-slate-200 px-4 py-3" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">Status</p>
-                  <p className="text-sm font-medium">
-                    <StatusBadge status={row.status} />
-                  </p>
-                </div>
-              )}
+                })}
+              </div>
+
+              <div className="mt-5 flex items-center gap-3">
+                <button
+                  onClick={saveEdit}
+                  disabled={editSaving}
+                  className="rounded-xl px-6 py-2.5 text-sm font-bold text-white transition disabled:opacity-60"
+                  style={{ backgroundColor: '#0197B2' }}
+                >
+                  {editSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  onClick={() => setEditMode(false)}
+                  disabled={editSaving}
+                  className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                {editMsg && <span className="text-sm font-medium text-red-600">{editMsg}</span>}
+              </div>
             </div>
-          </div>
+          ) : (
+            /* ── Full Record (read-only) ── */
+            <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+              <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
+              <div className="flex flex-col gap-3">
+                {Object.entries(row)
+                  .filter(([k, v]) => {
+                    if (k === 'status') return false
+                    if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object') return false
+                    if (isParentRec && parentHiddenKeys.has(k)) return false
+                    return true
+                  })
+                  .map(([k, v]) => {
+                    if (v === null || v === undefined || v === '') return null
+
+                    let displayVal = v
+                    if (isParentRec && k === 'org_name') {
+                      displayVal = String(v).replace(/^\(Parent Nomination\)\s*/, '')
+                    }
+
+                    const label = isParentRec && parentLabelMap[k]
+                      ? parentLabelMap[k]
+                      : k.replace(/_/g, ' ')
+
+                    return (
+                      <div key={k} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-slate-200 px-4 py-3" style={{ background: '#f8fafc' }}>
+                        <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">{label}</p>
+                        <p className="text-sm text-slate-800 font-medium break-words leading-relaxed w-full">
+                          {typeof displayVal === 'boolean'
+                            ? (displayVal ? 'Yes' : 'No')
+                            : Array.isArray(displayVal)
+                              ? displayVal.map((m, i) => <span key={i} className="block">{String(m)}</span>)
+                              : k.endsWith('_at') ? fmtDate(displayVal)
+                              : (k === 'prototype_url' || k === 'performance_url' || k === 'social_media_link') && String(displayVal).startsWith('http') ? (
+                                <a href={displayVal} target="_blank" rel="noreferrer" className="text-[#0197B2] hover:underline break-all">
+                                  {displayVal}
+                                </a>
+                              )
+                              : String(displayVal)
+                          }
+                        </p>
+                      </div>
+                    )
+                  })
+                }
+                {row.status !== null && row.status !== undefined && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 rounded-xl border-2 border-slate-200 px-4 py-3" style={{ background: STATUS_CFG[row.status]?.bg || '#f8fafc' }}>
+                    <p className="text-xs text-slate-400 uppercase tracking-wider font-bold min-w-[140px] shrink-0">Status</p>
+                    <p className="text-sm font-medium"><StatusBadge status={row.status} /></p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
         )
       })()}
 
@@ -814,7 +939,6 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
           </div>
         </div>
       ))}
-
 
       {/* ── Status controls (hidden for org tab) ── */}
       {!isOrgTab && (
@@ -864,6 +988,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose }) {
         </div>
       )}
       </div>
+
     </>
   )
 }
@@ -945,6 +1070,15 @@ export default function AdminDashboard() {
       ...d,
       [activeTab]: d[activeTab]?.map((r) =>
         r.id === id ? { ...r, status, admin_note: adminNote } : r
+      ) || [],
+    }))
+  }, [activeTab])
+
+  const handleRowUpdate = useCallback((id, updatedRow) => {
+    setData((d) => ({
+      ...d,
+      [activeTab]: d[activeTab]?.map((r) =>
+        r.id === id ? { ...r, ...updatedRow } : r
       ) || [],
     }))
   }, [activeTab])
@@ -1557,6 +1691,7 @@ export default function AdminDashboard() {
                           tabId={activeTab}
                           token={token}
                           onStatusChange={handleStatusChange}
+                          onRowUpdate={handleRowUpdate}
                           onClose={() => setExpandedRow(null)}
                         />
                       </div>

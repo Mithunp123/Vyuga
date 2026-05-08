@@ -2868,6 +2868,52 @@ app.patch('/api/admin/status/:type/:id', requireAdmin, async (req, res) => {
   }
 })
 
+// -- Admin: edit application fields (excluding payment / system fields) ---------
+app.patch('/api/admin/record/:type/:id', requireAdmin, async (req, res) => {
+  try {
+    const { type, id } = req.params
+    const meta = TABLE_MAP[type]
+    if (!meta) return res.status(400).json({ success: false, message: 'Unknown type' })
+    if (!isValidUUID(id)) return res.status(400).json({ success: false, message: 'Invalid record ID format' })
+
+    const BLOCKED = new Set([
+      'id', 'submitted_at', 'registered_at', 'created_at',
+      'payment_status', 'invoice_link', 'razorpay_order_id',
+      'razorpay_payment_id', 'amount_paise', 'paid_at',
+      'status', 'admin_note', 'email_sent',
+      'video_file_path', 'prototype_image_path', 'ppt_file_path', 'udid_card_path', 'logo_path'
+    ])
+
+    const updates = {}
+    for (const [k, v] of Object.entries(req.body)) {
+      if (!BLOCKED.has(k)) {
+        updates[k] = typeof v === 'string' ? sanitizeText(v, 2000) : v
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ success: false, message: 'No editable fields provided' })
+    }
+
+    const { data, error } = await supabase
+      .from(meta.table)
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      await logError({ source: 'admin', endpoint: `/api/admin/record/${type}/${id}`, method: 'PATCH', errorType: 'db_error', message: error.message, req })
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    res.json({ success: true, data })
+  } catch (err) {
+    await logError({ source: 'admin', endpoint: `/api/admin/record/${req.params.type}/${req.params.id}`, method: 'PATCH', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: trigger status email manually Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.post('/api/admin/trigger-email/:type/:id', requireAdmin, async (req, res) => {
   try {
