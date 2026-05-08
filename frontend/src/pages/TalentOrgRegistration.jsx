@@ -125,12 +125,12 @@ export default function TalentOrgRegistration() {
       return
     }
     if (!form.disabilityTypes || form.disabilityTypes.length === 0) {
-      setError('Please select at least one disability type.');
+      setError('Please select at least one specially abled type.');
       setLoading(false);
       return
     }
     if (form.orgFocus === 'single' && form.disabilityTypes.length > 1) {
-      setError('Single focus organizations can only select one disability type.');
+      setError('Single focus organizations can only select one specially abled type.');
       setLoading(false);
       return
     }
@@ -237,8 +237,8 @@ export default function TalentOrgRegistration() {
               style={{ focusBorderColor: '#0197B2' }}
             >
               <option value="">Select focus</option>
-              <option value="single">Single Disability Type</option>
-              <option value="multiple">Multiple Disability Types</option>
+              <option value="single">Single Specially Abled Type</option>
+              <option value="multiple">Multiple Specially Abled Types</option>
             </select>
           </div>
           

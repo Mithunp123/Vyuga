@@ -103,8 +103,8 @@ export default function BlindChessForm() {
     setLoading(true)
     setError('')
     if (!/^\d{10}$/.test(form.phone)) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
-    if (!form.disabilityType || form.disabilityType.length === 0) { setError('Please select at least one disability type.'); setLoading(false); return }
-    if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { setError('Please enter disability type.'); setLoading(false); return }
+    if (!form.disabilityType || form.disabilityType.length === 0) { setError('Please select at least one specially abled type.'); setLoading(false); return }
+    if (form.disabilityType.includes('Other') && !form.disabilityTypeOther.trim()) { setError('Please enter specially abled type.'); setLoading(false); return }
     if (form.experienceLevel === 'other' && !form.experienceLevelOther.trim()) { setError('Please enter experience level.'); setLoading(false); return }
 
     if (fee) {
@@ -249,7 +249,7 @@ export default function BlindChessForm() {
             <p className="mt-2 text-xs text-slate-500">Select all that apply</p>
           </div>
           {form.disabilityType?.includes('Other') && (
-            <Field label="Enter Disability Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
+            <Field label="Enter Specially Abled Type" value={form.disabilityTypeOther} onChange={set('disabilityTypeOther')} required />
           )}
         </Section>
 

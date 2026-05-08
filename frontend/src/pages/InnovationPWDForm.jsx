@@ -81,10 +81,10 @@ export default function InnovationPWDForm() {
     const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
     if (invalidPhone) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
     if (!form.member1DisabilityType || form.member1DisabilityType.length === 0) { 
-      setError('Please select at least one disability type.'); setLoading(false); return 
+      setError('Please select at least one specially abled type.'); setLoading(false); return 
     }
     if (form.member1DisabilityType.includes('Other') && !form.member1DisabilityTypeOther.trim()) { 
-      setError('Please enter the specific disability type.'); setLoading(false); return 
+      setError('Please enter the specific specially abled type.'); setLoading(false); return 
     }
     try {
       const fd = new FormData()
@@ -288,7 +288,7 @@ export default function InnovationPWDForm() {
           </div>
           {form.member1DisabilityType?.includes('Other') && (
             <Field 
-              label="Enter Disability Type" 
+              label="Enter Specially Abled Type" 
               value={form.member1DisabilityTypeOther} 
               onChange={set('member1DisabilityTypeOther')} 
               required 

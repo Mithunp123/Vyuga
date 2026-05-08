@@ -211,7 +211,7 @@ function exportCSV(tabId, rows) {
       { key: 'member_number', label: 'Member #' },
       { key: 'member_name', label: 'Member Name' },
       { key: 'member_age', label: 'Member Age' },
-      { key: 'member_disability', label: 'Member Disability' },
+      { key: 'member_disability', label: 'Member Specially Abled' },
       { key: 'member_guardian_name', label: 'Member Guardian' },
       { key: 'member_guardian_phone', label: 'Member Guardian Phone' }
     ]
@@ -636,7 +636,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
                           backgroundColor: row.org_disability_focus === 'single' ? '#fef3c7' : '#dbeafe',
                           color: row.org_disability_focus === 'single' ? '#d97706' : '#1d4ed8'
                         }}>
-                        {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Special Abled'}
+                        {row.org_disability_focus === 'single' ? 'Single Specially Abled' : 'Multiple Specially Abled'}
                       </span>
                     </div>
                   )}

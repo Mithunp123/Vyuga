@@ -169,10 +169,10 @@ export default function InnovationUnifiedForm() {
     if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.solution.trim()) return 'Solution is required.'
     if ((isForSpeciallyAbled || isBySpeciallyAbled) && !form.usp.trim()) return 'USP is required.'
     if (isBySpeciallyAbled && (!form.member1DisabilityType || form.member1DisabilityType.length === 0)) {
-      return 'Please select at least one disability type.'
+      return 'Please select at least one specially abled type.'
     }
     if (isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && !form.member1DisabilityTypeOther.trim()) {
-      return 'Please enter a disability type.'
+      return 'Please enter a specially abled type.'
     }
     if (isBySpeciallyAbled && !udidFile) {
       return 'Please upload the UDID card.'
@@ -652,7 +652,7 @@ export default function InnovationUnifiedForm() {
               )}
               {isBySpeciallyAbled && form.member1DisabilityType?.includes('Other') && (
                 <Field
-                  label="Enter Disability Type"
+                  label="Enter Specially Abled Type"
                   value={form.member1DisabilityTypeOther}
                   onChange={set('member1DisabilityTypeOther')}
                   required

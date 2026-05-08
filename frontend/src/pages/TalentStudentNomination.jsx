@@ -502,18 +502,18 @@ export default function TalentStudentNomination() {
               required
             >
               <option value="">Select organization focus</option>
-              <option value="single">Single Disability Type</option>
-              <option value="multiple">Multiple Disability Types</option>
+              <option value="single">Single Specially Abled Type</option>
+              <option value="multiple">Multiple Specially Abled Types</option>
             </select>
             <p className="mt-1 text-xs text-slate-500">
-              Does your organization serve people with a single type of disability or multiple types?
+              Does your organization serve people with a single type of specially abled or multiple types?
             </p>
           </div>
           
           {form.orgDisabilityFocus && (
             <div className="sm:col-span-2">
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                Disability Types Supported <span className="text-red-500">*</span>
+                Specially Abled Types Supported <span className="text-red-500">*</span>
                 {form.orgDisabilityFocus === 'single' && <span className="text-xs normal-case text-slate-500"> (Select one)</span>}
                 {form.orgDisabilityFocus === 'multiple' && <span className="text-xs normal-case text-slate-500"> (Select multiple)</span>}
               </label>
@@ -704,7 +704,7 @@ export default function TalentStudentNomination() {
                 </div>
                 {member.disabilityType?.includes('Other') && (
                   <Field
-                    label="Enter Disability Type"
+                    label="Enter Specially Abled Type"
                     value={member.disabilityTypeOther}
                     onChange={(e) => updateTeamMember(index, 'disabilityTypeOther', e.target.value)}
                     required

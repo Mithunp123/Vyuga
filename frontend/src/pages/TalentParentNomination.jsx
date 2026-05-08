@@ -567,7 +567,7 @@ export default function TalentParentNomination() {
                 </div>
                 {member.disabilityType?.includes('Other') && (
                   <Field
-                    label="Enter Disability Type"
+                    label="Enter Specially Abled Type"
                     value={member.disabilityTypeOther}
                     onChange={(e) => updateTeamMember(index, 'disabilityTypeOther', e.target.value)}
                     required
