@@ -798,6 +798,7 @@ export default function AdminDashboard() {
   const [errors, setErrors] = useState({})
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [nominationSourceFilter, setNominationSourceFilter] = useState('all') // 'all' | 'parent' | 'org'
   const [expandedRow, setExpandedRow] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -837,6 +838,7 @@ export default function AdminDashboard() {
       fetchTab(activeTab)
       setSearch('')
       setStatusFilter('all')
+      setNominationSourceFilter('all')
       setExpandedRow(null)
     }
   }, [activeTab]) // eslint-disable-line
@@ -888,7 +890,11 @@ export default function AdminDashboard() {
       String(v ?? '').toLowerCase().includes(search.toLowerCase())
     )
     const matchStatus = statusFilter === 'all' || (r.status || 'pending') === statusFilter
-    return matchSearch && matchStatus
+    const isParentNom = String(r.org_name || '').startsWith('(Parent Nomination)')
+    const matchSource = activeTab !== 'talent-student' || nominationSourceFilter === 'all'
+      || (nominationSourceFilter === 'parent' && isParentNom)
+      || (nominationSourceFilter === 'org' && !isParentNom)
+    return matchSearch && matchStatus && matchSource
   })
 
   const statusCounts = rows.reduce((acc, r) => {
@@ -1261,6 +1267,32 @@ export default function AdminDashboard() {
                     {s.label} ({statusCounts[key] || 0})
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Nomination Source Filter (only for Talent Utsav – Nominations) */}
+            {activeTab === 'talent-student' && (
+              <div className="mb-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Filter by Nomination Source</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { key: 'all',    label: 'All Nominations',       count: rows.length },
+                    { key: 'parent', label: 'Parent Nominations',  count: rows.filter(r => String(r.org_name || '').startsWith('(Parent Nomination)')).length },
+                    { key: 'org',    label: 'Organisation Nominations', count: rows.filter(r => !String(r.org_name || '').startsWith('(Parent Nomination)')).length },
+                  ].map(({ key, label, count }) => (
+                    <button
+                      key={key}
+                      onClick={() => setNominationSourceFilter(key)}
+                      className="rounded-full px-4 py-2 text-xs font-bold border-2 transition-all"
+                      style={nominationSourceFilter === key
+                        ? { background: '#e0f6fa', color: '#0197B2', borderColor: '#0197B2' }
+                        : { background: '#fff', color: '#64748b', borderColor: '#e2e8f0' }
+                      }
+                    >
+                      {label} ({count})
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
