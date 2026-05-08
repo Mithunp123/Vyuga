@@ -326,7 +326,7 @@ export default function InnovationUnifiedForm() {
     } else if (path.includes('innovation-pwd')) {
       return {
         title: "Inclusive Innovation Fest – By Specially Abled", 
-        subtitle: "Register to showcase your innovative solutions and entrepreneurial ideas."
+        subtitle: "By Specially Abled category is open to all specially challenged innovators to create solutions for the problems they face in their daily lives or any assistive tech ideas are also welcome."
       }
     } else {
       return {
