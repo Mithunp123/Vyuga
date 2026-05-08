@@ -44,9 +44,9 @@ const DISABILITY_TYPES = [
   'Hearing Impairment',
   'Mobility Impairment',
   'Speech Impairment',
-  'Intellectual Disability',
-  'Autism Spectrum Disorder',
-  'Multiple Disabilities',
+  'Cognitive Disability',
+  'Autism',
+  'Multiple Special Abled',
   'Other',
 ]
 
@@ -479,7 +479,7 @@ export default function TalentParentNomination() {
             <Field label="Age" type="number" value={form.studentAge} onChange={set('studentAge')} required />
             <div>
               <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                Type of Disability <span className="text-red-500">*</span>
+                    Type of Specially Abled <span className="text-red-500">*</span>
               </label>
               <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                 {DISABILITY_TYPES.map((disability) => (
@@ -546,7 +546,7 @@ export default function TalentParentNomination() {
                 />
                 <div>
                   <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                    Type of Disability <span className="text-red-500">*</span>
+                        Type of Specially Abled <span className="text-red-500">*</span>
                   </label>
                   <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                     {DISABILITY_TYPES.map((disability) => (

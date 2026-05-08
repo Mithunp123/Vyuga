@@ -636,7 +636,7 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
                           backgroundColor: row.org_disability_focus === 'single' ? '#fef3c7' : '#dbeafe',
                           color: row.org_disability_focus === 'single' ? '#d97706' : '#1d4ed8'
                         }}>
-                        {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Disabilities'}
+                        {row.org_disability_focus === 'single' ? 'Single Disability' : 'Multiple Special Abled'}
                       </span>
                     </div>
                   )}

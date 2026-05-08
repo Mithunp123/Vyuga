@@ -25,9 +25,9 @@ const DISABILITY_TYPES = [
   'Hearing Impairment',
   'Mobility Impairment',
   'Speech Impairment',
-  'Intellectual Disability',
-  'Autism Spectrum Disorder',
-  'Multiple Disabilities',
+  'Cognitive Disability',
+  'Autism',
+  'Multiple Special Abled',
   'Other',
 ]
 
@@ -615,7 +615,7 @@ export default function InnovationUnifiedForm() {
                 <>
                 <div className="sm:col-span-2">
                   <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-brand-cyan">
-                    Type of Disability <span className="text-red-500">*</span>
+                    Type of Specially Abled <span className="text-red-500">*</span>
                   </label>
                   <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                     {DISABILITY_TYPES.map((disability) => (

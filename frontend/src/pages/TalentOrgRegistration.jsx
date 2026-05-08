@@ -12,9 +12,9 @@ const DISABILITY_TYPES = [
   'Hearing Impairment',
   'Mobility Impairment',
   'Speech Impairment',
-  'Intellectual Disability',
-  'Autism Spectrum Disorder',
-  'Multiple Disabilities',
+  'Cognitive Disability',
+  'Autism',
+  'Multiple Special Abled',
   'Other',
 ]
 
@@ -245,7 +245,7 @@ export default function TalentOrgRegistration() {
           {form.orgFocus && (
             <div className="sm:col-span-2">
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                Disability Types Supported <span className="text-red-500">*</span>
+                Type of Specially Abled <span className="text-red-500">*</span>
                 {form.orgFocus === 'single' && <span className="text-xs normal-case text-slate-500"> (Select one)</span>}
                 {form.orgFocus === 'multiple' && <span className="text-xs normal-case text-slate-500"> (Select multiple)</span>}
               </label>
