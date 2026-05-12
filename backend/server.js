@@ -460,6 +460,8 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
     'chess': 'Blind Chess Competition',
   };
   const eventLabel = EVENT_NAME_MAP[eventType] || 'Event Registration';
+  // Generate a human-readable invoice number first — used as Razorpay receipt for easy identification
+  const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
   const receiptId = `rcpt_${eventType || 'event'}_${Date.now()}`.slice(0, 40);
 
   const expireBy = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60; // 7 days from now
@@ -467,7 +469,7 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
   const options = {
     type: "invoice",
     description: "VYUGA Event Registration",
-    receipt: receiptId,
+    receipt: invoiceNumber,   // Send invoice_number (VYG-XXXXXXXX) as the Razorpay receipt (Receipt No.)
     customer: {
       name: sanitizeText(name, 100) || 'Customer',
       email: email ? email.trim().toLowerCase() : undefined,
@@ -486,10 +488,9 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
   };
 
   const invoice = await razorpay.invoices.create(options);
-  const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
   const invoiceRef = invoice.id || invoice.order_id;
 
-  return { invoice, invoiceRef, receiptId: invoice.receipt || receiptId, totalAmount, baseFee, gstAmount, invoiceNumber };
+  return { invoice, invoiceRef, receiptId: invoice.receipt || invoiceNumber, totalAmount, baseFee, gstAmount, invoiceNumber, invoiceLink: invoice.short_url || null };
 }
 
 // Create Razorpay order for client-side checkout flow
@@ -1158,6 +1159,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       payer_phone: member1Phone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -1339,6 +1341,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       payer_phone: member1Phone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -1454,6 +1457,7 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       payer_phone: contactPhone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -1850,6 +1854,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       payer_phone: contactPhone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data?.id || null
     }])
@@ -1969,6 +1974,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       payer_phone: contactPhone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -2080,6 +2086,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       payer_phone: contactPhone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -2197,6 +2204,7 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       payer_phone: phone,
       receipt_id: invoiceInfo.receiptId,
       invoice_number: invoiceInfo.invoiceNumber,
+      invoice_link: invoiceInfo.invoiceLink,
       status: 'created',
       registration_id: data.id
     }])
@@ -2775,7 +2783,7 @@ app.get('/api/admin/payments', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('payments')
-      .select('id, event_type, amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, status, created_at, razorpay_payment_id')
+      .select('id, event_type, amount, base_amount, gst_amount, payer_name, payer_email, payer_phone, status, created_at, razorpay_payment_id, invoice_number, invoice_link, receipt_id')
       .order('created_at', { ascending: false })
     if (error) {
       await logError({ source: 'admin', endpoint: '/api/admin/payments', method: 'GET', errorType: 'db_error', message: error.message, req })
