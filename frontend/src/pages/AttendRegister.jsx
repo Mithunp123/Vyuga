@@ -43,7 +43,7 @@ const EVENT_DATA = [
 
   {
     id: "talent",
-    title: "Special Talent Hunt",
+    title: "Special Talent Utsav",
     accent: "Live Performance",
     description: "A vibrant platform to celebrate the unique talents of specially abled school children. Top 20 perform live at Vyuga!",
     image: eventImage,
