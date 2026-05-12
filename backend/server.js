@@ -461,7 +461,7 @@ async function createRazorpayInvoice({ eventType, name, email, phone }) {
   };
   const eventLabel = EVENT_NAME_MAP[eventType] || 'Event Registration';
   // Generate a human-readable invoice number first — used as Razorpay receipt for easy identification
-  const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`;
+  const invoiceNumber = `VYG-${Date.now().toString().slice(-5)}`;
   const receiptId = `rcpt_${eventType || 'event'}_${Date.now()}`.slice(0, 40);
 
   const expireBy = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60; // 7 days from now
@@ -532,7 +532,7 @@ app.post('/api/payment/create-order', async (req, res) => {
       },
     })
 
-    const invoiceNumber = `VYG-${Date.now().toString().slice(-8)}`
+    const invoiceNumber = `VYG-${Date.now().toString().slice(-5)}`
     await supabase.from('payments').insert([{
       razorpay_order_id: order.id,
       event_type: normalizedEventType,
@@ -952,7 +952,7 @@ app.post('/api/payment/verify', async (req, res) => {
         payer_email: fallbackReg.payerEmail || null,
         payer_phone: fallbackReg.payerPhone || null,
         receipt_id: receiptId,
-        invoice_number: `VYG-${Date.now().toString().slice(-8)}`,
+        invoice_number: `VYG-${Date.now().toString().slice(-5)}`,
         status: 'paid',
         registration_id: fallbackReg.registrationId,
       }
