@@ -8,6 +8,7 @@ import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
+import ApplicationStatusModal from '../components/ApplicationStatusModal.jsx'
 
 const INNOVATION_TYPE_OPTIONS = [
   { value: '', label: 'Select one' },
@@ -862,6 +863,10 @@ export default function InnovationUnifiedForm() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Registration'}
           </button>
+          <ApplicationStatusModal
+            eventType={location.pathname.includes('innovation-college') ? 'innovation-college' : 'innovation-pwd'}
+            label={location.pathname.includes('innovation-college') ? "Inclusive Innovation Fest \u2013 For Specially Abled" : "Inclusive Innovation Fest \u2013 By Specially Abled"}
+          />
         </div>
       </motion.form>
     </PageShell>

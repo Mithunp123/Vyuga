@@ -2516,7 +2516,7 @@ app.get('/api/gallery', async (req, res) => {
   }
 })
 
-// Î“Ã¶Ã‡Î“Ã¶Ã‡ Global Form Settings (Public) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
+// Î“Ã¶Ã‡Î“Ã¶Ã‡ Global Form Settings (Public) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/form-settings', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2792,6 +2792,125 @@ app.get('/api/admin/payments', requireAdmin, async (req, res) => {
     res.json({ success: true, data })
   } catch (err) {
     await logError({ source: 'admin', endpoint: '/api/admin/payments', method: 'GET', errorType: 'server_error', message: err.message, stack: err.stack, req })
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Public: Check My Registration Status by Phone ─────────────────────────────
+// GET /api/my-registration?phone=XXXXXXXXXX&eventType=innovation-college
+app.get('/api/my-registration', async (req, res) => {
+  try {
+    const phone = String(req.query.phone || '').replace(/\D/g, '').slice(0, 15)
+    const eventType = String(req.query.eventType || '').trim()
+
+    if (!phone || phone.length < 10) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid 10-digit phone number.' })
+    }
+    if (!eventType) {
+      return res.status(400).json({ success: false, message: 'eventType is required.' })
+    }
+
+    const sourceMap = {
+      'innovation-college': {
+        table: 'innovation_college_registrations',
+        phoneCol: 'leader_phone',
+        nameCol: 'team_name',
+        extraCols: 'id, team_name, leader_name, college_name, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'innovation-pwd': {
+        table: 'innovation_pwd_registrations',
+        phoneCol: 'phone',
+        nameCol: 'name',
+        extraCols: 'id, name, participation_type, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'talent-combined': {
+        table: 'talent_nominations',
+        phoneCol: 'contact_phone',
+        nameCol: 'student_name',
+        extraCols: 'id, student_name, org_name, contact_name, contact_phone, guardian_phone, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'talent-student': {
+        table: 'talent_nominations',
+        phoneCol: 'contact_phone',
+        nameCol: 'student_name',
+        extraCols: 'id, student_name, org_name, contact_name, contact_phone, guardian_phone, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'shortfilm': {
+        table: 'shortfilm_registrations',
+        phoneCol: 'contact_phone',
+        nameCol: 'film_title',
+        extraCols: 'id, film_title, director_name, contact_name, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'cricket': {
+        table: 'cricket_team_registrations',
+        phoneCol: 'contact_phone',
+        nameCol: 'team_name',
+        extraCols: 'id, team_name, contact_name, city, state, submitted_at, payment_status, status, admin_note, razorpay_order_id',
+      },
+      'chess': {
+        table: 'blind_chess_registrations',
+        phoneCol: 'phone',
+        nameCol: 'participant_name',
+        extraCols: 'id, participant_name, city, state, submitted_at, payment_status, razorpay_order_id',
+      },
+    }
+
+    const src = sourceMap[eventType]
+    if (!src) {
+      return res.status(400).json({ success: false, message: 'Invalid event type.' })
+    }
+
+    const fetchByPhone = async (colName, phoneVal) => {
+      const { data } = await supabase
+        .from(src.table)
+        .select(src.extraCols)
+        .eq(colName, phoneVal)
+        .order('submitted_at', { ascending: false })
+        .limit(5)
+      return data || []
+    }
+
+    let regs = await fetchByPhone(src.phoneCol, phone)
+
+    // Fallback: also try guardian_phone for talent forms
+    if (regs.length === 0 && eventType.startsWith('talent')) {
+      regs = await fetchByPhone('guardian_phone', phone)
+    }
+
+    if (regs.length === 0) {
+      return res.json({ success: false, message: 'No registration found for this phone number in this event.' })
+    }
+
+    // Enrich each registration with payment info
+    const results = await Promise.all(regs.map(async (reg) => {
+      let payment = null
+      if (reg.razorpay_order_id) {
+        const { data: p } = await supabase
+          .from('payments')
+          .select('invoice_link, invoice_number, status, amount, created_at')
+          .eq('razorpay_order_id', reg.razorpay_order_id)
+          .maybeSingle()
+        payment = p || null
+      }
+      return {
+        id: reg.id,
+        name: reg[src.nameCol] || 'N/A',
+        submittedAt: reg.submitted_at || null,
+        paymentStatus: reg.payment_status || 'pending',
+        applicationStatus: reg.status || 'pending',
+        adminNote: reg.admin_note || null,
+        payment: payment ? {
+          invoiceNumber: payment.invoice_number,
+          invoiceLink: payment.invoice_link,
+          status: payment.status,
+          amount: payment.amount,
+        } : null,
+      }
+    }))
+
+    return res.json({ success: true, data: results })
+  } catch (err) {
+    console.error('[my-registration] error:', err.message)
     res.status(500).json({ success: false, message: err.message })
   }
 })

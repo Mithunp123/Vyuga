@@ -7,6 +7,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 import { fetchEventFee } from '../paymentHandler.js'
+import ApplicationStatusModal from '../components/ApplicationStatusModal.jsx'
 
 const THEMES = [
   'Assistive Technology',
@@ -375,6 +376,10 @@ export default function InnovationCollegeForm() {
           >
             {loading ? 'Submitting…' : fee ? `Pay ₹${fee} + GST` : 'Submit Registration'}
           </button>
+          <ApplicationStatusModal
+            eventType="innovation-college"
+            label="Inclusive Innovation Fest – For Specially Abled"
+          />
         </div>
       </motion.form>
     </PageShell>

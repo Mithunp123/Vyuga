@@ -6,6 +6,7 @@ import { fetchEventFee } from '../paymentHandler.js'
 import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
+import ApplicationStatusModal from '../components/ApplicationStatusModal.jsx'
 
 // Film genres removed
 
@@ -410,6 +411,10 @@ export default function ShortFilmForm() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Film'}
           </button>
+          <ApplicationStatusModal
+            eventType="shortfilm"
+            label="Short Film Contest"
+          />
         </div>
       </motion.form>
     </PageShell>

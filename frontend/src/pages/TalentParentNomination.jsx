@@ -7,6 +7,7 @@ import SubmitLoader from '../components/SubmitLoader.jsx'
 import SuccessModal from '../components/SuccessModal.jsx'
 import PaymentWarningModal from '../components/PaymentWarningModal.jsx'
 import CityAutocomplete from '../components/CityAutocomplete.jsx'
+import ApplicationStatusModal from '../components/ApplicationStatusModal.jsx'
 
 const STATES = [
   'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam',
@@ -787,6 +788,10 @@ export default function TalentParentNomination() {
           >
             {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Nomination'}
           </button>
+          <ApplicationStatusModal
+            eventType="talent-combined"
+            label="Special Talent Utsav"
+          />
         </div>
       </motion.form>
     </PageShell>

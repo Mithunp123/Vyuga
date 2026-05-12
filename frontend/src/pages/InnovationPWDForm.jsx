@@ -4,6 +4,7 @@ import { AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
 import { postFormData } from '../api'
 import SubmitLoader from '../components/SubmitLoader.jsx'
+import ApplicationStatusModal from '../components/ApplicationStatusModal.jsx'
 
 const DISABILITY_TYPES = [
   'Visual Impairment',
@@ -404,14 +405,20 @@ export default function InnovationPWDForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !declared}
-          style={{ backgroundColor: '#0197B2' }}
-          className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
-        >
-          {loading ? 'Submitting…' : 'Submit Registration'}
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            type="submit"
+            disabled={loading || !declared}
+            style={{ backgroundColor: '#0197B2' }}
+            className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
+          >
+            {loading ? 'Submitting…' : 'Submit Registration'}
+          </button>
+          <ApplicationStatusModal
+            eventType="innovation-pwd"
+            label="Inclusive Innovation Fest – By Specially Abled"
+          />
+        </div>
       </motion.form>
     </PageShell>
   )
