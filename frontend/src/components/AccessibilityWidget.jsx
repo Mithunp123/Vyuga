@@ -41,6 +41,7 @@ export default function AccessibilityWidget() {
   // Load available voices — browsers fire voiceschanged asynchronously
   useEffect(() => {
     function loadVoices() {
+      if (typeof window === 'undefined' || !window.speechSynthesis) return
       const all = window.speechSynthesis.getVoices()
       if (!all.length) return
 
@@ -85,13 +86,19 @@ export default function AccessibilityWidget() {
     }
 
     loadVoices()
-    window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
-    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices)
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
+      return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices)
+    }
   }, [])
 
   // Persist settings
   useEffect(() => {
-    localStorage.setItem('a11y-settings', JSON.stringify(settings))
+    try {
+      localStorage.setItem('a11y-settings', JSON.stringify(settings))
+    } catch (e) {
+      console.warn('Failed to save accessibility settings (localStorage may be blocked):', e)
+    }
   }, [settings])
 
   // Apply all settings to <html>
@@ -134,7 +141,7 @@ export default function AccessibilityWidget() {
   // Text-to-speech: click any text element to speak it
   useEffect(() => {
     if (!settings.tts) {
-      window.speechSynthesis && window.speechSynthesis.cancel()
+      if (typeof window !== 'undefined' && window.speechSynthesis) window.speechSynthesis.cancel()
       setSpeaking(false)
       setSpokenText('')
       document.documentElement.classList.remove('a11y-tts-mode')
@@ -163,6 +170,8 @@ export default function AccessibilityWidget() {
       if (e.target.closest('.a11y-fab, .a11y-panel')) return
       const text = getTextFromTarget(e.target)
       if (!text) return
+      if (typeof window === 'undefined' || !window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') return
+      
       window.speechSynthesis.cancel()
       const utt = new SpeechSynthesisUtterance(text)
 
@@ -189,7 +198,7 @@ export default function AccessibilityWidget() {
     document.addEventListener('click', handleClick, true)
     return () => {
       document.removeEventListener('click', handleClick, true)
-      window.speechSynthesis.cancel()
+      if (typeof window !== 'undefined' && window.speechSynthesis) window.speechSynthesis.cancel()
       document.documentElement.classList.remove('a11y-tts-mode')
       setSpeaking(false)
       setSpokenText('')
