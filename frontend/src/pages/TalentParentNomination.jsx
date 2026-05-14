@@ -500,8 +500,8 @@ export default function TalentParentNomination() {
 
         {/* Individual Student Details */}
         {form.nominationType === 'individual' && (
-          <Section title="Student Details">
-            <Field label="Student Full Name" value={form.studentName} onChange={set('studentName')} required />
+          <Section title="Special Kid Details">
+            <Field label="Special Kid Full Name" value={form.studentName} onChange={set('studentName')} required />
             <Field label="Age" type="number" value={form.studentAge} onChange={set('studentAge')} required />
             <div>
               <label className="mb-3 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
@@ -530,7 +530,7 @@ export default function TalentParentNomination() {
             <Field label="Who will accompany (Name)" value={form.guardianName} onChange={set('guardianName')} required />
             <div>
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest" style={{ color: '#0197B2' }}>
-                Relationship with Student <span className="text-red-500">*</span>
+                Type of Relationship <span className="text-red-500">*</span>
               </label>
               <select
                 required
