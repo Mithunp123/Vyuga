@@ -1617,7 +1617,6 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
   }
 })
 
-// Î“Ã¶Ã‡Î“Ã¶Ã‡ Combined Special Talent Utsav (Organization + Student/Team Nomination) Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 // POST /api/talent-combined  (multipart/form-data; required performanceVideo field)
 app.post('/api/talent-combined', registrationLimiter, upload.single('performanceVideo'), async (req, res) => {
   try {
@@ -1629,7 +1628,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       contactName, contactDesignation, contactPhone, contactEmail,
 
       // Nomination details
-      nominationType, teamSize, teamMembers,
+      nominationType, teamSize, teamMembers, nominatorType, instagramId,
 
       // Student/team details
       studentName, studentAge, disabilityType, disabilityTypeOther,
@@ -1816,6 +1815,8 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         nomination_type: nominationType,
         team_size: nominationType === 'team' ? parseInt(teamSize) : 1,
         team_members: processedTeamMembers,
+        nominator_type: nominatorType ? sanitizeText(nominatorType, 50) : null,
+        instagram_id: instagramId ? sanitizeText(instagramId, 100) : null,
 
         // Student/team leader details (for individual nominations)
         student_name: nominationType === 'individual' ? sanitizeText(studentName, 100) : 'Team Nomination',

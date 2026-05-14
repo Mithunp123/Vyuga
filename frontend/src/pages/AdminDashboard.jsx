@@ -68,8 +68,10 @@ const COLUMNS = {
     { key: 'submitted_at',    label: 'Date',        fmt: fmtDate },
     { key: 'student_name',    label: 'Student/Team' },
     { key: 'nomination_type', label: 'Type',        fmt: (v) => v === 'team' ? 'Team' : v === 'individual' ? 'Individual' : '-' },
+    { key: 'nominator_type',  label: 'Nominator',   fmt: (v) => v || 'Org' },
     { key: 'talent_category', label: 'Talent' },
     { key: 'contact_name',    label: 'Contact' },
+    { key: 'instagram_id',    label: 'Instagram' },
     { key: 'contact_phone',   label: 'Phone' },
     { key: 'social_media_link', label: 'Social',     fmt: (v) => v ? <a href={v} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a> : '—' },
     { key: 'payment_status',  label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
@@ -565,10 +567,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
 
       {/* ── Organization & Nomination Details (for talent-student) ── */}
       {tabId === 'talent-student' && (row.org_address || row.org_size || row.contact_name || row.nomination_type || row.org_name) && (() => {
-        const isParent = String(row.org_name || '').startsWith('(Parent Nomination)')
-        const displayOrgName = isParent
-          ? row.org_name.replace(/^\(Parent Nomination\)\s*/, '')
-          : row.org_name
+        const nominatorMatch = String(row.org_name || '').match(/^\((.+) Nomination\)\s*(.*)$/)
+        const isParent = !!nominatorMatch || !!row.nominator_type
+        const nominatorType = row.nominator_type || (nominatorMatch ? nominatorMatch[1] : null)
+        const displayOrgName = nominatorMatch
+          ? nominatorMatch[2]
+          : row.nominator_type ? row.org_name : row.org_name
 
         return (
           <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
@@ -581,10 +585,10 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
                   : { background: '#e0f6fa', color: '#0197B2', borderColor: '#bae6fd' }
                 }
               >
-                {isParent ? 'Parent Nomination' : 'Organisation Nomination'}
+                {isParent ? `${nominatorType || 'Parent'} Nomination` : 'Organisation Nomination'}
               </span>
               <p className="text-sm font-bold tracking-wider uppercase" style={{ color: '#0197B2' }}>
-                {isParent ? 'Parent & Nomination Details' : 'Organization & Nomination Details'}
+                {isParent ? 'Nominator & Nomination Details' : 'Organization & Nomination Details'}
               </p>
             </div>
 
@@ -657,6 +661,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
                       <span className="text-sm text-slate-800 font-medium">{row.contact_name}</span>
                     </div>
                   )}
+                  {isParent && nominatorType && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Role</span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">{nominatorType}</span>
+                    </div>
+                  )}
                   {!isParent && row.contact_designation && (
                     <div className="flex items-start gap-3">
                       <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Title</span>
@@ -673,6 +683,12 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
                     <div className="flex items-start gap-3">
                       <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Phone</span>
                       <span className="text-sm text-slate-700">{row.contact_phone}</span>
+                    </div>
+                  )}
+                  {row.instagram_id && (
+                    <div className="flex items-start gap-3">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold min-w-[80px] mt-0.5">Instagram</span>
+                      <span className="text-sm text-slate-700 font-medium">@{row.instagram_id.replace(/^@/, '')}</span>
                     </div>
                   )}
                 </div>

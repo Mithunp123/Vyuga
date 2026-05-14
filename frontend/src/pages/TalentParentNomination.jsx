@@ -73,6 +73,8 @@ const EMPTY = {
   contactDesignation: '',
   contactPhone: '',
   contactEmail: '',
+  nominatorType: '',
+  instagramId: '',
   
   // Nomination type — always individual for parent form
   nominationType: 'individual',
@@ -265,9 +267,11 @@ export default function TalentParentNomination() {
     if (!/^https?:\/\//i.test(performanceUrl.trim()) || !performanceUrl.includes('drive.google.com')) {
       showError('Please enter a valid public Google Drive link.'); return
     }
-    if (!form.contactName.trim()) { showError('Please enter parent/guardian name.'); return }
-    if (!form.contactEmail.trim()) { showError('Please enter email.'); return }
+    if (!form.contactName.trim()) { showError('Please enter nominator name.'); return }
+    if (!form.contactEmail.trim()) { showError('Please enter email address.'); return }
     if (!/^\d{10}$/.test(form.contactPhone)) { showError('Phone number must be exactly 10 digits.'); return }
+    if (!form.nominatorType) { showError('Please select who is nominating.'); return }
+    if (form.nominatorType === 'Influencer' && !form.instagramId.trim()) { showError('Please enter Instagram ID.'); return }
     if (!form.orgAddress || !form.orgAddress.trim()) { showError('Please enter address.'); return }
     if (!form.orgCity.trim()) { showError('Please select city.'); return }
     if (!form.orgState.trim()) { showError('Please select state.'); return }
@@ -349,12 +353,12 @@ export default function TalentParentNomination() {
       })
       
       // Inject dummy org fields for Parent Nomination
-      fd.set('orgName', '(Parent Nomination) ' + form.contactName);
+      fd.set('orgName', `(${form.nominatorType || 'Parent'} Nomination) ` + form.contactName);
       fd.set('orgSize', '<10');
       fd.set('orgDisabilityFocus', 'single');
       fd.set('orgDisabilityTypes', JSON.stringify(['Parent/Individual']));
       fd.set('orgType', 'Other');
-      fd.set('orgTypeOther', 'Parent');
+      fd.set('orgTypeOther', form.nominatorType || 'Parent');
       // gradeCategory is removed from parent form, inject dummy
       fd.set('gradeCategory', '1–5');
 
@@ -390,8 +394,8 @@ export default function TalentParentNomination() {
 
   return (
     <PageShell
-      title="Special Talent Utsav – Parent / Individual Nomination"
-      subtitle="Nominate your child or individual student for the Special Talent Utsav."
+      title="Special Talent Utsav – Nominator & Participant Registration Form"
+      subtitle="(Parents, Individuals, Influencers & Others)"
     >
       <SuccessModal
         isOpen={submitted}
@@ -419,11 +423,32 @@ export default function TalentParentNomination() {
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
 
-        {/* Parent Details Section */}
-        <Section title="Parent / Guardian Details">
-          <Field label="Parent / Guardian Name" value={form.contactName} onChange={set('contactName')} required />
-          <Field label="Email" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
-          <Field label="Phone" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
+        {/* Nominator Details Section */}
+        <Section title="Nominator Details">
+          <div>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-[#0197B2]">
+              Who is Nominating? <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={form.nominatorType}
+              onChange={set('nominatorType')}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-[#0197B2] focus:outline-none focus:ring-2 focus:ring-[#0197B2]/20"
+            >
+              <option value="">Select Nominator</option>
+              {['Influencer', 'Parent', 'Guardian', 'Teacher', 'Other'].map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+          <Field label="Nominator Name" value={form.contactName} onChange={set('contactName')} required />
+          <Field label="Email Address" type="email" value={form.contactEmail} onChange={set('contactEmail')} required />
+          <Field label="Phone Number" type="tel" value={form.contactPhone} onChange={set('contactPhone')} required pattern="\d{10}" maxLength={10} title="Enter exactly 10 digits" />
+          
+          {form.nominatorType === 'Influencer' && (
+             <Field label="Instagram ID" value={form.instagramId} onChange={set('instagramId')} required />
+          )}
+
           <div className="sm:col-span-2">
             <Field label="Address" value={form.orgAddress} onChange={set('orgAddress')} required/>
           </div>
