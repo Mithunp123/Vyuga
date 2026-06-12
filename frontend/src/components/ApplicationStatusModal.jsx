@@ -208,10 +208,12 @@ export default function ApplicationStatusModal({ eventType, label }) {
                             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Application</p>
                             <StatusBadge value={reg.applicationStatus} cfg={STATUS_CFG} />
                           </div>
-                          <div>
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Payment</p>
-                            <StatusBadge value={reg.paymentStatus} cfg={PAY_CFG} />
-                          </div>
+                          {reg.applicationStatus !== 'pending' && (
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Payment</p>
+                              <StatusBadge value={reg.paymentStatus} cfg={PAY_CFG} />
+                            </div>
+                          )}
                           {reg.payment?.invoiceNumber && (
                             <div>
                               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Receipt No.</p>
@@ -241,7 +243,7 @@ export default function ApplicationStatusModal({ eventType, label }) {
                             <ExternalLink className="h-4 w-4" />
                             View / Pay Invoice
                           </a>
-                        ) : reg.paymentStatus !== 'paid' && (
+                        ) : reg.paymentStatus !== 'paid' && reg.applicationStatus !== 'pending' && (
                           <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2.5">
                             <Clock className="h-4 w-4 text-slate-400" />
                             <p className="text-xs text-slate-500 font-medium">Invoice link not available yet.</p>
