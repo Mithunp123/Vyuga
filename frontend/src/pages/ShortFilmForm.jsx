@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import PageShell from './PageShell.jsx'
 import { postJSON } from '../api'
@@ -108,12 +108,7 @@ export default function ShortFilmForm() {
       setError('Please enter a valid email address.'); setLoading(false); return
     }
 
-    if (fee) {
-      setLoading(false)
-      setShowPaymentWarning(true)
-    } else {
-      executeSubmit()
-    }
+    executeSubmit()
   }
 
   const executeSubmit = async () => {
@@ -134,11 +129,7 @@ export default function ShortFilmForm() {
       }
 
       const res = await postJSON('/api/shortfilm', submitData)
-      if (res.invoice_link) {
-        window.location.href = res.invoice_link
-      } else {
-        setSubmitted(true)
-      }
+      setSubmitted(true)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -409,7 +400,7 @@ export default function ShortFilmForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Film'}
+            {loading ? 'Processing...' : 'Register Now'}
           </button>
           <ApplicationStatusModal
             eventType="shortfilm"

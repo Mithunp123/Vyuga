@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+﻿import { useMemo, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { Info, AlertCircle } from 'lucide-react'
@@ -262,12 +262,7 @@ export default function InnovationUnifiedForm() {
       return
     }
 
-    if (fee) {
-      setLoading(false)
-      setShowPaymentWarning(true)
-    } else {
-      executeSubmit()
-    }
+    executeSubmit()
   }
 
   const executeSubmit = async () => {
@@ -278,11 +273,7 @@ export default function InnovationUnifiedForm() {
     try {
       const payload = buildPayload();
       const res = await postFormData(endpoint, payload)
-      if (res.invoice_link) {
-         window.location.href = res.invoice_link;
-      } else {
-         setSubmitted(true)
-      }
+       setSubmitted(true)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -861,7 +852,7 @@ export default function InnovationUnifiedForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Registration'}
+            {loading ? 'Processing...' : 'Register Now'}
           </button>
           <ApplicationStatusModal
             eventType={location.pathname.includes('innovation-college') ? 'innovation-college' : 'innovation-pwd'}

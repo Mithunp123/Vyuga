@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Info, AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
@@ -310,12 +310,7 @@ export default function TalentParentNomination() {
     if (!form.talentDescription.trim()) { showError('Please provide a brief description of the talent.'); return }
     if (talentWords.length > 50) { showError('Talent description must not exceed 50 words.'); return }
     
-    if (fee) {
-      setLoading(false)
-      setShowPaymentWarning(true)
-    } else {
-      executeSubmit()
-    }
+    executeSubmit()
   }
 
   const executeSubmit = async () => {
@@ -367,11 +362,7 @@ export default function TalentParentNomination() {
       }
       
       const res = await postFormData('/api/talent-combined', fd)
-        if (res.invoice_link) {
-          window.location.href = res.invoice_link;
-        } else {
-          setSubmitted(true)
-        }
+        setSubmitted(true)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -811,7 +802,7 @@ export default function TalentParentNomination() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : fee ? `Pay ₹${fee}` : 'Submit Nomination'}
+            {loading ? 'Processing...' : 'Register Now'}
           </button>
           <ApplicationStatusModal
             eventType="talent-combined"

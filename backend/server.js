@@ -1031,17 +1031,17 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
     // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 
-    let invoiceInfo;
-
-
-    try {
-
-
-      invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-college', name: member1Name, email: member1Email, phone: member1Phone });
-    } catch (e) {
-      console.error('[innovation-college] Razorpay invoice error:', e.message, e.error);
-      return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
-    }
+    // PAYMENT BYPASSED: Registration is free
+    // 
+    // 
+    // try {
+    // 
+    // 
+    // invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-college', name: member1Name, email: member1Email, phone: member1Phone });
+    // } catch (e) {
+    // console.error('[innovation-college] Razorpay invoice error:', e.message, e.error);
+    // return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
+    // }
 
 
     // Ã¢â€â‚¬Ã¢â€â‚¬ Validation Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
@@ -1135,9 +1135,9 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
         prototype_image_path: protoImagePath,
         ppt_file_path: pptFilePath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_order_id: null,
         razorpay_payment_id: null,
-        payment_status: 'pending'
+        payment_status: 'free'
       }])
       .select()
       .single()
@@ -1147,30 +1147,31 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Insert payment record
-    const { error: paymentInsertErrorCollege } = await supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoiceRef,
-      event_type: 'innovation-college',
-      amount: invoiceInfo.totalAmount,
-      base_amount: invoiceInfo.baseFee,
-      gst_amount: invoiceInfo.gstAmount,
-      payer_name: member1Name,
-      payer_email: member1Email,
-      payer_phone: member1Phone,
-      receipt_id: invoiceInfo.receiptId,
-      invoice_number: invoiceInfo.invoiceNumber,
-      invoice_link: invoiceInfo.invoiceLink,
-      status: 'created',
-      registration_id: data.id
-    }])
+    // // Insert payment record
+    // const { error: paymentInsertErrorCollege } = await supabase.from('payments').insert([{
+    // razorpay_order_id: invoiceInfo.invoiceRef,
+    // event_type: 'innovation-college',
+    // amount: invoiceInfo.totalAmount,
+    // base_amount: invoiceInfo.baseFee,
+    // gst_amount: invoiceInfo.gstAmount,
+    // payer_name: member1Name,
+    // payer_email: member1Email,
+    // payer_phone: member1Phone,
+    // receipt_id: invoiceInfo.receiptId,
+    // invoice_number: invoiceInfo.invoiceNumber,
+    // invoice_link: invoiceInfo.invoiceLink,
+    // status: 'created',
+    // registration_id: data.id
+    // }])
+    // 
+    // if (paymentInsertErrorCollege) {
+    // console.error('[innovation-college] Payment insert failed:', paymentInsertErrorCollege.message)
+    // await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorCollege.message}`, req })
+    // }
 
-    if (paymentInsertErrorCollege) {
-      console.error('[innovation-college] Payment insert failed:', paymentInsertErrorCollege.message)
-      await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorCollege.message}`, req })
-    }
-
-    // Confirmation email will be sent by webhook after payment is completed
-    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
+    // Send confirmation email immediately (free registration)
+    try { await sendInnovationCollegeConfirmation({ member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone, member2Name: members[0]?.name, member2Email: members[0]?.email, member3Name: members[1]?.name, member3Email: members[1]?.email, teamName: sTeamName, collegeName: sCollegeName, ideaTitle: sIdeaTitle }) } catch(confErr) { console.error('[innovation-college] email failed:', confErr.message) }
+    res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1189,18 +1190,18 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       member3Name, member3Email, member3Phone,
     } = req.body
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-
-
-    let invoiceInfo;
-
-
-    try {
-      invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-pwd', name: member1Name, email: member1Email, phone: member1Phone });
-    } catch (e) {
-      console.error('[innovation-pwd] Razorpay invoice error:', e.message, e.error);
-      return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
-    }
+    // // Ã¢â€â‚¬Ã¢â€â‚¬ Create Invoice Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // 
+    // 
+    // let invoiceInfo;
+    // 
+    // 
+    // try {
+    // invoiceInfo = await createRazorpayInvoice({ eventType: 'innovation-pwd', name: member1Name, email: member1Email, phone: member1Phone });
+    // } catch (e) {
+    // console.error('[innovation-pwd] Razorpay invoice error:', e.message, e.error);
+    // return res.status(500).json({ success: false, message: `Failed to generate invoice: ${e.error?.description || e.message}` })
+    // }
 
 
     // Ã¢â€â‚¬Ã¢â€â‚¬ Validation Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
@@ -1317,9 +1318,9 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         ppt_file_path: pptFilePath,
         udid_card_path: udidCardPath,
         prototype_url: prototypeUrl ? prototypeUrl.trim() : null,
-        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_order_id: null,
         razorpay_payment_id: null,
-        payment_status: 'pending'
+        payment_status: 'free'
       }])
       .select()
       .single()
@@ -1329,30 +1330,32 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    // Insert payment record
-    const { error: paymentInsertErrorPwd } = await supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoiceRef,
-      event_type: 'innovation-pwd',
-      amount: invoiceInfo.totalAmount,
-      base_amount: invoiceInfo.baseFee,
-      gst_amount: invoiceInfo.gstAmount,
-      payer_name: member1Name,
-      payer_email: member1Email,
-      payer_phone: member1Phone,
-      receipt_id: invoiceInfo.receiptId,
-      invoice_number: invoiceInfo.invoiceNumber,
-      invoice_link: invoiceInfo.invoiceLink,
-      status: 'created',
-      registration_id: data.id
-    }])
+    // // Insert payment record
+    // const { error: paymentInsertErrorPwd } = await supabase.from('payments').insert([{
+    // razorpay_order_id: invoiceInfo.invoiceRef,
+    // event_type: 'innovation-pwd',
+    // amount: invoiceInfo.totalAmount,
+    // base_amount: invoiceInfo.baseFee,
+    // gst_amount: invoiceInfo.gstAmount,
+    // payer_name: member1Name,
+    // payer_email: member1Email,
+    // payer_phone: member1Phone,
+    // receipt_id: invoiceInfo.receiptId,
+    // invoice_number: invoiceInfo.invoiceNumber,
+    // invoice_link: invoiceInfo.invoiceLink,
+    // status: 'created',
+    // registration_id: data.id
+    // }])
+    // 
+    // if (paymentInsertErrorPwd) {
+    // console.error('[innovation-pwd] Payment insert failed:', paymentInsertErrorPwd.message)
+    // await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorPwd.message}`, req })
+    // }
 
-    if (paymentInsertErrorPwd) {
-      console.error('[innovation-pwd] Payment insert failed:', paymentInsertErrorPwd.message)
-      await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorPwd.message}`, req })
-    }
 
-    // Confirmation email will be sent by webhook after payment is completed
-    res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
+    // Send confirmation email immediately (free registration)
+    try { await sendInnovationPwdConfirmation({ member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone, member2Name: members[0]?.name, member2Email: members[0]?.email, member3Name: members[1]?.name, member3Email: members[1]?.email, ideaTitle: sIdeaTitle, disabilityType: sDisability }) } catch(confErr) { console.error('[innovation-pwd] email failed:', confErr.message) }
+    res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })
@@ -1729,12 +1732,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
 
 
 
-    const invoiceInfo = await createRazorpayInvoice({
-      eventType: 'talent-combined',
-      name: contactName,
-      email: contactEmail,
-      phone: contactPhone,
-    })
+    // BYPASSED: const invoiceInfo = await createRazorpayInvoice({
+    // BYPASSED: eventType: 'talent-combined',
+    // BYPASSED: name: contactName,
+    // BYPASSED: email: contactEmail,
+    // BYPASSED: phone: contactPhone,
+    // BYPASSED: })
 
     // Validate and sanitize URLs if provided
     const sanitizedPerformanceUrl = performanceUrl && performanceUrl.trim() ?
@@ -1831,9 +1834,9 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         video_file_path: videoFileName,
         performance_url: sanitizedPerformanceUrl,
         social_media_link: social ? social.trim() : null,
-        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_order_id: null,
         razorpay_payment_id: null,
-        payment_status: 'pending'
+        payment_status: 'free'
       }])
       .select()
       .single()
@@ -1843,36 +1846,34 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: error.message, req })
       return res.status(500).json({ success: false, message: error.message })
     }
+    // BYPASSED: 
+    // BYPASSED: const { error: combinedPaymentInsertError } = await supabase.from('payments').insert([{
+    // BYPASSED: razorpay_order_id: invoiceInfo.invoiceRef,
+    // BYPASSED: event_type: 'talent-combined',
+    // BYPASSED: amount: invoiceInfo.totalAmount,
+    // BYPASSED: base_amount: invoiceInfo.baseFee,
+    // BYPASSED: gst_amount: invoiceInfo.gstAmount,
+    // BYPASSED: payer_name: contactName,
+    // BYPASSED: payer_email: contactEmail,
+    // BYPASSED: payer_phone: contactPhone,
+    // BYPASSED: receipt_id: invoiceInfo.receiptId,
+    // BYPASSED: invoice_number: invoiceInfo.invoiceNumber,
+    // BYPASSED: invoice_link: invoiceInfo.invoiceLink,
+    // BYPASSED: status: 'created',
+    // BYPASSED: registration_id: data?.id || null
+    // BYPASSED: }])
+    // BYPASSED: 
+    // BYPASSED: if (combinedPaymentInsertError) {
+    // BYPASSED: console.error('[talent-combined] Payment insert failed:', combinedPaymentInsertError.message)
+    // BYPASSED: await logError({ ... })
+    // BYPASSED: }
 
-    const { error: combinedPaymentInsertError } = await supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoiceRef,
-      event_type: 'talent-combined',
-      amount: invoiceInfo.totalAmount,
-      base_amount: invoiceInfo.baseFee,
-      gst_amount: invoiceInfo.gstAmount,
-      payer_name: contactName,
-      payer_email: contactEmail,
-      payer_phone: contactPhone,
-      receipt_id: invoiceInfo.receiptId,
-      invoice_number: invoiceInfo.invoiceNumber,
-      invoice_link: invoiceInfo.invoiceLink,
-      status: 'created',
-      registration_id: data?.id || null
-    }])
-
-    if (combinedPaymentInsertError) {
-      console.error('[talent-combined] Payment insert failed:', combinedPaymentInsertError.message)
-      await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${combinedPaymentInsertError.message}`, req })
-    }
+    // Send confirmation email immediately (free registration)
+    try { await sendTalentStudentConfirmation({ contactEmail: contactEmail, studentName: form?.studentName || 'Participant' }) } catch(confErr) { console.error('[talent-combined] email failed:', confErr.message) }
+    res.status(201).json({ success: true, data })
 
 
-    res.status(201).json({
-      success: true,
-      data,
-      invoice_link: invoiceInfo.invoice.short_url,
-      invoice_id: invoiceInfo.invoice.id,
-      receipt_id: invoiceInfo.receiptId,
-    })
+
   } catch (err) {
     console.error('[talent-combined] Unexpected error:', err.message, err.stack)
     await logError({ source: 'user', endpoint: '/api/talent-combined', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1910,12 +1911,12 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
     ])
     if (errors.length) return res.status(400).json({ success: false, message: 'Validation failed', errors })
 
-    const invoiceInfo = await createRazorpayInvoice({
-      eventType: 'shortfilm',
-      name: contactName,
-      email: contactEmail,
-      phone: contactPhone,
-    })
+    // BYPASSED: const invoiceInfo = await createRazorpayInvoice({
+    // BYPASSED: eventType: 'shortfilm',
+    // BYPASSED: name: contactName,
+    // BYPASSED: email: contactEmail,
+    // BYPASSED: phone: contactPhone,
+    // BYPASSED: })
 
     // Parse and validate team members (only for team participation)
     let parsedTeamMembers = null
@@ -1952,9 +1953,9 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
         contact_email: contactEmail.trim().toLowerCase(),
         contact_phone: contactPhone.trim(),
         additional_info: additionalInfo ? sanitizeText(additionalInfo, 1000) : null,
-        razorpay_order_id: invoiceInfo.invoiceRef,
+        razorpay_order_id: null,
         razorpay_payment_id: null,
-        payment_status: 'pending'
+        payment_status: 'free'
       }])
       .select()
       .single()
@@ -1964,34 +1965,13 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
 
-    const { error: shortfilmPaymentInsertError } = await supabase.from('payments').insert([{
-      razorpay_order_id: invoiceInfo.invoiceRef,
-      event_type: 'shortfilm',
-      amount: invoiceInfo.totalAmount,
-      base_amount: invoiceInfo.baseFee,
-      gst_amount: invoiceInfo.gstAmount,
-      payer_name: contactName,
-      payer_email: contactEmail,
-      payer_phone: contactPhone,
-      receipt_id: invoiceInfo.receiptId,
-      invoice_number: invoiceInfo.invoiceNumber,
-      invoice_link: invoiceInfo.invoiceLink,
-      status: 'created',
-      registration_id: data.id
-    }])
+    // BYPASSED: const { error: shortfilmPaymentInsertError } = await supabase.from('payments').insert([{...}])
+    // BYPASSED: if (shortfilmPaymentInsertError) { ... }
 
-    if (shortfilmPaymentInsertError) {
-      console.error('[shortfilm] Payment insert failed:', shortfilmPaymentInsertError.message)
-      await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${shortfilmPaymentInsertError.message}`, req })
-    }
+    // Send confirmation email immediately (free registration)
+    try { await sendShortFilmConfirmation({ contactName, contactEmail, filmTitle }) } catch(confErr) { console.error('[shortfilm] email failed:', confErr.message) }
+    res.status(201).json({ success: true, data })
 
-    res.status(201).json({
-      success: true,
-      data,
-      invoice_link: invoiceInfo.invoice.short_url,
-      invoice_id: invoiceInfo.invoice.id,
-      receipt_id: invoiceInfo.receiptId,
-    })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/shortfilm', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
     res.status(500).json({ success: false, message: err.message })

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { AlertCircle } from 'lucide-react'
 import PageShell from './PageShell.jsx'
@@ -67,12 +67,7 @@ export default function InnovationCollegeForm() {
     const invalidPhone = phoneFields.find((p) => !/^\d{10}$/.test(p))
     if (invalidPhone) { setError('Phone number must be exactly 10 digits.'); setLoading(false); return }
 
-    if (fee) {
-      setShowPaymentWarning(true)
-      setLoading(false)
-    } else {
-      executeSubmit()
-    }
+    executeSubmit()
   }
 
   const executeSubmit = async () => {
@@ -88,15 +83,7 @@ export default function InnovationCollegeForm() {
 
       const res = await postFormData('/api/innovation-college', fd)
 
-      if (res.invoice_link) {
-
-        window.location.href = res.invoice_link;
-
-      } else {
-
-        setSubmitted(true)
-
-      }
+      setSubmitted(true)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -374,7 +361,7 @@ export default function InnovationCollegeForm() {
             style={{ backgroundColor: '#0197B2' }}
             className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:opacity-90 hover:scale-[1.03] active:scale-[0.98] disabled:opacity-60"
           >
-            {loading ? 'Submitting…' : fee ? `Pay ₹${fee} + GST` : 'Submit Registration'}
+            {loading ? 'Processing...' : 'Register Now'}
           </button>
           <ApplicationStatusModal
             eventType="innovation-college"
