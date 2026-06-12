@@ -154,7 +154,7 @@ function RotatingBadge() {
 }
 
 export default function Hero() {
-  const countdown = useCountdown('2026-06-26T09:00:00')
+  const countdown = useCountdown('2026-07-25T09:00:00')
   const sectionRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0.15])
@@ -192,7 +192,7 @@ export default function Hero() {
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-lime" />
                   </span>
                   <span className="font-mono text-xs font-semibold tracking-[0.2em] text-slate-400">
-                    JUNE 26–27, 2026 · K S RANGASAMY COLLEGE OF TECHNOLOGY
+                    JULY 25, 2026 · K S RANGASAMY COLLEGE OF TECHNOLOGY
                   </span>
                 </div>
               </motion.div>

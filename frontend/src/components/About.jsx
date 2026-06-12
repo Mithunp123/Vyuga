@@ -149,7 +149,7 @@ const eventSchedules = [
     timeline: [
       { label: "Application Open", date: "14/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
-      { label: "Finalist Announcement", date: "05/06/2026" }
+      { label: "Finalist Announcement", date: "10/07/2026" }
     ],
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹50 Thousand" }
@@ -160,7 +160,7 @@ const eventSchedules = [
     timeline: [
       { label: "Application Open", date: "14/04/2026" },
       { label: "Application Close", date: "20/05/2026" },
-      { label: "Finalist Announcement", date: "05/06/2026" }
+      { label: "Finalist Announcement", date: "10/07/2026" }
     ],
     prizes: [
       { category: "Overall", genericText: "Prize up to ₹50 Thousand" }

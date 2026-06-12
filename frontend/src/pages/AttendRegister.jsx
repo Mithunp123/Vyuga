@@ -30,7 +30,7 @@ const EVENT_DATA = [
     ],
     timeline: [
       { label: "Application Open", date: "25/04/2026" },
-      { label: "Application Close", date: "05/06/2026" },
+      { label: "Application Close", date: "10/07/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
 
@@ -52,7 +52,7 @@ const EVENT_DATA = [
     ],
     timeline: [
       { label: "Application Open", date: "25/04/2026" },
-      { label: "Application Close", date: "05/06/2026" },
+      { label: "Application Close", date: "10/07/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
 
@@ -106,7 +106,7 @@ const EVENT_DATA = [
     ],
     timeline: [
       { label: "Application Open", date: "25/04/2026" },
-      { label: "Application Close", date: "05/06/2026" },
+      { label: "Application Close", date: "10/07/2026" },
       { date: "Result Updates will be announced on Social Media " }
     ],
 
