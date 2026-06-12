@@ -1470,7 +1470,8 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
       await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${paymentInsertErrorTalentOrg.message}`, req })
     }
 
-    // Confirmation email will be sent by webhook after payment is completed
+    // Send confirmation email immediately
+    try { await sendTalentOrgConfirmation({ orgName: sanitizeText(orgName, 200), orgType: effectiveOrgType, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone }) } catch(confErr) { console.error('[talent-org] email failed:', confErr.message) }
     res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -2077,6 +2078,8 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
       await logError({ source: 'user', endpoint: '/api/cricket', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${cricketPaymentInsertError.message}`, req })
     }
 
+    // Send confirmation email
+    try { await sendCricketConfirmation({ teamName: sanitizeText(teamName, 100), city: sanitizeText(city, 100), state: sanitizeText(state, 100), playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone }) } catch(confErr) { console.error('[cricket] email failed:', confErr.message) }
     res.status(201).json({
       success: true,
       data,
@@ -2194,6 +2197,8 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       console.error('[chess] Payment insert failed:', chessPaymentInsertError.message)
       await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${chessPaymentInsertError.message}`, req })
     }
+    // Send confirmation email
+    try { await sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType: effectiveDisability, hasPlayedBefore, experienceLevel: effectiveExperience, additionalInfo }) } catch(confErr) { console.error('[chess] email failed:', confErr.message) }
     res.status(201).json({
       success: true,
       data,
