@@ -385,8 +385,7 @@ export default function AwardsPage() {
           />
           <p style={{ textAlign: 'center', fontSize: 14, color: '#475569', fontWeight: 600, marginBottom: 28, lineHeight: 1.7 }}>
             Recognising the schools that champion inclusion by nominating the highest number of
-            talented children to Vyuga 2026. A celebration of the institutions that believe every
-            child deserves a stage.
+            talented children to Vyuga 2026.
           </p>
           <div className="awards-grid-4col">
             <AwardItem name="Champion School — Most Nominations" accent={LIME} imgSrc={tropy4} delay={0.1} />
