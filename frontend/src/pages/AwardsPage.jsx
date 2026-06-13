@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles, Lightbulb, Users, Video
+  Sparkles, Lightbulb, Users, Video, School
 } from 'lucide-react';
 import Navbar from '../components/Navbar.jsx';
 
@@ -371,6 +371,25 @@ export default function AwardsPage() {
             <AwardItem name="Best Director — Inclusion Lens" accent={CYAN} imgSrc={shortflim} delay={0.1} />
             <AwardItem name="Impact Story Award" accent={CYAN} imgSrc={tropy3} delay={0.2} />
             <AwardItem name="People's Favorite" accent={CYAN} imgSrc={hand} delay={0.3} />
+          </div>
+        </AwardCard>
+
+        {/* ── BEST SCHOOL AWARD ── */}
+        <Divider label="Best School Award" accent={LIME} />
+        <AwardCard accent={LIME} style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <SectionHeader
+            label="Best School Award"
+            sublabel="Most Nominations of Children"
+            icon={<School size={24} color={LIME} />}
+            accent={LIME}
+          />
+          <p style={{ textAlign: 'center', fontSize: 14, color: '#475569', fontWeight: 600, marginBottom: 28, lineHeight: 1.7 }}>
+            Recognising the schools that champion inclusion by nominating the highest number of
+            talented children to Vyuga 2026. A celebration of the institutions that believe every
+            child deserves a stage.
+          </p>
+          <div className="awards-grid-4col">
+            <AwardItem name="Champion School — Most Nominations" accent={LIME} imgSrc={tropy4} delay={0.1} />
           </div>
         </AwardCard>
 
