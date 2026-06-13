@@ -14,18 +14,18 @@ const EVENT_DATA = [
   {
     id: "innovation",
     title: "Inclusive Innovation Fest",
-    accent: "For Specially Abled / By Specially Abled",
-    description: "A platform where college teams and specially challenged innovators come together to create impactful solutions for accessibility and inclusion.",
+    accent: "For Specially Abled",
+    description: "A platform where college teams come together to create impactful solutions for accessibility and inclusion.",
     image: thinkImage,
     details: [
       {
         label: 'For Specially Abled',
         value: ['College students need to analyze the problems faced by specially challenged people and innovate solutions for specially challenged individuals.']
       },
-      {
-        label: 'By Specially Abled',
-        value: ['Open to all specially challenged innovators to create solutions for the problems they face in their daily lives or any assistive tech ideas are also welcome.']
-      },
+      // {
+      //   label: 'By Specially Abled',
+      //   value: ['Open to all specially challenged innovators to create solutions for the problems they face in their daily lives or any assistive tech ideas are also welcome.']
+      // },
       { label: 'Focus Sector', value: ['Assistive Technology'] },
     ],
     timeline: [
@@ -37,7 +37,7 @@ const EVENT_DATA = [
     isExpandable: true,
     tracks: [
       { link: '/register/innovation-college', label: 'College Teams', id: 'innovation-college' },
-      { link: '/register/innovation-pwd', label: 'Specially Abled', id: 'innovation-pwd' }
+      //{ link: '/register/innovation-pwd', label: 'Specially Abled', id: 'innovation-pwd' }
     ]
   },
 
