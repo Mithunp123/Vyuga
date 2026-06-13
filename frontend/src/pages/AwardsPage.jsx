@@ -342,14 +342,14 @@ export default function AwardsPage() {
             </div>
           </AwardCard>
 
-          {/* For S.A — RIGHT */}
-          <AwardCard accent={CYAN}>
+          {/* For S.A — RIGHT (commented out) */}
+          {/* <AwardCard accent={CYAN}>
             <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={CYAN} />} accent={CYAN} />
             <div className="award-item-grid">
               <AwardItem name="Impact Innovator Icon" accent={CYAN} imgSrc={tropy5} delay={0.1} />
               <AwardItem name="Emerging Inclusive Innovator" accent={CYAN} imgSrc={tropy6} delay={0.2} />
             </div>
-          </AwardCard>
+          </AwardCard> */}
         </div>
 
         {/* ── SPECIAL TALENT HUNT ── */}
