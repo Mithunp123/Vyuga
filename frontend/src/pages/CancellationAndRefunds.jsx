@@ -13,31 +13,27 @@ export default function CancellationAndRefunds() {
   return (
     <PageShell
       title="Cancellation & Refunds"
-      subtitle="Our policy for managing registration cancellations."
+      subtitle="Our policy for VYUGA 2026 registrations."
       titleClass="text-slate-900"
       subtitleClass="text-slate-600"
     >
       <div className="max-w-4xl mx-auto py-10 px-4">
-        <p className="text-sm text-slate-500 mb-8">Last updated: April 2026</p>
+        <p className="text-sm text-slate-500 mb-8">Last updated: June 2026</p>
 
-        <Section title="1. Refund Policy">
-          <p>All registration fees for VYUGA events are strictly non-refundable. Once a payment is made, no refund will be provided for any reason.</p>
+        <Section title="1. Free Registration">
+          <p>Registration for all VYUGA 2026 events is completely <strong>free of charge</strong>. No payment is collected at any stage of the registration process, so no refund policy applies.</p>
         </Section>
 
         <Section title="2. Cancellation by Participant">
-          <p>If you have registered but are no longer able to attend the event, please note that no refunds of the fee will be issued for voluntary cancellations.</p>
+          <p>Since registration is free, there is no financial obligation. If you have registered but are unable to attend, you are welcome to simply notify us via email so we can manage attendance accordingly.</p>
         </Section>
 
-        <Section title="3. Event Cancellation">
-          <p>A refund will only be initiated in the unlikely event that the VYUGA event is entirely cancelled by the organizers. If the event is postponed, your registration will automatically be transferred to the new dates.</p>
+        <Section title="3. Event Cancellation or Postponement">
+          <p>In the unlikely event that VYUGA 2026 is cancelled or postponed by the organizers, all registered participants will be notified promptly via the email address provided during registration. Any rescheduled event will automatically honour existing registrations.</p>
         </Section>
 
-        <Section title="4. Failed Transactions">
-          <p>If a transaction fails but money has been debited from your account, it will automatically be refunded by your bank or the payment gateway (Razorpay) within 5-7 business days.</p>
-        </Section>
-
-        <Section title="5. Contact for Refund Queries">
-          <p>For any queries related to failed transactions or eligible refunds, please reach out to us at <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] underline">vyuga@nexyugainnovations.com</a> with your Order ID.</p>
+        <Section title="4. Contact Us">
+          <p>For any questions or to cancel your registration, please reach out to us at <a href="mailto:vyuga@nexyugainnovations.com" className="text-[#0197B2] underline">vyuga@nexyugainnovations.com</a> with your registered name and event details.</p>
         </Section>
       </div>
     </PageShell>
