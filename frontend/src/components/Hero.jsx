@@ -134,7 +134,7 @@ function useCountdown(targetDate) {
 
 /* ── Rotating circular text badge ── */
 function RotatingBadge() {
-  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JUNE '
+  const text = '✦ VYUGA ✦ 2026 ✦ KSRCT ✦ JULY '
   return (
     <div className="relative h-32 w-32 sm:h-40 sm:w-40">
       <svg viewBox="0 0 200 200" className="h-full w-full animate-rotate-text">
@@ -192,7 +192,7 @@ export default function Hero() {
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-lime" />
                   </span>
                   <span className="font-mono text-xs font-semibold tracking-[0.2em] text-slate-400">
-                    JULY 25, 2026 · K S RANGASAMY COLLEGE OF TECHNOLOGY
+                    JUNE TO JULY, 2026 · K S RANGASAMY COLLEGE OF TECHNOLOGY
                   </span>
                 </div>
               </motion.div>
