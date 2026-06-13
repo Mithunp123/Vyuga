@@ -12,7 +12,6 @@ import cricketImg from '../assets/images/cirket.png'
 import chessImg from '../assets/images/chess.png'
 import shortFilmImg from '../assets/images/shortflim.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
-import rangaLogo from '../assets/present by/ranga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import triNexguga from '../assets/present by/tri_nexguga.png'
 import aboutImg from '../assets/about.png'
@@ -249,19 +248,6 @@ export default function About() {
                   </div>
                 </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, x: 30, rotateY: 15 }}
-                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  whileHover={{ scale: 1.1, rotateY: -5 }}
-                  className="group relative perspective-1000"
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-auto sm:w-56 px-6">
-                    <img src={rangaLogo} alt="Ranga" className="h-20 sm:h-24 w-auto object-contain" />
-                  </div>
-                </motion.div>
               </div>
 
               {/* Association */}
