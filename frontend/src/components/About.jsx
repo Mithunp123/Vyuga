@@ -96,7 +96,7 @@ const aims = [
 const eventsList = [
   {
     title: "Innovation Fest",
-    description: "An innovation fest focused on assistive technology, centered around themes for specially abled and by specially abled. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
+    description: "An innovation fest focused on assistive technology, centered around themes for specially abled. Participants develop impactful solutions that address real-world accessibility challenges. Top three winners under each theme will receive cash prizes and recognition.",
     color: "!text-[#5BCB2B]",
     image: think
   },
