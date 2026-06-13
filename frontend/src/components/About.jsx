@@ -12,15 +12,10 @@ import cricketImg from '../assets/images/cirket.png'
 import chessImg from '../assets/images/chess.png'
 import shortFilmImg from '../assets/images/shortflim.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
-import srpLogo from '../assets/present by/SRP.webp'
 import rangaLogo from '../assets/present by/ranga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import triNexguga from '../assets/present by/tri_nexguga.png'
-import logoSrpIcon from '../assets/present by/logo_SRP.jpg'
 import aboutImg from '../assets/about.png'
-import srp1 from '../assets/aboutsrp/1.jpg'
-import srp2 from '../assets/aboutsrp/2.jpg'
-import srp3 from '../assets/aboutsrp/3.jpg'
 import nexyugaGroup from '../assets/nexyuga_group.png'
 import eventImage from '../assets/images/event.png'
 import triangleImg from '../assets/loading/triangle.png'
@@ -205,15 +200,6 @@ function MarqueeBand() {
 }
 
 export default function About() {
-  const [currentSrpImage, setCurrentSrpImage] = useState(0)
-  const srpImages = [srp1, srp2, srp3]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSrpImage((prev) => (prev + 1) % srpImages.length)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
 
   const sectionRef = useRef(null)
   const inView = useInView(sectionRef, { once: true, amount: 0.15 })
@@ -269,14 +255,11 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                   whileHover={{ scale: 1.1, rotateY: -5 }}
-                  className="group relative perspective-1000 cursor-pointer"
-                  onClick={() => document.getElementById('about-srp')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group relative perspective-1000"
                 >
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center gap-6 h-36 w-auto sm:w-80 px-6">
-                    <img src={rangaLogo} alt="Ranga" className="h-20 sm:h-24 w-auto object-contain flex-1" />
-                    <div className="h-16 w-px bg-slate-200 shrink-0" />
-                    <img src={srpLogo} alt="SRP Foundation" className="h-20 sm:h-24 w-auto object-contain flex-1 transform scale-[1.25]" />
+                  <div className="relative bg-white rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-auto sm:w-56 px-6">
+                    <img src={rangaLogo} alt="Ranga" className="h-20 sm:h-24 w-auto object-contain" />
                   </div>
                 </motion.div>
               </div>
@@ -793,148 +776,6 @@ export default function About() {
         </div>
       )}
 
-      {/* ── ABOUT SRP ── */}
-      {location.pathname === '/about' && (
-        <div id="about-srp" className="relative mx-auto max-w-7xl px-4 border-t border-slate-100 bg-slate-50/50 min-h-screen flex flex-col justify-center">
-          <div className="relative">
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex items-center justify-end gap-3"
-            >
-              <span className="font-mono text-sm sm:text-lg font-semibold tracking-[0.3em] text-brand-lime text-right">ABOUT SRP FOUNDATION</span>
-              <div className="gradient-line w-16" />
-            </motion.div>
-
-            <div className="mt-12 grid gap-16 lg:grid-cols-5 items-start">
-              {/* LEFT Side: Image (col-span-2) */}
-              <div className="lg:col-span-2 flex flex-col h-full justify-center lg:pt-[130px]">
-                 <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="w-full flex justify-center md:justify-start h-[300px] lg:h-[380px] relative overflow-hidden rounded-xl"
-                  >
-                    <AnimatePresence mode="wait">
-                      <motion.img
-                        key={currentSrpImage}
-                        src={srpImages[currentSrpImage]}
-                        alt="SRP Foundation Initiatives"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="absolute inset-0 w-full h-full object-cover rounded-xl shadow-md"
-                      />
-                    </AnimatePresence>
-                  </motion.div>
-              </div>
-
-              {/* RIGHT Side: Header + Initiatives + Text (col-span-3) */}
-              <div className="lg:col-span-3 flex flex-col">
-                <div className="space-y-1 mb-10 text-right">
-                  <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.7, delay: 0.1 }}
-                  >
-                    <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
-                      Uplifting{' '}
-                    </span>
-                    <span className="font-serif text-[3vw] italic font-light leading-[0.9] text-brand-lime sm:text-xl lg:text-3xl">
-                      communities
-                    </span>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                  >
-                    <span className="font-hero text-[3vw] font-black leading-[0.9] tracking-tight text-slate-900 sm:text-xl lg:text-3xl">
-                      through{' '}
-                    </span>
-                    <span className="font-marker text-[3vw] leading-[0.9] text-[#5BCB2B] sm:text-xl lg:text-3xl">
-                      empowerment
-                    </span>
-                  </motion.div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                  
-                  {/* INITIATIVES (Middle) */}
-                  <div className="flex flex-col h-full text-right">
-                    <p className="mb-6 font-display text-sm font-bold text-slate-600 uppercase tracking-wider">
-                      Our initiatives cover:
-                    </p>
-                    <div className="space-y-0">
-                      {[
-                        'Accessible Education for All',
-                        'Community Healthcare Support',
-                        'Skill Development Workshops',
-                        'Sustainable Livelihood Programs'
-                      ].map((item, idx) => (
-                        <motion.div
-                          key={item}
-                          initial={{ opacity: 0, x: 30 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                          className="group flex flex-row-reverse items-start gap-4 border-b border-slate-100 py-3 transition-colors hover:border-brand-lime/30"
-                        >
-                          <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-lime" />
-                          <span className="text-base sm:text-lg transition-all duration-500 font-serif italic text-slate-600 group-hover:-translate-x-2">
-                            {item}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: 0.7 }}
-                      className="mt-8 flex justify-end"
-                    >
-                      <a 
-                        href="https://www.shreerengapolymers.com/srp-foundation-plants-1600-trees-at-valluvar-college-of-science-and-management-karur/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="group inline-flex flex-row-reverse items-center gap-2.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-brand-lime hover:text-white hover:ring-brand-lime"
-                      >
-                        <img src={logoSrpIcon} alt="SRP Icon" className="h-6 w-auto object-contain rounded-full transition-transform group-hover:scale-110" />
-                        Visit Website
-                      </a>
-                    </motion.div>
-                  </div>
-
-                  {/* PARAGRAPH (Right) */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                  >
-                    <p className="text-sm leading-relaxed text-slate-500 sm:text-base text-justify">
-                      SRP Foundation is a social impact organization committed to empowering communities and creating meaningful change through inclusive initiatives.
-                      <br /><br />
-                      The foundation works across various sectors to support underrepresented and differently-abled individuals, focusing on education, accessibility, and community development.
-                      <br /><br />
-                      Through collaborations, programs, and grassroots efforts, SRP Foundation aims to build an equitable society where every individual has the opportunity to grow, contribute, and thrive.
-                    </p>
-                  </motion.div>
-
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
