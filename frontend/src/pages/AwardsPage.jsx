@@ -145,7 +145,7 @@ export default function AwardsPage() {
       <style>{`
         .awards-grid-innovation {
           display: grid;
-          grid-template-columns: 1.2fr 0.8fr 1.2fr;
+          grid-template-columns: 1fr 1fr;
           gap: 12px;
           align-items: stretch;
         }
@@ -320,7 +320,7 @@ export default function AwardsPage() {
 
         <div className="awards-grid-innovation">
 
-          {/* By S.A — LEFT */}
+          {/* For Specially Abled — LEFT */}
           <AwardCard accent={LIME}>
             <SectionHeader label="For Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={LIME} />} accent={LIME} />
             <div className="award-item-grid">
@@ -329,7 +329,7 @@ export default function AwardsPage() {
             </div>
           </AwardCard>
 
-          {/* Jury Special Mention — CENTER */}
+          {/* Jury Special Mention — RIGHT */}
           <AwardCard accent={CYAN} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '24px 12px', justifyContent: 'center' }}>
             <SpinningStar size={85} />
             <p style={{ fontSize: 14, fontWeight: 800, color: CYAN, textTransform: 'uppercase', letterSpacing: '0.18em', margin: '16px 0 10px' }}>Jury Special Mention</p>
@@ -342,7 +342,7 @@ export default function AwardsPage() {
             </div>
           </AwardCard>
 
-          {/* For S.A — RIGHT (commented out) */}
+          {/* By Specially Abled — commented out */}
           {/* <AwardCard accent={CYAN}>
             <SectionHeader label="By Specially Abled" sublabel="Innovation Category" icon={<Lightbulb size={24} color={CYAN} />} accent={CYAN} />
             <div className="award-item-grid">
