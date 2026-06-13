@@ -117,12 +117,6 @@ const eventsList = [
     description: "Showcase your filmmaking skills by submitting impactful short films centered around inclusivity, accessibility, and empowerment.",
     color: "!text-[#5BCB2B]",
     image: shortFilmImg
-  },
-  {
-    title: "Blind Chess",
-    description: "An inclusive blind chess tournament that challenges strategy, memory, and focus beyond sight.Specially abled players compete using adaptive methods, showcasing intelligence, patience, and precision. Winner and runner-up will receive prizes, celebrating excellence and strategic brilliance.",
-    color: "!text-[#5BCB2B]",
-    image: chessImg
   }
 ]
 
