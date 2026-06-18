@@ -323,14 +323,16 @@ function StatusBadge({ status }) {
 
 function PaymentBadge({ status }) {
   const isPaid = status === 'paid'
+  const isFree = status === 'free'
+  const cfg = isPaid
+    ? { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', label: 'Paid' }
+    : isFree
+    ? { color: '#0197B2', bg: '#e0f6fa', border: '#bae6fd', label: 'Free' }
+    : { color: '#d97706', bg: '#fffbeb', border: '#fde68a', label: 'Pending' }
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold border"
-      style={{ 
-        color: isPaid ? '#16a34a' : '#d97706', 
-        background: isPaid ? '#f0fdf4' : '#fffbeb', 
-        borderColor: isPaid ? '#bbf7d0' : '#fde68a' 
-      }}>
-      {isPaid ? 'Paid' : 'Pending'}
+      style={{ color: cfg.color, background: cfg.bg, borderColor: cfg.border }}>
+      {cfg.label}
     </span>
   )
 }
