@@ -1170,7 +1170,18 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
     // }
 
     // Send confirmation email immediately (free registration)
-    try { await sendInnovationCollegeConfirmation({ member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone, member2Name: members[0]?.name, member2Email: members[0]?.email, member3Name: members[1]?.name, member3Email: members[1]?.email, teamName: sTeamName, collegeName: sCollegeName, ideaTitle: sIdeaTitle }) } catch(confErr) { console.error('[innovation-college] email failed:', confErr.message) }
+    try {
+      await sendInnovationCollegeConfirmation({
+        member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone,
+        member2Name: members[0]?.name, member2Email: members[0]?.email, member2Phone: members[0]?.phone,
+        member3Name: members[1]?.name, member3Email: members[1]?.email, member3Phone: members[1]?.phone,
+        teamName: sTeamName, collegeName: sCollegeName, theme: sTheme,
+        ideaTitle: sIdeaTitle, ideaDescription: sIdeaDesc,
+        paymentStatus: 'Free Registration',
+        registrationId: data?.id,
+        eventType: 'innovation-college',
+      })
+    } catch(confErr) { console.error('[innovation-college] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1354,7 +1365,20 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
 
 
     // Send confirmation email immediately (free registration)
-    try { await sendInnovationPwdConfirmation({ member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone, member2Name: members[0]?.name, member2Email: members[0]?.email, member3Name: members[1]?.name, member3Email: members[1]?.email, ideaTitle: sIdeaTitle, disabilityType: sDisability }) } catch(confErr) { console.error('[innovation-pwd] email failed:', confErr.message) }
+    // Send confirmation email immediately (free registration)
+    try {
+      await sendInnovationPwdConfirmation({
+        participationType: sPartType,
+        ideaTitle: sIdeaTitle, ideaDescription: sIdeaDesc,
+        member1Name: sM1Name, member1Email: sM1Email, member1Phone: sM1Phone,
+        member1DisabilityType: sDisability,
+        member2Name: members[0]?.name, member2Email: members[0]?.email, member2Phone: members[0]?.phone,
+        member3Name: members[1]?.name, member3Email: members[1]?.email, member3Phone: members[1]?.phone,
+        paymentStatus: 'Free Registration',
+        registrationId: data?.id,
+        eventType: 'innovation-pwd',
+      })
+    } catch(confErr) { console.error('[innovation-pwd] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1870,7 +1894,26 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
     // BYPASSED: }
 
     // Send confirmation email immediately (free registration)
-    try { await sendTalentStudentConfirmation({ contactEmail: contactEmail, studentName: form?.studentName || 'Participant' }) } catch(confErr) { console.error('[talent-combined] email failed:', confErr.message) }
+    try {
+      await sendTalentStudentConfirmation({
+        orgName: sanitizeText(orgName, 200),
+        studentName: nominationType === 'individual' ? sanitizeText(studentName, 100) : 'Team Nomination',
+        studentAge: nominationType === 'individual' ? studentAge : null,
+        disabilityType: nominationType === 'individual' ? processedDisabilityType : 'Multiple (Team)',
+        talentCategory: processedTalentCategory,
+        talentDescription: talentDescription ? sanitizeText(talentDescription, 500) : null,
+        guardianName: nominationType === 'individual' ? sanitizeText(guardianName, 100) : null,
+        guardianPhone: nominationType === 'individual' ? guardianPhone : null,
+        guardianEmail: nominationType === 'individual' && guardianEmail ? guardianEmail.toLowerCase() : null,
+        videoLink: sanitizedPerformanceUrl,
+        payerEmail: contactEmail ? contactEmail.toLowerCase() : null,
+        orgContactEmail: contactEmail ? contactEmail.toLowerCase() : null,
+        orgContactName: sanitizeText(contactName, 100),
+        paymentStatus: 'Free Registration',
+        registrationId: data?.id,
+        eventType: 'talent-combined',
+      })
+    } catch(confErr) { console.error('[talent-combined] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
 
 
@@ -1970,7 +2013,23 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
     // BYPASSED: if (shortfilmPaymentInsertError) { ... }
 
     // Send confirmation email immediately (free registration)
-    try { await sendShortFilmConfirmation({ contactName, contactEmail, filmTitle }) } catch(confErr) { console.error('[shortfilm] email failed:', confErr.message) }
+    try {
+      await sendShortFilmConfirmation({
+        filmTitle: sanitizeText(filmTitle, 200),
+        filmLanguage: filmLanguage ? sanitizeText(filmLanguage, 100) : null,
+        duration: duration,
+        genre: sanitizeText(genre, 100),
+        participationType: participationType.trim(),
+        directorName: sanitizeText(directorName, 100),
+        filmUrl: filmUrl ? filmUrl.trim() : null,
+        contactName: sanitizeText(contactName, 100),
+        contactEmail: contactEmail.trim().toLowerCase(),
+        contactPhone: contactPhone.trim(),
+        paymentStatus: 'Free Registration',
+        registrationId: data?.id,
+        eventType: 'shortfilm',
+      })
+    } catch(confErr) { console.error('[shortfilm] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
 
   } catch (err) {

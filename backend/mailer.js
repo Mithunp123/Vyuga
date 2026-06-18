@@ -141,8 +141,8 @@ async function sendInnovationCollegeConfirmation(d) {
     ${section('Team Members', members)}
     ${d.paymentStatus ? section('Payment Details', [
     row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
-    row('Order ID', d.razorpayOrderId),
-    row('Transaction ID', d.razorpayPaymentId),
+    d.razorpayOrderId ? row('Order ID', d.razorpayOrderId) : '',
+    d.razorpayPaymentId ? row('Transaction ID', d.razorpayPaymentId) : '',
   ].join('')) : ''}
     ${statusButton(d)}
   `)
@@ -171,8 +171,8 @@ async function sendInnovationPwdConfirmation(d) {
     ${extraMembers ? section('Additional Team Members', extraMembers) : ''}
     ${d.paymentStatus ? section('Payment Details', [
     row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
-    row('Order ID', d.razorpayOrderId),
-    row('Transaction ID', d.razorpayPaymentId),
+    d.razorpayOrderId ? row('Order ID', d.razorpayOrderId) : '',
+    d.razorpayPaymentId ? row('Transaction ID', d.razorpayPaymentId) : '',
   ].join('')) : ''}
     ${statusButton(d)}
   `)
@@ -226,8 +226,8 @@ async function sendTalentStudentConfirmation(d) {
   ].join(''))}
     ${d.paymentStatus ? section('Payment Details', [
     row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
-    row('Order ID', d.razorpayOrderId),
-    row('Transaction ID', d.razorpayPaymentId),
+    d.razorpayOrderId ? row('Order ID', d.razorpayOrderId) : '',
+    d.razorpayPaymentId ? row('Transaction ID', d.razorpayPaymentId) : '',
   ].join('')) : ''}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       📹 Your performance video has been received and will be reviewed by our team.
@@ -344,8 +344,8 @@ async function sendShortFilmConfirmation(d) {
   ].join(''))}
     ${d.paymentStatus ? section('Payment Details', [
     row('Status', `<span style="color:#16a34a;font-weight:bold;">${d.paymentStatus}</span>`),
-    row('Order ID', d.razorpayOrderId),
-    row('Transaction ID', d.razorpayPaymentId),
+    d.razorpayOrderId ? row('Order ID', d.razorpayOrderId) : '',
+    d.razorpayPaymentId ? row('Transaction ID', d.razorpayPaymentId) : '',
   ].join('')) : ''}
     <p style="font-size:13px;color:#475569;margin-top:16px;">
       Your short film registration has been received successfully. Our team will contact you if any additional details are needed.
