@@ -331,6 +331,11 @@ export default function AttendRegister() {
                                       <Linkedin className="w-3.5 h-3.5" />
                                     </a>
                                   </div>
+                                  <div className="flex items-center gap-1.5 mt-1.5">
+                                    <Calendar className="w-3 h-3 text-brand-cyan shrink-0" />
+                                    <span className="text-slate-500 italic">Result Announcement:</span>
+                                    <span className="font-black text-[#5BCB2B] tracking-wide">15/07/2026</span>
+                                  </div>
                                 </div>
                               ) : (
                                 <div className="flex justify-between items-center text-xs">
@@ -405,6 +410,11 @@ export default function AttendRegister() {
                                     <a href="https://www.linkedin.com/showcase/vyuga/posts/?feedView=all" target="_blank" rel="noopener noreferrer" title="LinkedIn" className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
                                       <Linkedin className="w-4 h-4" />
                                     </a>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 mt-1.5">
+                                    <Calendar className="w-3.5 h-3.5 text-brand-cyan shrink-0" />
+                                    <span className="text-slate-500 italic">Result Announcement:</span>
+                                    <span className="font-black text-[#5BCB2B] tracking-wide">15/07/2026</span>
                                   </div>
                                 </div>
                               ) : (
