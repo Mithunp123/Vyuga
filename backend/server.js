@@ -405,6 +405,41 @@ async function logError({ source, endpoint, method, errorType, message, stack, r
   }
 }
 
+// ── Registration ID Generator ──────────────────────────────────────────────────
+// Format: VYG-<prefix><4-digit-sequence>
+//   VYG-1XXXX  -> innovation_college_registrations
+//   VYG-2XXXX  -> talent_nominations (talent-student)
+//   VYG-3XXXX  -> talent_nominations (talent-combined/parent)
+//   VYG-4XXXX  -> shortfilm_registrations
+async function generateRegId(table, prefix) {
+  try {
+    // Find the highest existing seq number for this prefix in the table
+    const { data, error } = await supabase
+      .from(table)
+      .select('reg_id')
+      .like('reg_id', `VYG-${prefix}%`)
+      .order('reg_id', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    let nextSeq = 1
+    if (!error && data && data.reg_id) {
+      // Extract the numeric part after the prefix digit: VYG-1XXXX => XXXX
+      const numStr = data.reg_id.replace(`VYG-${prefix}`, '')
+      const num = parseInt(numStr, 10)
+      if (!isNaN(num)) nextSeq = num + 1
+    }
+
+    // Zero-pad to 4 digits: 1 -> 0001, 999 -> 0999, 9999 -> 9999
+    const padded = String(nextSeq).padStart(4, '0')
+    return `VYG-${prefix}${padded}`
+  } catch (e) {
+    console.error(`[generateRegId] Failed for table=${table} prefix=${prefix}:`, e.message)
+    // Fallback: timestamp-based to avoid blocking the registration
+    return `VYG-${prefix}${Date.now().toString().slice(-4)}`
+  }
+}
+
 // Ã¢â€â‚¬Ã¢â€â‚¬ Client-side error reporting Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 app.post('/api/log-error', errorReportLimiter, async (req, res) => {
   const { endpoint, errorType, message, stack } = req.body
@@ -1117,9 +1152,12 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
       pptFilePath = filename
     }
 
+    const regId1 = await generateRegId('innovation_college_registrations', '1')
+
     const { data, error } = await supabase
       .from('innovation_college_registrations')
       .insert([{
+        reg_id: regId1,
         team_name: sTeamName,
         college_name: sCollegeName,
         theme: sTheme,
@@ -1584,9 +1622,12 @@ app.post('/api/talent-student', registrationLimiter, upload.single('performanceV
     // Store only the filename (not the full path) so frontend can construct URL
     const videoFileName = videoFilePath ? path.basename(videoFilePath) : null
 
+    const regId2 = await generateRegId('talent_nominations', '2')
+
     const { data, error } = await supabase
       .from('talent_nominations')
       .insert([{
+        reg_id: regId2,
         org_name: sanitizeText(orgName, 200),
         student_name: sanitizeText(studentName, 100),
         student_age: parseInt(studentAge, 10),
@@ -1822,9 +1863,12 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
       }
     }
 
+    const regId3 = await generateRegId('talent_nominations', '3')
+
     const { data, error } = await supabase
       .from('talent_nominations')
       .insert([{
+        reg_id: regId3,
         // Organization details
         org_name: sanitizeText(orgName, 200),
         org_address: orgAddress ? sanitizeText(orgAddress, 300) : null,
@@ -1977,9 +2021,12 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
       }
     }
 
+    const regId4 = await generateRegId('shortfilm_registrations', '4')
+
     const { data, error } = await supabase
       .from('shortfilm_registrations')
       .insert([{
+        reg_id: regId4,
         film_title: sanitizeText(filmTitle, 200),
         genre: sanitizeText(genre, 100),
         duration: parseInt(duration, 10),
