@@ -36,7 +36,7 @@ const STATUS_CFG = {
 // ── Column definitions per tab ────────────────────────────────────────────────
 const COLUMNS = {
   'innovation-college': [
-    { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
+    { key: 'reg_id',        label: 'Reg ID',    fmt: (v) => v ? <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0197B2', background: '#e0f6fa', borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>{v}</span> : <span style={{ color: '#94a3b8' }}>—</span> },
     { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
     { key: 'team_name',     label: 'Team Name' },
     { key: 'college_name',  label: 'College' },
@@ -64,7 +64,7 @@ const COLUMNS = {
     { key: 'contact_phone',  label: 'Phone' },
   ],
   'talent-student': [
-    { key: 'id',              label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
+    { key: 'reg_id',          label: 'Reg ID',    fmt: (v) => v ? <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0197B2', background: '#e0f6fa', borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>{v}</span> : <span style={{ color: '#94a3b8' }}>—</span> },
     { key: 'submitted_at',    label: 'Date',        fmt: fmtDate },
     { key: 'student_name',    label: 'Student/Team' },
     { key: 'nomination_type', label: 'Type',        fmt: (v) => v === 'team' ? 'Team' : v === 'individual' ? 'Individual' : '-' },
@@ -116,7 +116,7 @@ const COLUMNS = {
     { key: 'logo_path',     label: 'Logo',      fmt: (v) => v ? <a href={`${API_BASE}/uploads/${v}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View</a> : '-' },
   ],
   shortfilm: [
-    { key: 'id',            label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
+    { key: 'reg_id',        label: 'Reg ID',    fmt: (v) => v ? <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0197B2', background: '#e0f6fa', borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>{v}</span> : <span style={{ color: '#94a3b8' }}>—</span> },
     { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
     { key: 'film_title',    label: 'Film Title' },
     { key: 'genre',         label: 'Genre' },
@@ -875,8 +875,17 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
             <div className="rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#0197B2' }}>Full Record</p>
               <div className="flex flex-col gap-3">
+                {/* ── reg_id pinned at top if present ── */}
+                {row.reg_id && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 rounded-xl border-2 px-4 py-3" style={{ background: '#e0f6fa', borderColor: '#0197B2' }}>
+                    <p className="text-xs uppercase tracking-wider font-bold min-w-[140px] shrink-0" style={{ color: '#0197B2' }}>Registration ID</p>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: 16, color: '#0197B2', letterSpacing: 1 }}>{row.reg_id}</span>
+                  </div>
+                )}
                 {Object.entries(row)
                   .filter(([k, v]) => {
+                    if (k === 'id') return false       // hide raw UUID
+                    if (k === 'reg_id') return false   // already shown above
                     if (k === 'status') return false
                     if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'object') return false
                     if (isParentRec && parentHiddenKeys.has(k)) return false
