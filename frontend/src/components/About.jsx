@@ -215,47 +215,62 @@ export default function About() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-center"
           >
-            <motion.h3
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-4"
-            >
-              Presented by
-            </motion.h3>
-
             <div className="flex flex-col items-center gap-4">
               {/* Main presenters */}
-              <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-8">
-                <motion.div
-                  initial={{ opacity: 0, x: -30, rotateY: -15 }}
-                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  whileHover={{ scale: 1.1, rotateY: 5 }}
-                  className="group relative perspective-1000 cursor-pointer"
-                  onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
-                    <img src={nexgugaLogo} alt="Nexyuga Innovation" className="max-h-full max-w-full object-contain" />
-                  </div>
-                </motion.div>
+              <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-16">
+                
+                {/* Presented By */}
+                <div className="flex flex-col items-center">
+                  <motion.h3
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-4"
+                  >
+                    Presented by
+                  </motion.h3>
+                  <motion.div
+                    initial={{ opacity: 0, x: -30, rotateY: -15 }}
+                    whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    whileHover={{ scale: 1.1, rotateY: 5 }}
+                    className="group relative perspective-1000 cursor-pointer"
+                    onClick={() => document.getElementById('about-nexyuga')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
+                      <img src={nexgugaLogo} alt="Nexyuga Innovation" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  </motion.div>
+                </div>
 
-                <motion.div
-                  initial={{ opacity: 0, x: 30, rotateY: 15 }}
-                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  whileHover={{ scale: 1.1, rotateY: -5 }}
-                  className="group relative perspective-1000"
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
-                    <img src={chelseaLogo} alt="Chelsea" className="max-h-full max-w-full object-contain" />
-                  </div>
-                </motion.div>
+                {/* Powered By */}
+                <div className="flex flex-col items-center">
+                  <motion.h3
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-4"
+                  >
+                    Powered by
+                  </motion.h3>
+                  <motion.div
+                    initial={{ opacity: 0, x: 30, rotateY: 15 }}
+                    whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                    whileHover={{ scale: 1.1, rotateY: -5 }}
+                    className="group relative perspective-1000"
+                  >
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
+                      <img src={chelseaLogo} alt="Chelsea" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  </motion.div>
+                </div>
               </div>
 
               {/* Association */}
