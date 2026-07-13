@@ -153,7 +153,7 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* Sponsorship Benefits Table */}
+      {/* Sponsorship Benefits Table 
       <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <motion.div
@@ -223,6 +223,7 @@ export default function SponsorsPage() {
           </motion.div>
         </div>
       </section>
+      */}
 
       <section ref={ref} className="relative overflow-hidden px-4 pb-12 sm:px-6">
         <div className="mt-8 text-center">
