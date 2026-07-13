@@ -15,6 +15,7 @@ import chelseaLogo from '../assets/present by/Chelsea.png'
 import nexgugaLogo from '../assets/present by/nexguga.png'
 import ksrctLogo from '../assets/present by/ksrct logo.png'
 import triNexguga from '../assets/present by/tri_nexguga.png'
+import swadharmaLogo from '../assets/present by/swadharma.png'
 import aboutImg from '../assets/about.png'
 import nexyugaGroup from '../assets/nexyuga_group.png'
 import eventImage from '../assets/images/event.png'
@@ -217,7 +218,7 @@ export default function About() {
           >
             <div className="flex flex-col items-center gap-4">
               {/* Main presenters */}
-              <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-16">
+              <div className="flex flex-col items-center justify-center gap-10">
                 
                 {/* Presented By */}
                 <div className="flex flex-col items-center">
@@ -228,7 +229,7 @@ export default function About() {
                     transition={{ duration: 0.6, delay: 0.1 }}
                     className="font-mono text-xs sm:text-sm font-bold tracking-[0.3em] text-slate-500 uppercase mb-4"
                   >
-                    Presented by
+                    Organized by
                   </motion.h3>
                   <motion.div
                     initial={{ opacity: 0, x: -30, rotateY: -15 }}
@@ -273,32 +274,50 @@ export default function About() {
                 </div>
               </div>
 
-              {/* Association */}
+              {/* Venue & Supporting Partners Header */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className="flex items-center gap-3"
+                className="flex items-center gap-3 mt-8"
               >
                 <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-slate-300" />
-                <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-slate-400">IN ASSOCIATION WITH</p>
+                <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-slate-400">VENUE PARTNER &nbsp;|&nbsp; SUPPORTING PARTNER</p>
                 <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-slate-300" />
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                whileHover={{ scale: 1.1, rotateX: 5 }}
-                className="group relative perspective-1000"
-              >
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
-                  <img src={ksrctLogo} alt="KSRCT" className="max-h-[80%] max-w-[80%] object-contain" />
-                </div>
-              </motion.div>
+              <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-16 mt-4">
+                {/* Venue Partner */}
+                <motion.div
+                  initial={{ opacity: 0, x: -30, rotateY: -15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  whileHover={{ scale: 1.1, rotateY: 5 }}
+                  className="group relative perspective-1000"
+                >
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
+                    <img src={ksrctLogo} alt="KSRCT" className="max-h-[80%] max-w-[80%] object-contain" />
+                  </div>
+                </motion.div>
+
+                {/* Supporting Partner */}
+                <motion.div
+                  initial={{ opacity: 0, x: 30, rotateY: 15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  whileHover={{ scale: 1.1, rotateY: -5 }}
+                  className="group relative perspective-1000"
+                >
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-brand-cyan/20 to-brand-lime/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border border-slate-100 flex items-center justify-center h-36 w-56">
+                    <img src={swadharmaLogo} alt="Swadharma" className="max-h-[80%] max-w-[80%] object-contain" />
+                  </div>
+                </motion.div>
+              </div>
 
             </div>
 
