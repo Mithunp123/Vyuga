@@ -3,6 +3,8 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { X, Loader2, CheckCircle } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
+import chelseaLogo from '../assets/present by/Chelsea.png'
+import goodwillLogo from '../assets/present by/Goodwill.png'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -150,6 +152,53 @@ export default function SponsorsPage() {
               {/*Benefits*/}
             </span>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Current Sponsors Section */}
+      <section className="relative overflow-hidden px-4 pb-12 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex flex-col gap-12 sm:gap-16 items-center">
+            
+            {/* Platinum Sponsor */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="flex flex-col items-center"
+            >
+              <h3 className="font-mono text-sm sm:text-base font-bold tracking-[0.3em] text-yellow-500 uppercase mb-6 text-center">
+                Platinum Sponsor
+              </h3>
+              <div className="group relative perspective-1000">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-yellow-100 flex items-center justify-center h-48 w-72 sm:h-56 sm:w-80">
+                  <img src={chelseaLogo} alt="Chelsea" className="max-h-full max-w-full object-contain" />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Golden Sponsor */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col items-center"
+            >
+              <h3 className="font-mono text-sm sm:text-base font-bold tracking-[0.3em] text-amber-500 uppercase mb-6 text-center">
+                Golden Sponsor
+              </h3>
+              <div className="group relative perspective-1000">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-400/20 to-amber-600/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amber-100 flex items-center justify-center h-48 w-72 sm:h-56 sm:w-80">
+                  <img src={goodwillLogo} alt="Goodwill" className="max-h-full max-w-full object-contain" />
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
         </div>
       </section>
 
