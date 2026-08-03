@@ -18,7 +18,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^8.0.2",
     "pdfmake": "^0.3.7",
-    "postgres": "^3.4.8",
+    "postgres": "^3.4.9",
     "razorpay": "^2.9.6"
   },
   "devDependencies": {

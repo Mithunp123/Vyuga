@@ -18,6 +18,46 @@ const transporter = nodemailer.createTransport({
 // Absolute path to the logo (copied into backend/assets/)
 const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png')
 
+function getCertificateTemplatePath() {
+  const htmlCandidates = [
+    path.join(__dirname, '..', 'Certificate 3.html'),
+    path.join(__dirname, 'assets', 'Certificate 3.html')
+  ]
+  for (const hp of htmlCandidates) {
+    if (fs.existsSync(hp)) {
+      try {
+        const content = fs.readFileSync(hp, 'utf8')
+        const match = content.match(/data:image\/(?:png|jpeg|jpg);base64,([^"']+)/i)
+        if (match) {
+          const isPng = content.includes('data:image/png')
+          const ext = isPng ? 'png' : 'jpeg'
+          const outPath = path.join(__dirname, 'assets', `Certificate.${ext}`)
+          fs.mkdirSync(path.dirname(outPath), { recursive: true })
+          fs.writeFileSync(outPath, Buffer.from(match[1], 'base64'))
+          console.log(`[mailer] Successfully extracted Certificate.${ext} from Certificate 3.html!`)
+          return outPath
+        }
+      } catch (e) {
+        console.error('[mailer] Error extracting certificate from Certificate 3.html:', e.message)
+      }
+    }
+  }
+
+  const defaultPng = path.join(__dirname, 'assets', 'Certificate.png')
+  if (fs.existsSync(defaultPng)) return defaultPng
+
+  const defaultAsset = path.join(__dirname, 'assets', 'Certificate.jpeg')
+  if (fs.existsSync(defaultAsset)) return defaultAsset
+  return null
+}
+
+const CERTIFICATE_TEMPLATE_PATH = getCertificateTemplatePath()
+
+
+
+
+
+
 // ── Shared HTML shell ─────────────────────────────────────────────────────────
 function shell(title, bodyHtml) {
   return `<!DOCTYPE html>
@@ -34,7 +74,7 @@ function shell(title, bodyHtml) {
 
       <!-- Header -->
       <tr>
-        <td style="background:linear-gradient(135deg,#0197B2 0%,#5BCB2B 100%);padding:28px 32px;text-align:center;">
+        <td style="background:#0197B2;padding:28px 32px;text-align:center;">
           <img src="cid:vyuga-logo" alt="VYUGA" height="56" style="display:block;margin:0 auto 10px;" />
           <p style="margin:0;color:#ffffff;font-size:13px;opacity:0.85;letter-spacing:0.08em;text-transform:uppercase;">Ability Carnival · Inclusive Innovation Fest</p>
         </td>
@@ -403,7 +443,7 @@ function numberToWords(num) {
 
 // ── GST Invoice PDF Generator ─────────────────────────────────────────────────
 const EVENT_LABEL_MAP = {
-  'innovation-college': 'Inclusive Innovation Fest – For Specially Abled (College)',
+  'innovation-college': 'Inclusive Innovation Fest (College)',
   'innovation-pwd': 'Inclusive Innovation Fest – By Specially Abled',
   'shortfilm': 'Short Film Contest',
   'cricket': 'Blind Cricket Tournament',
@@ -730,6 +770,422 @@ async function sendGSTInvoiceEmail({ payerName, payerEmail, payerPhone, eventTyp
   }
 }
 
+// ── Certificate Generator & Mailer ───────────────────────────────────────────
+async function generateCertificatePdf(data) {
+  const { recipientName, positionTitle, eventName } = data
+
+  const allowedPositions = ['Winner', 'Runner Up', '2nd Runner Up', 'Finalist']
+  if (!positionTitle || !allowedPositions.includes(positionTitle)) {
+    return Promise.reject(new Error('Certificate generation is restricted to Winner, Runner Up, 2nd Runner Up, and Finalist only.'))
+  }
+
+  return new Promise((resolve, reject) => {
+    try {
+      let PDFDocument
+      try {
+        PDFDocument = require('pdfkit')
+      } catch (_) {
+        PDFDocument = require('pdfmake/node_modules/pdfkit')
+      }
+
+      // A4 Landscape dimensions in points: 841.89 x 595.28
+      const doc = new PDFDocument({
+        size: 'A4',
+        layout: 'landscape',
+        margin: 0
+      })
+
+      const chunks = []
+      doc.on('data', chunk => chunks.push(chunk))
+      doc.on('end', () => resolve(Buffer.concat(chunks)))
+      doc.on('error', err => reject(err))
+
+      // 1. Background Image overlay (Certificate 3 background)
+      const templatePath = getCertificateTemplatePath() || CERTIFICATE_TEMPLATE_PATH
+      if (templatePath && fs.existsSync(templatePath)) {
+        doc.image(templatePath, 0, 0, { width: 841.89, height: 595.28 })
+      }
+
+
+      // 2. Full Name: Centered directly on top of the underline (y ~362pt)
+      const nameText = (recipientName || 'PARTICIPANT NAME').toUpperCase()
+      doc
+        .fillColor('#0f172a')
+        .font('Helvetica-Bold')
+        .fontSize(23)
+        .text(nameText, 0, 362, { width: 841.89, align: 'center' })
+
+      // 3. Line 1: "for being [Position] at Vyuga – National Ability Carnival 2026, [Event Name] held on"
+      const pos = positionTitle || 'Winner'
+      const evt = eventName || 'Inclusive Innovation Fest'
+
+      const part1 = 'For being '
+      const part2 = `${pos}`
+      const part3 = ' at Vyuga – National Ability Carnival 2026, '
+      const part4 = `${evt}`
+      const part5 = ' held on'
+
+      doc.fontSize(11.5)
+
+      doc.font('Helvetica')
+      const w1 = doc.widthOfString(part1)
+      doc.font('Helvetica-Bold')
+      const w2 = doc.widthOfString(part2)
+      doc.font('Helvetica')
+      const w3 = doc.widthOfString(part3)
+      doc.font('Helvetica-Bold')
+      const w4 = doc.widthOfString(part4)
+      doc.font('Helvetica')
+      const w5 = doc.widthOfString(part5)
+
+      const totalWidth = w1 + w2 + w3 + w4 + w5
+      const startX = Math.max(20, (841.89 - totalWidth) / 2)
+
+      doc
+        .font('Helvetica')
+        .fillColor('#1e293b')
+        .text(part1, startX, 412, { continued: true })
+        .font('Helvetica-Bold')
+        .fillColor('#0f172a')
+        .text(part2, { continued: true })
+
+        .font('Helvetica')
+        .fillColor('#1e293b')
+        .text(part3, { continued: true })
+        .font('Helvetica-Bold')
+        .fillColor('#0f172a')
+        .text(part4, { continued: true })
+        .font('Helvetica')
+        .fillColor('#1e293b')
+        .text(part5, { continued: false })
+
+
+
+      // 4. Line 2: "25 July 2026. Your outstanding talent, dedication, and remarkable achievement are sincerely"
+      doc
+        .fontSize(11)
+        .font('Helvetica')
+        .fillColor('#1e293b')
+        .text('25 July 2026. Your outstanding talent, dedication, and remarkable achievement are sincerely', 60, 430, { width: 721.89, align: 'center' })
+
+      // 5. Line 3: "recognized and celebrated. Congratulations, and best wishes for your continued success."
+      doc
+        .fontSize(11)
+        .font('Helvetica')
+        .fillColor('#1e293b')
+        .text('recognized and celebrated. Congratulations, and best wishes for your continued success.', 60, 446, { width: 721.89, align: 'center' })
+
+
+
+
+
+      doc.end()
+    } catch (err) {
+      console.error('[mailer] PDFKit generation error:', err)
+      reject(err)
+    }
+  })
+}
+
+
+
+
+async function sendIndividualCertificateEmail({ recipientEmail, recipientName, recipientRole, teamName, collegeName, eventName, ideaTitle, positionTitle }) {
+  try {
+    const allowedPositions = ['Winner', 'Runner Up', '2nd Runner Up', 'Finalist']
+    if (!positionTitle || !allowedPositions.includes(positionTitle)) {
+      return { success: false, error: 'Certificate generation is restricted to Winner, Runner Up, 2nd Runner Up, and Finalist only.' }
+    }
+
+    const pdfBuffer = await generateCertificatePdf({
+      recipientName,
+      positionTitle,
+      eventName
+    })
+
+
+    const safeFilename = `VYUGA_Certificate_${(recipientName || 'Participant').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VYUGA - Certificate of Appreciation</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#f5f7fb;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#1f2937;
+}
+
+.wrapper{
+    width:100%;
+    padding:40px 15px;
+}
+
+.container{
+    max-width:620px;
+    margin:auto;
+    background:#ffffff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+/* Header */
+
+.header{
+    text-align:center;
+    padding:45px 40px 25px;
+}
+
+.logo{
+    font-size:36px;
+    font-weight:800;
+    color:#0197B2;
+    letter-spacing:1px;
+}
+
+.subtitle{
+    margin-top:10px;
+    font-size:16px;
+    color:#5BCB2B;
+    font-weight:600;
+}
+
+/* Body */
+
+.content{
+    padding:20px 50px 45px;
+    text-align:center;
+}
+
+.content h1{
+    font-size:40px;
+    color:#1f2937;
+    margin-bottom:25px;
+    line-height:48px;
+}
+
+.content p{
+    font-size:17px;
+    color:#5f6368;
+    line-height:30px;
+    margin-bottom:18px;
+}
+
+.name{
+    color:#0197B2;
+    font-weight:bold;
+}
+
+.highlight{
+    color:#0197B2;
+    font-weight:bold;
+}
+
+.notice{
+    background:#F2FCFD;
+    border-left:5px solid #0197B2;
+    border-radius:10px;
+    padding:22px;
+    text-align:left;
+    margin-top:30px;
+    color:#555;
+    line-height:28px;
+    font-size:16px;
+}
+
+/* Footer */
+
+.footer{
+    background:#f4f5f7;
+    padding:35px;
+    text-align:center;
+}
+
+.footer-logo{
+    color:#0197B2;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.footer-sub{
+    color:#5BCB2B;
+    margin-top:8px;
+    font-size:15px;
+}
+
+.divider{
+    width:100%;
+    height:1px;
+    background:#dddddd;
+    margin:28px 0;
+}
+
+.footer p{
+    color:#777;
+    line-height:26px;
+    font-size:14px;
+}
+
+.footer a{
+    color:#0197B2;
+    text-decoration:none;
+}
+
+@media only screen and (max-width:600px){
+
+.container{
+    border-radius:12px;
+}
+
+.header{
+    padding:35px 20px 15px;
+}
+
+.content{
+    padding:20px 25px 35px;
+}
+
+.content h1{
+    font-size:30px;
+    line-height:38px;
+}
+
+.content p{
+    font-size:16px;
+    line-height:28px;
+}
+
+.notice{
+    padding:18px;
+}
+
+.footer{
+    padding:25px;
+}
+
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="container">
+
+<div class="header">
+
+<div class="logo">
+<img src="cid:vyuga-logo" alt="VYUGA" height="56" style="display:inline-block; margin:0;" />
+</div>
+
+<div class="subtitle">
+Ability Carnival • Inclusive Innovation Fest
+</div>
+
+</div>
+
+<div class="content">
+
+<h1>Certificate of Appreciation</h1>
+
+<p>
+Thank you for registering with
+<span class="highlight">VYUGA 2026</span>.
+Here is a summary of your submission.
+</p>
+
+<p>
+🎓 Congratulations,
+<span class="name">${recipientName}!</span>
+</p>
+
+<p>
+We are delighted to present you with the
+<strong>Certificate of Appreciation (${positionTitle})</strong>
+for your participation and achievement in the
+<strong>${eventName || 'Inclusive Innovation Fest'}.</strong>
+</p>
+
+
+
+</div>
+
+<div class="footer">
+
+<div class="footer-logo">
+<img src="cid:vyuga-logo" alt="VYUGA" height="40" style="display:inline-block; margin:0;" />
+</div>
+
+<div class="footer-sub">
+Ability Carnival • Inclusive Innovation Fest
+</div>
+
+<div class="divider"></div>
+
+<p>
+© 2026 VYUGA – Ability Carnival. All Rights Reserved.
+</p>
+
+<p style="margin-top:12px;">
+This is an automated confirmation email.<br>
+Please do not reply.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>`
+
+    const mailPromise = transporter.sendMail({
+      from: process.env.EMAIL_FROM || 'VYUGA Carnival <no-reply@vyuga.in>',
+      to: recipientEmail,
+      subject: `Official Certificate – VYUGA Ability Carnival 2026 (${recipientName})`,
+      html,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: LOGO_PATH,
+          cid: 'vyuga-logo',
+        },
+        {
+          filename: safeFilename,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        }
+      ]
+    })
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('SMTP email sending timed out after 45 seconds')), 45000)
+    })
+
+    await Promise.race([mailPromise, timeoutPromise])
+
+
+    return { success: true }
+  } catch (err) {
+    console.error('[mailer] Certificate email failed for:', recipientEmail, err.message)
+    return { success: false, error: err.message || 'SMTP Email Send Failed' }
+  }
+}
+
 module.exports = {
   sendInnovationCollegeConfirmation,
   sendInnovationPwdConfirmation,
@@ -740,6 +1196,9 @@ module.exports = {
   sendShortFilmConfirmation,
   sendStatusUpdateEmail,
   sendGSTInvoiceEmail,
+  generateCertificatePdf,
+  sendIndividualCertificateEmail,
   sendMail,
   transporter,
 }
+

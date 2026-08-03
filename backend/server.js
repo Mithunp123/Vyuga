@@ -22,8 +22,11 @@ const {
   sendChessConfirmation,
   sendShortFilmConfirmation,
   sendStatusUpdateEmail,
+  sendIndividualCertificateEmail,
+  generateCertificatePdf,
   transporter,
 } = require('./mailer')
+
 
 const crypto = require('crypto')
 const Razorpay = require('razorpay')
@@ -75,17 +78,21 @@ const ALLOWED_ORIGINS = process.env.CLIENT_ORIGIN
   ? process.env.CLIENT_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
   : ['*']
 
+const isLocalOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g. mobile apps, curl, Postman)
     if (!origin) return callback(null, true)
-    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(origin)) {
+    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(origin) || isLocalOrigin(origin)) {
       return callback(null, true)
     }
+    console.error(`[CORS] Rejected origin: ${origin}`)
     callback(new Error(`CORS: origin '${origin}' not allowed`))
   },
   credentials: true,
 }))
+
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true, limit: '1mb' }))
 // Serve uploaded files with permissive CORS for cross-origin frontend
@@ -1219,7 +1226,7 @@ app.post('/api/innovation-college', registrationLimiter, innovationUpload.fields
         registrationId: data?.id,
         eventType: 'innovation-college',
       })
-    } catch(confErr) { console.error('[innovation-college] email failed:', confErr.message) }
+    } catch (confErr) { console.error('[innovation-college] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-college', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1416,7 +1423,7 @@ app.post('/api/innovation-pwd', registrationLimiter, innovationUpload.fields([{ 
         registrationId: data?.id,
         eventType: 'innovation-pwd',
       })
-    } catch(confErr) { console.error('[innovation-pwd] email failed:', confErr.message) }
+    } catch (confErr) { console.error('[innovation-pwd] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/innovation-pwd', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1533,7 +1540,7 @@ app.post('/api/talent-org', registrationLimiter, async (req, res) => {
     }
 
     // Send confirmation email immediately
-    try { await sendTalentOrgConfirmation({ orgName: sanitizeText(orgName, 200), orgType: effectiveOrgType, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone }) } catch(confErr) { console.error('[talent-org] email failed:', confErr.message) }
+    try { await sendTalentOrgConfirmation({ orgName: sanitizeText(orgName, 200), orgType: effectiveOrgType, orgFocus, disabilityTypes, address, studentCount, contactName, contactEmail, contactPhone }) } catch (confErr) { console.error('[talent-org] email failed:', confErr.message) }
     res.status(201).json({ success: true, data, invoice_link: invoiceInfo.invoice.short_url, invoice_id: invoiceInfo.invoice.id, receipt_id: invoiceInfo.receiptId })
   } catch (err) {
     await logError({ source: 'user', endpoint: '/api/talent-org', method: 'POST', errorType: 'server_error', message: err.message, stack: err.stack, req })
@@ -1957,7 +1964,7 @@ app.post('/api/talent-combined', registrationLimiter, upload.single('performance
         registrationId: data?.id,
         eventType: 'talent-combined',
       })
-    } catch(confErr) { console.error('[talent-combined] email failed:', confErr.message) }
+    } catch (confErr) { console.error('[talent-combined] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
 
 
@@ -2076,7 +2083,7 @@ app.post('/api/shortfilm', registrationLimiter, async (req, res) => {
         registrationId: data?.id,
         eventType: 'shortfilm',
       })
-    } catch(confErr) { console.error('[shortfilm] email failed:', confErr.message) }
+    } catch (confErr) { console.error('[shortfilm] email failed:', confErr.message) }
     res.status(201).json({ success: true, data })
 
   } catch (err) {
@@ -2185,7 +2192,7 @@ app.post('/api/cricket', registrationLimiter, async (req, res) => {
     }
 
     // Send confirmation email
-    try { await sendCricketConfirmation({ teamName: sanitizeText(teamName, 100), city: sanitizeText(city, 100), state: sanitizeText(state, 100), playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone }) } catch(confErr) { console.error('[cricket] email failed:', confErr.message) }
+    try { await sendCricketConfirmation({ teamName: sanitizeText(teamName, 100), city: sanitizeText(city, 100), state: sanitizeText(state, 100), playerCount, hasPlayedBefore, additionalInfo, contactName, contactEmail, contactPhone }) } catch (confErr) { console.error('[cricket] email failed:', confErr.message) }
     res.status(201).json({
       success: true,
       data,
@@ -2304,7 +2311,7 @@ app.post('/api/chess', registrationLimiter, async (req, res) => {
       await logError({ source: 'user', endpoint: '/api/chess', method: 'POST', errorType: 'db_error', message: `payment insert failed: ${chessPaymentInsertError.message}`, req })
     }
     // Send confirmation email
-    try { await sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType: effectiveDisability, hasPlayedBefore, experienceLevel: effectiveExperience, additionalInfo }) } catch(confErr) { console.error('[chess] email failed:', confErr.message) }
+    try { await sendChessConfirmation({ participantName, email, phone, age, city, state, disabilityType: effectiveDisability, hasPlayedBefore, experienceLevel: effectiveExperience, additionalInfo }) } catch (confErr) { console.error('[chess] email failed:', confErr.message) }
     res.status(201).json({
       success: true,
       data,
@@ -2708,7 +2715,7 @@ app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
   }
 })
 
-// Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all innovation-college registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
+// ── Admin: all innovation-college registrations ─────────────────────────────
 app.get('/api/admin/innovation-college', requireAdmin, async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -2725,6 +2732,7 @@ app.get('/api/admin/innovation-college', requireAdmin, async (req, res) => {
     res.status(500).json({ success: false, message: err.message })
   }
 })
+
 
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all innovation-pwd registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/innovation-pwd', requireAdmin, async (req, res) => {
@@ -3317,7 +3325,6 @@ app.get('/api/admin/jury', requireAdmin, async (req, res) => {
     res.status(500).json({ success: false, message: err.message })
   }
 })
-
 // Create new Jury
 app.post('/api/admin/jury', requireAdmin, async (req, res) => {
   try {
@@ -3338,141 +3345,8 @@ app.post('/api/admin/jury', requireAdmin, async (req, res) => {
       .single()
 
     if (error) return res.status(500).json({ success: false, message: error.message })
+
     res.json({ success: true, data })
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
-  }
-})
-
-// Update Jury
-app.put('/api/admin/jury/:id', requireAdmin, async (req, res) => {
-  try {
-    const { id } = req.params
-    const { username, password, name, phone, organization, designation } = req.body
-    if (!username) return res.status(400).json({ success: false, message: 'Username is required' })
-
-    // Prepare update payload
-    let payload = {
-      username: username.trim(),
-      name: name ? name.trim() : null,
-      phone: phone ? phone.trim() : null,
-      organization: organization ? organization.trim() : null,
-      designation: designation ? designation.trim() : null
-    }
-
-    // Only update password if provided
-    if (password && password.trim() !== '') {
-      payload.password = password
-    }
-
-    const { data, error } = await supabase
-      .from('jury_users')
-      .update(payload)
-      .eq('id', id)
-      .select('id, username, name, phone, organization, designation, created_at')
-      .single()
-
-    if (error) return res.status(500).json({ success: false, message: error.message })
-    res.json({ success: true, data })
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
-  }
-})
-
-// Delete Jury
-app.delete('/api/admin/jury/:id', requireAdmin, async (req, res) => {
-  try {
-    const { id } = req.params
-    const { error } = await supabase
-      .from('jury_users')
-      .delete()
-      .eq('id', id)
-
-    if (error) return res.status(500).json({ success: false, message: error.message })
-    res.json({ success: true, message: 'Jury deleted' })
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
-  }
-})
-
-// Allocate Registrations to Jury
-app.post('/api/admin/jury/allocate', requireAdmin, async (req, res) => {
-  try {
-    const { juryId, eventType, count } = req.body
-    if (!juryId || !eventType || !count) return res.status(400).json({ success: false, message: 'Missing parameters' })
-
-    const meta = TABLE_MAP[eventType]
-    if (!meta) return res.status(400).json({ success: false, message: 'Unknown event type' })
-
-    // Find registrations of this event type that are NOT in jury_assignments for this event
-    const { data: unassigned, error: unassignedErr } = await supabase
-      .from(meta.table)
-      .select('id')
-      .order('submitted_at', { ascending: true }) // Oldest first
-
-    if (unassignedErr) return res.status(500).json({ success: false, message: unassignedErr.message })
-
-    // Get ALL existing assignments for this event type across all juries to filter them out
-    const { data: existingAssignments, error: existErr } = await supabase
-      .from('jury_assignments')
-      .select('registration_id')
-      .eq('event_type', eventType)
-
-    if (existErr) return res.status(500).json({ success: false, message: existErr.message })
-
-    const assignedIds = new Set(existingAssignments.map(a => a.registration_id))
-
-    // Filter unassigned
-    const availableToAssign = unassigned.filter(r => !assignedIds.has(r.id)).slice(0, parseInt(count, 10))
-
-    if (availableToAssign.length === 0) {
-      return res.status(400).json({ success: false, message: 'No more unassigned registrations available for this event.' })
-    }
-
-    // Insert into jury_assignments
-    const inserts = availableToAssign.map(r => ({
-      jury_id: juryId,
-      event_type: eventType,
-      registration_id: r.id
-    }))
-
-    const { error: insertErr } = await supabase
-      .from('jury_assignments')
-      .insert(inserts)
-
-    if (insertErr) return res.status(500).json({ success: false, message: insertErr.message })
-
-    res.json({ success: true, message: `Successfully allocated ${inserts.length} registrations.`, count: inserts.length })
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
-  }
-})
-
-// Î“Ã¶Ã‡Î“Ã¶Ã‡ Jury Routes Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
-
-// Jury Login
-app.post('/api/jury/login', loginLimiter, async (req, res) => {
-  try {
-    const { username, password } = req.body
-
-    const { data, error } = await supabase
-      .from('jury_users')
-      .select('id, username, password, name, phone, organization, designation')
-      .eq('username', username)
-      .single()
-
-    if (error || !data) return res.status(401).json({ success: false, message: 'Invalid credentials' })
-    if (data.password !== password) return res.status(401).json({ success: false, message: 'Invalid credentials' })
-
-    res.json({
-      success: true,
-      token: data.id,
-      username: data.username,
-      name: data.name,
-      phone: data.phone,
-      organization: data.organization,
-      designation: data.designation
-    })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
@@ -3482,75 +3356,13 @@ app.post('/api/jury/login', loginLimiter, async (req, res) => {
 function requireJury(req, res, next) {
   const token = req.headers['x-jury-token']
   if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' })
-  // In a real app we'd verify a JWT, but here token is just jury ID
   req.juryId = token
   next()
 }
 
-// Get Allocated Registrations for a Jury
-app.get('/api/jury/registrations', requireJury, async (req, res) => {
-  try {
-    const juryId = req.juryId
-
-    const { data: assignments, error } = await supabase
-      .from('jury_assignments')
-      .select('registration_id, event_type')
-      .eq('jury_id', juryId)
-
-    if (error) return res.status(500).json({ success: false, message: error.message })
-
-    // Fetch the actual registration data for these IDs
-    const results = []
-
-    // Group by event type to minimize queries
-    const grouped = assignments.reduce((acc, curr) => {
-      if (!acc[curr.event_type]) acc[curr.event_type] = []
-      acc[curr.event_type].push(curr.registration_id)
-      return acc
-    }, {})
-
-    // Also fetch evaluations by this jury so we know which ones are evaluated
-    const { data: evaluations, error: evalErr } = await supabase
-      .from('jury_evaluations')
-      .select('registration_id, score, comments')
-      .eq('jury_id', juryId)
-
-    if (evalErr) return res.status(500).json({ success: false, message: evalErr.message })
-
-    const evaluationMap = {}
-    evaluations.forEach(e => {
-      evaluationMap[e.registration_id] = { score: e.score, comments: e.comments }
-    })
-
-    for (const [eventType, ids] of Object.entries(grouped)) {
-      const meta = TABLE_MAP[eventType]
-      if (!meta) continue
-
-      const { data: recs, error: fetchErr } = await supabase
-        .from(meta.table)
-        .select('*')
-        .in('id', ids)
-
-      if (!fetchErr && recs) {
-        recs.forEach(r => {
-          results.push({
-            event_type: eventType,
-            event_label: meta.event,
-            registration: r,
-            evaluation: evaluationMap[r.id] || null
-          })
-        })
-      }
-    }
-
-    res.json({ success: true, data: results })
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
-  }
-})
-
 // Jury update status
 app.patch('/api/jury/status/:type/:id', requireJury, async (req, res) => {
+
   try {
     const { type, id } = req.params
     const { status } = req.body
@@ -3786,6 +3598,351 @@ app.delete('/api/dev/error-logs/:id', requireDevAuth, async (req, res) => {
     res.status(500).json({ success: false, message: err.message })
   }
 })
+
+// ── Admin: Certificate Management API Endpoints ───────────────────────────────
+
+const TAB_TABLE_MAP = {
+  'innovation-college': 'innovation_college_registrations',
+  'innovation-pwd': 'innovation_pwd_registrations',
+  'talent-student': 'talent_nominations',
+  'cricket': 'cricket_team_registrations',
+  'chess': 'blind_chess_registrations',
+  'shortfilm': 'shortfilm_registrations',
+}
+
+const TAB_EVENT_NAME_MAP = {
+  'innovation-college': 'Inclusive Innovation Fest',
+  'innovation-pwd': 'Inclusive Innovation Fest – By Specially Abled',
+  'talent-student': 'Special Talent Utsav',
+  'cricket': 'Blind Cricket Tournament',
+  'chess': 'Blind Chess Competition',
+  'shortfilm': 'Short Film Contest',
+}
+
+
+
+const inMemoryCertificateLogs = []
+
+async function saveCertificateLog(logEntry) {
+  inMemoryCertificateLogs.unshift({
+    ...logEntry,
+    created_at: logEntry.created_at || new Date().toISOString()
+  })
+  try {
+    const { error } = await supabase.from('certificate_logs').insert([logEntry])
+    if (error) {
+      console.warn('[server] DB certificate_logs insert error (saved to memory fallback):', error.message)
+    }
+  } catch (err) {
+    console.warn('[server] DB certificate_logs exception (saved to memory fallback):', err.message)
+  }
+}
+
+
+
+function extractRecipientsFromRecord(record, eventType) {
+  const recipients = []
+  const leaderName = record.leader_name || record.member1Name || record.contactName || record.contact_name || record.participantName || record.participant_name || record.studentName || record.student_name || record.directorName || record.director_name || 'Participant'
+  const leaderEmail = record.email || record.member1Email || record.contactEmail || record.contact_email || record.guardianEmail || record.guardian_email
+  const teamName = record.teamName || record.team_name || record.orgName || record.org_name || record.filmTitle || record.film_title || ''
+  const collegeName = record.collegeName || record.college_name || record.college || record.school || ''
+  const ideaTitle = record.ideaTitle || record.idea_title || record.talentCategory || record.talent_category || record.filmTitle || record.film_title || ''
+
+  if (leaderEmail && typeof leaderEmail === 'string' && leaderEmail.includes('@')) {
+    recipients.push({
+      recipientName: leaderName,
+      recipientEmail: leaderEmail,
+      recipientRole: 'Team Leader',
+      teamName,
+      collegeName,
+      ideaTitle,
+      registrationId: record.id || record.registrationId || record.registration_id
+    })
+  }
+
+  let members = record.members
+  if (typeof members === 'string') {
+    try { members = JSON.parse(members) } catch (_) { members = [] }
+  }
+
+  if (Array.isArray(members)) {
+    members.forEach((m, idx) => {
+      const name = m.name || m.member_name || `Member ${idx + 2}`
+      const email = m.email || m.member_email
+      if (email && typeof email === 'string' && email.includes('@') && email !== leaderEmail) {
+        recipients.push({
+          recipientName: name,
+          recipientEmail: email,
+          recipientRole: 'Team Member',
+          teamName,
+          collegeName,
+          ideaTitle,
+          registrationId: record.id || record.registrationId || record.registration_id
+        })
+      }
+    })
+  }
+
+  return recipients
+}
+
+app.post('/api/admin/send-certificate/individual', requireAdmin, async (req, res) => {
+  try {
+    const {
+      registrationId,
+      eventType = 'innovation-college',
+      recipientName,
+      recipientEmail,
+      recipientRole = 'Member',
+      teamName = '',
+      collegeName = '',
+      ideaTitle = '',
+      positionTitle = 'Selected Project'
+    } = req.body
+
+    if (!recipientEmail || !recipientName) {
+      return res.status(400).json({ success: false, message: 'Recipient name and valid email are required' })
+    }
+
+    const eventName = TAB_EVENT_NAME_MAP[eventType] || 'VYUGA Ability Carnival 2026'
+
+    const result = await sendIndividualCertificateEmail({
+      recipientEmail,
+      recipientName,
+      recipientRole,
+      teamName,
+      collegeName,
+      eventName,
+      ideaTitle,
+      positionTitle
+    })
+
+    const logEntry = {
+      registration_id: registrationId || 'MANUAL',
+      event_type: eventType,
+      team_name: teamName,
+      recipient_name: recipientName,
+      recipient_email: recipientEmail,
+      recipient_role: recipientRole,
+      position_title: positionTitle,
+      status: result.success ? 'sent' : 'failed',
+      error_message: result.error || null,
+      sent_at: result.success ? new Date().toISOString() : null
+    }
+
+    try { await supabase.from('certificate_logs').insert([logEntry]) } catch (dbErr) { }
+
+    const tableName = TAB_TABLE_MAP[eventType]
+    if (tableName && registrationId && result.success) {
+      try { await supabase.from(tableName).update({ certificate_sent: true, certificate_sent_at: new Date().toISOString() }).eq('id', registrationId) } catch (_) { }
+    }
+
+    if (!result.success) {
+      return res.status(500).json({ success: false, message: result.error || 'Failed to send certificate', log: logEntry })
+    }
+
+    res.json({ success: true, message: `Certificate email sent to ${recipientName} (${recipientEmail})`, log: logEntry })
+  } catch (err) {
+    console.error('[server] Individual certificate error:', err)
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// ── Admin: Preview Certificate PDF ───────────────────────────────────────────
+app.post('/api/admin/preview-certificate', requireAdmin, async (req, res) => {
+  try {
+    const { recipientName, tabId, positionTitle = 'Selected Project' } = req.body
+    const eventName = TAB_EVENT_NAME_MAP[tabId] || 'Inclusive Innovation Fest'
+    const pdfBuffer = await generateCertificatePdf({
+      recipientName: recipientName || 'Participant Name',
+      positionTitle,
+      eventName
+    })
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `inline; filename="Certificate_Preview_${(recipientName || 'Participant').replace(/[^a-zA-Z0-9]/g, '_')}.pdf"`)
+    res.send(pdfBuffer)
+  } catch (err) {
+    console.error('[server] Preview certificate error:', err)
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+
+app.post('/api/admin/send-certificate/team/:tabId/:id', requireAdmin, async (req, res) => {
+
+  try {
+    const { tabId, id } = req.params
+    const { positionTitle = 'Selected Project' } = req.body
+    const tableName = TAB_TABLE_MAP[tabId] || 'innovation_college_registrations'
+
+    const { data } = await supabase.from(tableName).select('*').eq('id', id).single()
+    const record = data
+
+    if (!record) {
+      return res.status(404).json({ success: false, message: 'Registration record not found' })
+    }
+
+
+    const recipients = extractRecipientsFromRecord(record, tabId)
+    if (!recipients.length) {
+      return res.status(400).json({ success: false, message: 'No valid recipient email addresses found for this team' })
+    }
+
+    const eventName = TAB_EVENT_NAME_MAP[tabId] || 'VYUGA Ability Carnival 2026'
+    // Process all team member certificates concurrently for faster execution
+    const results = await Promise.all(recipients.map(async (r) => {
+      const sendRes = await sendIndividualCertificateEmail({
+        recipientEmail: r.recipientEmail,
+        recipientName: r.recipientName,
+        recipientRole: r.recipientRole,
+        teamName: r.teamName,
+        collegeName: r.collegeName,
+        eventName,
+        ideaTitle: r.ideaTitle,
+        positionTitle
+      })
+
+      const logEntry = {
+        registration_id: id,
+        event_type: tabId,
+        team_name: r.teamName,
+        recipient_name: r.recipientName,
+        recipient_email: r.recipientEmail,
+        recipient_role: r.recipientRole,
+        position_title: positionTitle,
+        status: sendRes.success ? 'sent' : 'failed',
+        error_message: sendRes.error || null,
+        sent_at: sendRes.success ? new Date().toISOString() : null
+      }
+
+      await saveCertificateLog(logEntry)
+      return { ...r, status: sendRes.success ? 'sent' : 'failed', error: sendRes.error }
+    }))
+
+    const sentCount = results.filter(r => r.status === 'sent').length
+    const failedCount = results.filter(r => r.status === 'failed').length
+
+    if (sentCount > 0) {
+      try { await supabase.from(tableName).update({ certificate_sent: true, certificate_sent_at: new Date().toISOString() }).eq('id', id) } catch (_) { }
+    }
+
+    res.json({
+      success: true,
+      message: `Processed ${recipients.length} certificates: ${sentCount} sent, ${failedCount} failed`,
+      totalCount: recipients.length,
+      sentCount,
+      failedCount,
+      results
+    })
+  } catch (err) {
+    console.error('[server] Team certificate trigger error:', err)
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+app.post('/api/admin/send-certificates-bulk/:tabId', requireAdmin, async (req, res) => {
+  try {
+    const { tabId } = req.params
+    const { positionTitle = 'Selected Project' } = req.body
+    const tableName = TAB_TABLE_MAP[tabId] || 'innovation_college_registrations'
+
+    const { data: records, error } = await supabase.from(tableName).select('*').eq('status', 'selected')
+
+    if (error) {
+      return res.status(500).json({ success: false, message: error.message })
+    }
+
+    if (!records || !records.length) {
+      return res.status(400).json({ success: false, message: 'No selected teams found for this event' })
+    }
+
+    const eventName = TAB_EVENT_NAME_MAP[tabId] || 'VYUGA Ability Carnival 2026'
+    let totalSent = 0
+    let totalFailed = 0
+    const allResults = []
+
+    for (const record of records) {
+      const recipients = extractRecipientsFromRecord(record, tabId)
+      for (const r of recipients) {
+        const sendRes = await sendIndividualCertificateEmail({
+          recipientEmail: r.recipientEmail,
+          recipientName: r.recipientName,
+          recipientRole: r.recipientRole,
+          teamName: r.teamName,
+          collegeName: r.collegeName,
+          eventName,
+          ideaTitle: r.ideaTitle,
+          positionTitle
+        })
+
+        const logEntry = {
+          registration_id: record.id,
+          event_type: tabId,
+          team_name: r.teamName,
+          recipient_name: r.recipientName,
+          recipient_email: r.recipientEmail,
+          recipient_role: r.recipientRole,
+          position_title: positionTitle,
+          status: sendRes.success ? 'sent' : 'failed',
+          error_message: sendRes.error || null,
+          sent_at: sendRes.success ? new Date().toISOString() : null
+        }
+
+        await saveCertificateLog(logEntry)
+
+        if (sendRes.success) { totalSent++ } else { totalFailed++ }
+        allResults.push({ ...r, status: sendRes.success ? 'sent' : 'failed', error: sendRes.error })
+      }
+
+      try { await supabase.from(tableName).update({ certificate_sent: true, certificate_sent_at: new Date().toISOString() }).eq('id', record.id) } catch (_) { }
+    }
+
+    res.json({
+      success: true,
+      message: `Bulk certificates completed: ${totalSent} sent, ${totalFailed} failed across ${records.length} teams`,
+      totalTeams: records.length,
+      totalRecipients: allResults.length,
+      totalSent,
+      totalFailed,
+      results: allResults
+    })
+  } catch (err) {
+    console.error('[server] Bulk certificate trigger error:', err)
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+app.get('/api/admin/certificate-logs/:tabId', requireAdmin, async (req, res) => {
+  try {
+    const { tabId } = req.params
+    let dbLogs = []
+    try {
+      let query = supabase
+        .from('certificate_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (tabId !== 'all') {
+        query = query.eq('event_type', tabId)
+      }
+
+      const { data } = await query
+      if (data) dbLogs = data
+    } catch (_) { }
+
+    const memLogs = tabId === 'all'
+      ? inMemoryCertificateLogs
+      : inMemoryCertificateLogs.filter(l => l.event_type === tabId)
+    const combined = [...memLogs, ...dbLogs]
+
+    res.json({ success: true, logs: combined })
+  } catch (err) {
+    res.json({ success: true, logs: inMemoryCertificateLogs.filter(l => l.event_type === req.params.tabId) })
+  }
+})
+
+
+
 
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Global error handler Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.use(async (err, req, res, next) => {

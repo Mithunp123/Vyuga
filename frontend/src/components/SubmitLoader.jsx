@@ -10,7 +10,7 @@ import a from '../assets/logo/5.png'
 const letters = [v, y, u, g, a]
 const labels = ['V', 'Y', 'U', 'G', 'A']
 
-const messages = [
+const defaultMessages = [
   'Preparing your submission…',
   'Almost there…',
   'Validating your details…',
@@ -18,18 +18,19 @@ const messages = [
   'Hang tight…',
 ]
 
-export default function SubmitLoader({ visible }) {
+export default function SubmitLoader({ visible, customMessages }) {
   const [msgIdx, setMsgIdx] = useState(0)
   const [dots, setDots] = useState('')
+  const activeMessages = customMessages || defaultMessages
 
   useEffect(() => {
     if (!visible) return
     setMsgIdx(0)
     setDots('')
-    const msgTimer = setInterval(() => setMsgIdx(i => (i + 1) % messages.length), 2800)
+    const msgTimer = setInterval(() => setMsgIdx(i => (i + 1) % activeMessages.length), 2800)
     const dotTimer = setInterval(() => setDots(d => (d.length >= 3 ? '' : d + '.')), 500)
     return () => { clearInterval(msgTimer); clearInterval(dotTimer) }
-  }, [visible])
+  }, [visible, activeMessages])
 
   if (!visible) return null
 
@@ -58,7 +59,7 @@ export default function SubmitLoader({ visible }) {
         </div>
 
         {/* Rotating message */}
-        <p className="submit-loader-msg">{messages[msgIdx]}{dots}</p>
+        <p className="submit-loader-msg">{activeMessages[msgIdx]}{dots}</p>
       </div>
     </div>,
     document.body

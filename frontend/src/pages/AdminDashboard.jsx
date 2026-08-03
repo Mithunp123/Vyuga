@@ -8,6 +8,7 @@ import AdminSettingsView from '../components/AdminSettingsView.jsx'
 import AdminGalleryView from '../components/AdminGalleryView.jsx'
 import AdminPaymentsView from '../components/AdminPaymentsView.jsx'
 import AdminJuryView from '../components/AdminJuryView.jsx'
+import AdminCertificateView from '../components/AdminCertificateView.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -24,6 +25,7 @@ const TABS = [
   { id: 'settings',           label: 'Form Controls',                 endpoint: null },
   { id: 'gallery',            label: 'Gallery',                       endpoint: null },
   { id: 'jury',               label: 'Jury Management',               endpoint: null },
+  { id: 'certificate-management', label: 'Certificate Management',    endpoint: null },
 ]
 
 const STATUS_CFG = {
@@ -34,17 +36,20 @@ const STATUS_CFG = {
 }
 
 // ── Column definitions per tab ────────────────────────────────────────────────
+const INNOVATION_COLLEGE_COLS = [
+  { key: 'reg_id',        label: 'Reg ID',    fmt: (v) => v ? <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0197B2', background: '#e0f6fa', borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>{v}</span> : <span style={{ color: '#94a3b8' }}>—</span> },
+  { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
+  { key: 'team_name',     label: 'Team Name' },
+  { key: 'college_name',  label: 'College' },
+  { key: 'theme',         label: 'Theme' },
+  { key: 'leader_email',  label: 'Email' },
+  { key: 'leader_phone',  label: 'Phone' },
+  { key: 'payment_status',label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
+]
+
 const COLUMNS = {
-  'innovation-college': [
-    { key: 'reg_id',        label: 'Reg ID',    fmt: (v) => v ? <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0197B2', background: '#e0f6fa', borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>{v}</span> : <span style={{ color: '#94a3b8' }}>—</span> },
-    { key: 'submitted_at',  label: 'Date',      fmt: fmtDate },
-    { key: 'team_name',     label: 'Team Name' },
-    { key: 'college_name',  label: 'College' },
-    { key: 'theme',         label: 'Theme' },
-    { key: 'leader_email',  label: 'Email' },
-    { key: 'leader_phone',  label: 'Phone' },
-    { key: 'payment_status',label: 'Payment',   fmt: (v) => <PaymentBadge status={v} /> },
-  ],
+  'innovation-college': INNOVATION_COLLEGE_COLS,
+
   'innovation-pwd': [
     { key: 'id',                 label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
     { key: 'submitted_at',       label: 'Date',      fmt: fmtDate },
@@ -348,8 +353,111 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
   const [editData, setEditData] = useState({})
   const [editSaving, setEditSaving] = useState(false)
   const [editMsg, setEditMsg] = useState('')
+  const [certPosition, setCertPosition] = useState('')
+  const [certSendingRecipient, setCertSendingRecipient] = useState(null)
+  const [teamCertSending, setTeamCertSending] = useState(false)
+  const [previewingName, setPreviewingName] = useState(null)
+  const [certCustomNames, setCertCustomNames] = useState({})
+  const [editingCertNameKey, setEditingCertNameKey] = useState(null)
+
+  const previewCertificate = async (name, role) => {
+    if (!certPosition || !['Winner', 'Runner Up', '2nd Runner Up', 'Finalist'].includes(certPosition)) {
+      alert("❌ Please select a valid Position/Award before generating.")
+      return
+    }
+    setPreviewingName(name)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/preview-certificate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({
+          recipientName: name,
+          tabId,
+          positionTitle: certPosition
+        })
+      })
+
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => null)
+        throw new Error((errorJson && errorJson.message) || `HTTP Error ${res.status}`)
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+    } catch (err) {
+      alert('❌ Preview Error: ' + err.message)
+    } finally {
+      setPreviewingName(null)
+    }
+  }
+
+
+
+  const sendIndividualCert = async (name, email, role) => {
+    if (!certPosition || !['Winner', 'Runner Up', '2nd Runner Up', 'Finalist'].includes(certPosition)) {
+      alert("❌ Please select a valid Position/Award before generating.")
+      return
+    }
+
+    if (!email) {
+      alert("❌ No email address found for this participant.")
+      return
+    }
+    setCertSendingRecipient(email)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/send-certificate/individual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({
+          registrationId: row.id,
+          eventType: tabId,
+          recipientName: name,
+          recipientEmail: email,
+          recipientRole: role,
+          teamName: row.team_name || row.teamName || row.orgName || '',
+          collegeName: row.college_name || row.collegeName || row.college || '',
+          ideaTitle: row.idea_title || row.ideaTitle || '',
+          positionTitle: certPosition
+        })
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      alert(`✅ Certificate sent successfully to ${name} (${email})`)
+      row.certificate_sent = true
+    } catch (err) {
+      alert('❌ Certificate Email Error: ' + err.message)
+    } finally {
+      setCertSendingRecipient(null)
+    }
+  }
+
+  const sendTeamCerts = async () => {
+    if (!certPosition || !['Winner', 'Runner Up', '2nd Runner Up', 'Finalist'].includes(certPosition)) {
+      alert("❌ Please select a valid Position/Award before generating.")
+      return
+    }
+    if (!window.confirm(`Send certificates to ALL members of team "${row.team_name || row.teamName || 'this team'}"?`)) return
+    setTeamCertSending(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/send-certificate/team/${tabId}/${row.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ positionTitle: certPosition })
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      alert(`✅ ${json.message}`)
+      row.certificate_sent = true
+    } catch (err) {
+      alert('❌ Team Certificate Error: ' + err.message)
+    } finally {
+      setTeamCertSending(false)
+    }
+  }
 
   const EDIT_BLOCKED = new Set([
+
     'id', 'submitted_at', 'registered_at', 'created_at',
     'payment_status', 'invoice_link', 'razorpay_order_id',
     'razorpay_payment_id', 'amount_paise', 'paid_at',
@@ -453,7 +561,15 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
 
   return (
     <>
-      <SubmitLoader visible={saving || editSaving} />
+      <SubmitLoader 
+        visible={saving || editSaving || triggering || !!certSendingRecipient || teamCertSending || !!previewingName}
+        customMessages={
+          !!previewingName ? ['Generating high-resolution PDF...', 'Adding certificate details...', 'Almost ready...'] :
+          (!!certSendingRecipient || teamCertSending) ? ['Generating certificate(s)...', 'Preparing email...', 'Connecting to mail server...', 'Dispatching securely...'] :
+          triggering ? ['Sending status email...', 'Connecting to server...'] :
+          null
+        }
+      />
 
       {/* Edit Application banner */}
       <div className="flex items-center justify-between px-6 pt-5 pb-2">
@@ -1014,13 +1130,323 @@ function ExpandedPanel({ row, tabId, token, onStatusChange, onClose, onRowUpdate
           </div>
         </div>
       )}
-      </div>
 
-    </>
+      {/* ── Certificate Dispatch & Individual Triggers ── */}
+      <div className="mt-5 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <p className="text-sm font-bold tracking-wider uppercase flex items-center gap-2" style={{ color: '#0197B2' }}>
+              Certificates
+            </p>
+            
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-slate-700">Position / Award:</span>
+            <select
+              value={certPosition}
+              onChange={(e) => setCertPosition(e.target.value)}
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-800 bg-white shadow-sm focus:outline-none focus:border-cyan-500 cursor-pointer"
+            >
+              <option value="">Select Position...</option>
+              <option value="Winner">🏆 Winner</option>
+              <option value="Runner Up">🥈 Runner Up</option>
+              <option value="2nd Runner Up">🥉 2nd Runner Up</option>
+              <option value="Finalist">🌟 Finalist</option>
+            </select>
+          </div>
+        </div>
+
+
+        {/* Team Members Overview List */}
+        <div className="space-y-2.5 mb-4">
+          {/* Leader */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-cyan-100 text-cyan-800 border border-cyan-300">Team Leader</span>
+              <div>
+                {editingCertNameKey === 'leader' ? (
+                  <input
+                    type="text"
+                    value={certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader')}
+                    onChange={(e) => setCertCustomNames({ ...certCustomNames, leader: e.target.value })}
+                    onBlur={() => setEditingCertNameKey(null)}
+                    onKeyDown={(e) => e.key === 'Enter' && setEditingCertNameKey(null)}
+                    autoFocus
+                    className="text-sm font-bold text-slate-800 border-b border-cyan-400 focus:outline-none bg-transparent w-48"
+                  />
+                ) : (
+                  <p className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    {certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader')}
+                    <button onClick={() => setEditingCertNameKey('leader')} className="text-slate-400 hover:text-cyan-600" title="Edit Name for Certificate">
+                      ✏️
+                    </button>
+                  </p>
+                )}
+                <p className="text-xs text-slate-500">{row.email || row.member1Email || row.contactEmail || row.guardianEmail || 'No Email'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => previewCertificate(
+                  certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader'),
+                  'Team Leader'
+                )}
+                disabled={previewingName === (certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader'))}
+                className="px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:text-cyan-800 bg-white hover:bg-cyan-50 border border-slate-300 hover:border-cyan-400 rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                {previewingName === (certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader')) ? 'Generating...' : 'Preview 📄'}
+              </button>
+              <button
+                onClick={() => sendIndividualCert(
+                  certCustomNames['leader'] !== undefined ? certCustomNames['leader'] : (row.leader_name || row.member1Name || row.contactName || row.studentName || row.name || 'Leader'),
+                  row.email || row.member1Email || row.contactEmail || row.guardianEmail,
+                  'Team Leader'
+                )}
+                disabled={certSendingRecipient === (row.email || row.member1Email || row.contactEmail || row.guardianEmail)}
+                className="px-3.5 py-1.5 text-xs font-bold text-white bg-[#0197B2] hover:bg-[#017a94] rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                {certSendingRecipient === (row.email || row.member1Email || row.contactEmail || row.guardianEmail) ? 'Sending...' : 'Send ✉️'}
+              </button>
+            </div>
+          </div>
+
+          {/* Members Array */}
+          {(() => {
+            let membersList = row.members
+            if (typeof membersList === 'string') {
+              try { membersList = JSON.parse(membersList) } catch (_) { membersList = [] }
+            }
+            if (!Array.isArray(membersList) || !membersList.length) return null
+            return membersList.map((m, idx) => {
+              const memberName = m.name || m.member_name || `Member ${idx + 2}`
+              return (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-emerald-100 text-emerald-800 border border-emerald-300">Member {idx + 2}</span>
+                    <div>
+                      {editingCertNameKey === `member_${idx}` ? (
+                        <input
+                          type="text"
+                          value={certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName}
+                          onChange={(e) => setCertCustomNames({ ...certCustomNames, [`member_${idx}`]: e.target.value })}
+                          onBlur={() => setEditingCertNameKey(null)}
+                          onKeyDown={(e) => e.key === 'Enter' && setEditingCertNameKey(null)}
+                          autoFocus
+                          className="text-sm font-bold text-slate-800 border-b border-cyan-400 focus:outline-none bg-transparent w-48"
+                        />
+                      ) : (
+                        <p className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                          {certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName}
+                          <button onClick={() => setEditingCertNameKey(`member_${idx}`)} className="text-slate-400 hover:text-cyan-600" title="Edit Name for Certificate">
+                            ✏️
+                          </button>
+                        </p>
+                      )}
+                      <p className="text-xs text-slate-500">{m.email || m.member_email || 'No Email'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => previewCertificate(certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName, 'Team Member')}
+                      disabled={previewingName === (certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName)}
+                      className="px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:text-cyan-800 bg-white hover:bg-cyan-50 border border-slate-300 hover:border-cyan-400 rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                    >
+                      {previewingName === (certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName) ? 'Generating...' : 'Preview 📄'}
+                    </button>
+                    <button
+                      onClick={() => sendIndividualCert(
+                        certCustomNames[`member_${idx}`] !== undefined ? certCustomNames[`member_${idx}`] : memberName,
+                        m.email || m.member_email,
+                        'Team Member'
+                      )}
+                      disabled={certSendingRecipient === (m.email || m.member_email)}
+                      className="px-3.5 py-1.5 text-xs font-bold text-white bg-[#0197B2] hover:bg-[#017a94] rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                    >
+                      {certSendingRecipient === (m.email || m.member_email) ? 'Sending...' : 'Send ✉️'}
+                    </button>
+                  </div>
+                </div>
+              )
+            })
+          })()}
+        </div>
+
+
+        {/* Team-wide Trigger Button */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-200">
+          <span className="text-xs text-slate-600 font-medium"></span>
+          <button
+            onClick={sendTeamCerts}
+            disabled={teamCertSending}
+            className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white rounded-xl transition disabled:opacity-60 shadow-sm flex items-center justify-center gap-2"
+            style={{ backgroundColor: '#0197B2' }}
+          >
+            {teamCertSending ? 'Dispatching Team Certificates...' : '🎓 Send Certificates to Entire Team'}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </>
+)
+}
+
+
+
+// ── Certificate Delivery Logs Modal ──────────────────────────────────────────
+
+function CertificateLogsModal({ isOpen, onClose, tabId, token }) {
+  const [logs, setLogs] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [retryingEmail, setRetryingEmail] = useState(null)
+
+  const fetchLogs = useCallback(async () => {
+    if (!isOpen || !tabId) return
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/certificate-logs/${tabId}`, {
+        headers: { 'x-admin-token': token }
+      })
+      const json = await res.json()
+      if (json.success) setLogs(json.logs || [])
+    } catch (e) {
+      console.error('Failed to fetch certificate logs:', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [isOpen, tabId, token])
+
+  useEffect(() => {
+    fetchLogs()
+  }, [fetchLogs])
+
+  const retryCert = async (log) => {
+    setRetryingEmail(log.recipient_email)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/send-certificate/individual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({
+          registrationId: log.registration_id,
+          eventType: log.event_type,
+          recipientName: log.recipient_name,
+          recipientEmail: log.recipient_email,
+          recipientRole: log.recipient_role,
+          teamName: log.team_name,
+          positionTitle: log.position_title || 'Selected Project'
+        })
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      alert(`✅ Certificate resent to ${log.recipient_name}`)
+      fetchLogs()
+    } catch (err) {
+      alert('❌ Retry error: ' + err.message)
+    } finally {
+      setRetryingEmail(null)
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl shadow-2xl border-2 border-slate-200 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between" style={{ background: 'linear-gradient(90deg, #e0f6fa, #e8f9de)' }}>
+          <div>
+            <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+              🎓 Certificate Delivery Logs & Error Report
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Audit status for individual certificate dispatches ({logs.length} entries)
+            </p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-800 rounded-full hover:bg-white/80 transition">
+            ✕
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+          {loading ? (
+            <div className="text-center py-12 text-slate-500 font-medium">Loading delivery logs...</div>
+          ) : !logs.length ? (
+            <div className="text-center py-12 text-slate-400">No certificate dispatch logs found for this event yet.</div>
+          ) : (
+            <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="p-3">Recipient</th>
+                    <th className="p-3">Role</th>
+                    <th className="p-3">Team</th>
+                    <th className="p-3">Position</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Details / Error</th>
+                    <th className="p-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {logs.map((l) => (
+                    <tr key={l.id || l.recipient_email + l.created_at} className="hover:bg-slate-50/80">
+                      <td className="p-3">
+                        <div className="font-bold text-slate-800">{l.recipient_name}</div>
+                        <div className="text-[11px] text-slate-500">{l.recipient_email}</div>
+                      </td>
+                      <td className="p-3">
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${l.recipient_role === 'Team Leader' ? 'bg-cyan-100 text-cyan-800' : 'bg-slate-100 text-slate-700'}`}>
+                          {l.recipient_role}
+                        </span>
+                      </td>
+                      <td className="p-3 font-medium text-slate-700">{l.team_name || '—'}</td>
+                      <td className="p-3 font-semibold text-cyan-700">{l.position_title || 'Selected Project'}</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full ${l.status === 'sent' ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-red-100 text-red-700 border border-red-300'}`}>
+                          {l.status === 'sent' ? 'Sent 🟢' : 'Failed 🔴'}
+                        </span>
+                      </td>
+                      <td className="p-3 max-w-[200px]">
+                        {l.error_message ? (
+                          <span className="text-red-600 font-mono text-[11px] break-words" title={l.error_message}>
+                            {l.error_message}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">
+                            {l.sent_at ? new Date(l.sent_at).toLocaleString() : 'Sent'}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right">
+                        <button
+                          onClick={() => retryCert(l)}
+                          disabled={retryingEmail === l.recipient_email}
+                          className="px-2.5 py-1 text-[11px] font-bold text-cyan-700 bg-cyan-50 border border-cyan-200 rounded-lg hover:bg-cyan-100 transition disabled:opacity-50"
+                        >
+                          {retryingEmail === l.recipient_email ? 'Resending...' : 'Retry 🔄'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+          <button onClick={fetchLogs} className="text-xs font-bold text-cyan-700 hover:underline flex items-center gap-1">
+            🔄 Refresh Logs
+          </button>
+          <button onClick={onClose} className="px-5 py-2 text-xs font-bold text-slate-700 bg-slate-200 rounded-xl hover:bg-slate-300 transition">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
 // ── Main dashboard ────────────────────────────────────────────────────────────
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(null) // null = stats overview
   const [data, setData] = useState({})
@@ -1032,7 +1458,10 @@ export default function AdminDashboard() {
   const [expandedRow, setExpandedRow] = useState(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [logsModalOpen, setLogsModalOpen] = useState(false)
+  const [bulkCertSending, setBulkCertSending] = useState(false)
   const navigate = useNavigate()
+
 
   const token = sessionStorage.getItem('vyuga_admin_token')
 
@@ -1175,6 +1604,31 @@ export default function AdminDashboard() {
       setBulkTriggering(false)
     }
   }
+
+  const triggerBulkCertificates = async () => {
+    if (!window.confirm(`Are you sure you want to generate & email individual certificates to ALL SELECTED teams and members in "${TABS.find(t=>t.id === activeTab)?.label}"?`)) return
+
+    const pos = prompt("Enter Position/Award Title for these certificates:", "Selected Project")
+    if (pos === null) return
+
+    setBulkCertSending(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/send-certificates-bulk/${activeTab}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ positionTitle: pos || 'Selected Project' })
+      })
+      const json = await res.json()
+      if (!json.success) throw new Error(json.message)
+      alert(`✅ ${json.message}`)
+      await fetchData(activeTab)
+    } catch (err) {
+      alert('❌ Bulk Certificate Error: ' + err.message)
+    } finally {
+      setBulkCertSending(false)
+    }
+  }
+
 
   const logout = () => {
     sessionStorage.removeItem('vyuga_admin_token')
@@ -1451,14 +1905,24 @@ export default function AdminDashboard() {
                       )}
                     </div>
                     {activeTab !== 'payments' && activeTab !== 'settings' && activeTab !== 'gallery' && activeTab !== 'jury' && activeTab !== 'accommodation' && activeTab !== 'sponsors' && (
-                      <button 
-                        onClick={triggerBulkEmailAll}
-                        disabled={bulkTriggering}
-                        className="inline-flex items-center gap-2 rounded-xl bg-[#0197B2] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#017a94] disabled:opacity-50"
-                      >
-                        {bulkTriggering ? 'Sending...' : 'Bulk Trigger Status Emails'} 
-                      </button>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <button 
+                          onClick={triggerBulkEmailAll}
+                          disabled={bulkTriggering}
+                          className="inline-flex items-center gap-2 rounded-xl bg-[#0197B2] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#017a94] disabled:opacity-50"
+                        >
+                          {bulkTriggering ? 'Sending Status...' : 'Bulk Status Emails'} 
+                        </button>
+
+                        <button 
+                          onClick={() => setLogsModalOpen(true)}
+                          className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-slate-700"
+                        >
+                          📋 Certificate Logs
+                        </button>
+                      </div>
                     )}
+
                   </div>
                 </div>
             </div>
@@ -1478,6 +1942,8 @@ export default function AdminDashboard() {
               <AdminPaymentsView token={token} />
             ) : activeTab === 'jury' ? (
               <AdminJuryView token={token} />
+            ) : activeTab === 'certificate-management' ? (
+              <AdminCertificateView token={token} />
             ) : (
              <>
             {/* Status summary pills (hidden for org tab) */}
@@ -1727,14 +2193,25 @@ export default function AdminDashboard() {
                 )
               })()}
             </AnimatePresence>
-           </>
-           )}
-
-          </div>
-        </>
-      )}
-      </main>
+          </>
+        )}
       </div>
-    </div>
-  )
+    </>
+  )}
+
+  {/* Certificate Logs Modal */}
+  <CertificateLogsModal
+    isOpen={logsModalOpen}
+    onClose={() => setLogsModalOpen(false)}
+    tabId={activeTab}
+    token={token}
+  />
+  </main>
+  </div>
+</div>
+)
 }
+
+
+
+

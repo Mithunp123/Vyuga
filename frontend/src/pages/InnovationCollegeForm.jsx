@@ -106,7 +106,7 @@ export default function InnovationCollegeForm() {
 
   return (
     <PageShell
-      title="Inclusive Innovation Fest – For Specially Abled"
+      title="Inclusive Innovation Fest"
       subtitle="College students: register your 3-member team and choose a theme."
     >
       <SuccessModal
@@ -136,9 +136,9 @@ export default function InnovationCollegeForm() {
             <h3 className="font-display text-base font-bold text-slate-800">Presentation Template</h3>
             <p className="text-sm text-slate-600 mt-1">Please use this official template to prepare your presentation.</p>
           </div>
-          <a 
-            href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`} 
-            download 
+          <a
+            href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`}
+            download
             className="flex-shrink-0 inline-flex items-center gap-2 rounded-xl bg-[#0197B2] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-[#01788e] hover:shadow-lg"
           >
             📥 Download
@@ -281,7 +281,7 @@ export default function InnovationCollegeForm() {
               Remove image
             </button>
           )}
-          
+
           <div className="mt-4">
             <label className="mb-2 block text-sm font-medium text-slate-600">
               Prototype URL <span className="text-slate-400 font-normal text-xs">(Optional)</span>
@@ -301,9 +301,9 @@ export default function InnovationCollegeForm() {
         <div>
           <h2 className="mb-4 font-display text-base font-bold text-slate-800 border-b border-slate-100 pb-2 flex justify-between items-center">
             <span>Upload Presentation <span className="text-red-500">*</span></span>
-            <a 
-              href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`} 
-              download 
+            <a
+              href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/assets/Vyuga%20Template.pptx`}
+              download
               className="text-xs font-bold text-[#0197B2] hover:underline"
             >
               Download Template
@@ -334,7 +334,7 @@ export default function InnovationCollegeForm() {
           <div className="mt-2 flex items-start gap-2 rounded-lg bg-orange-50 p-3 border border-orange-200 shadow-sm">
             <AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
             <p className="text-xs font-medium text-orange-700 leading-relaxed">
-              <strong className="font-bold uppercase tracking-wider text-[10px] mr-1 opacity-90 text-orange-800 block mb-0.5">Note:</strong> 
+              <strong className="font-bold uppercase tracking-wider text-[10px] mr-1 opacity-90 text-orange-800 block mb-0.5">Note:</strong>
               Your presentation must strictly follow the provided template format.
             </p>
           </div>
@@ -365,7 +365,7 @@ export default function InnovationCollegeForm() {
           </button>
           <ApplicationStatusModal
             eventType="innovation-college"
-            label="Inclusive Innovation Fest – For Specially Abled"
+            label="Inclusive Innovation Fest"
           />
         </div>
       </motion.form>
