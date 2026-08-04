@@ -84,13 +84,16 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g. mobile apps, curl, Postman)
     if (!origin) return callback(null, true)
-    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(origin) || isLocalOrigin(origin)) {
+    const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(normalizedOrigin) || isLocalOrigin(normalizedOrigin)) {
       return callback(null, true)
     }
     console.error(`[CORS] Rejected origin: ${origin}`)
     callback(new Error(`CORS: origin '${origin}' not allowed`))
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }))
 
 app.use(express.json({ limit: '1mb' }))
