@@ -93,7 +93,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'x-admin-token']
 }))
 
 app.use(express.json({ limit: '1mb' }))
@@ -2736,6 +2736,30 @@ app.get('/api/admin/innovation-college', requireAdmin, async (req, res) => {
   }
 })
 
+// ── Admin: all test registrations ─────────────────────────────
+app.get('/api/admin/test', requireAdmin, async (req, res) => {
+  try {
+    const dummyData = [
+      {
+        id: 'test-demo-1234',
+        reg_id: 'TEST001',
+        submitted_at: new Date().toISOString(),
+        team_name: 'demo team',
+        college_name: 'Demo College',
+        theme: 'Testing',
+        leader_email: 'Prithikavadivel02@gmail.com',
+        leader_name: 'Demo Leader',
+        leader_phone: '1234567890',
+        payment_status: 'paid',
+        status: 'selected'
+      }
+    ]
+    res.json({ success: true, data: dummyData })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 
 // Î“Ã¶Ã‡Î“Ã¶Ã‡ Admin: all innovation-pwd registrations Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡Î“Ã¶Ã‡
 app.get('/api/admin/innovation-pwd', requireAdmin, async (req, res) => {
@@ -3620,6 +3644,7 @@ const TAB_EVENT_NAME_MAP = {
   'cricket': 'Blind Cricket Tournament',
   'chess': 'Blind Chess Competition',
   'shortfilm': 'Short Film Contest',
+  'test': 'Test Certificate Event',
 }
 
 
@@ -3776,10 +3801,24 @@ app.post('/api/admin/send-certificate/team/:tabId/:id', requireAdmin, async (req
   try {
     const { tabId, id } = req.params
     const { positionTitle = 'Selected Project' } = req.body
-    const tableName = TAB_TABLE_MAP[tabId] || 'innovation_college_registrations'
-
-    const { data } = await supabase.from(tableName).select('*').eq('id', id).single()
-    const record = data
+    
+    let record;
+    if (tabId === 'test') {
+      record = {
+        id: 'test-demo-1234',
+        team_name: 'demo team',
+        college_name: 'Demo College',
+        leader_name: 'Demo Leader',
+        email: 'Prithikavadivel02@gmail.com',
+        leader_email: 'Prithikavadivel02@gmail.com',
+        member1Name: 'Member 1',
+        member1Email: 'Prithikavadivel02@gmail.com'
+      }
+    } else {
+      const tableName = TAB_TABLE_MAP[tabId] || 'innovation_college_registrations'
+      const { data } = await supabase.from(tableName).select('*').eq('id', id).single()
+      record = data
+    }
 
     if (!record) {
       return res.status(404).json({ success: false, message: 'Registration record not found' })

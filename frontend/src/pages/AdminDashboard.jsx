@@ -26,6 +26,7 @@ const TABS = [
   { id: 'gallery',            label: 'Gallery',                       endpoint: null },
   { id: 'jury',               label: 'Jury Management',               endpoint: null },
   { id: 'certificate-management', label: 'Certificate Management',    endpoint: null },
+  { id: 'test',               label: 'Test Tab',                      endpoint: '/api/admin/test' },
 ]
 
 const STATUS_CFG = {
@@ -49,6 +50,7 @@ const INNOVATION_COLLEGE_COLS = [
 
 const COLUMNS = {
   'innovation-college': INNOVATION_COLLEGE_COLS,
+  'test': INNOVATION_COLLEGE_COLS,
 
   'innovation-pwd': [
     { key: 'id',                 label: 'ID',        fmt: (v) => v ? v.substring(0, 8) + '...' : '-' },
